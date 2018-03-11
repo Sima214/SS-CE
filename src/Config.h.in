@@ -1,0 +1,15 @@
+#ifndef SSCE_CONFIG_H
+#define SSCE_CONFIG_H
+/*
+ * Major version number.
+ */
+#define SSCE_VERSION_MAJOR ${SSCE_VERSION_MAJOR}
+/*
+ * Minor version number.
+ */
+#define SSCE_VERSION_MINOR ${SSCE_VERSION_MINOR}
+/*
+ * Version string.
+ */
+#define SSCE_VERSION "${SSCE_VERSION}"
+#endif /*SSCE_CONFIG_H*/
