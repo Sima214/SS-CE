@@ -4,7 +4,7 @@
 C_DECLS_START
 #include "Clock.h"
 C_DECLS_END
-namespace clock{
+namespace ssce{
 class PerformanceClock {
   public:
     /*
