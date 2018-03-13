@@ -19,3 +19,6 @@
     #define C_DECLS_END
   #endif
 #endif
+#ifndef SSCE_MASK_CREATE
+  #define SSCE_MASK_CREATE(bit) (0x1<<(bit))
+#endif

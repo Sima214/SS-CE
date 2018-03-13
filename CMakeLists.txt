@@ -45,7 +45,7 @@ message( STATUS "######################################################" )
 message( STATUS "Configuring modules..." )
 message( STATUS "######################################################" )
 handle_module( "Clock" ${MODULE_CLOCK} "${SSCE_DIR_SRC}/clock/Clock_${SSCE_PLT}.c" "${SSCE_DIR_SRC}/clock/Clock.h\;${SSCE_DIR_SRC}/clock/Clock.hpp")
-handle_module( "Strings" ${MODULE_STRINGS} "${SSCE_DIR_SRC}/string/Strings_${SSCE_PLT}.c" "${SSCE_DIR_SRC}/string/Strings.h\;${SSCE_DIR_SRC}/string/Strings.hpp")
+handle_module( "Strings" ${MODULE_STRINGS} "${SSCE_DIR_SRC}/string/Strings_${SSCE_PLT}.c;${SSCE_DIR_SRC}/string/Strings.c" "${SSCE_DIR_SRC}/string/Strings.h\;${SSCE_DIR_SRC}/string/Strings.hpp")
 handle_module( "Logger" ${MODULE_LOGGER} "${SSCE_DIR_SRC}/logger/Logger.c" "${SSCE_DIR_SRC}/logger/Logger.h\;${SSCE_DIR_SRC}/logger/Logger.hpp")
 ## More modules go here!!!
 
