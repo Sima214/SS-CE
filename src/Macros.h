@@ -19,6 +19,12 @@
     #define C_DECLS_END
   #endif
 #endif
+#ifndef IS_POSIX
+  #define IS_POSIX (defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)))
+#endif
 #ifndef SSCE_MASK_CREATE
   #define SSCE_MASK_CREATE(bit) (0x1<<(bit))
+#endif
+#ifndef SSCE_MASK_TEST
+  #define SSCE_MASK_TEST(o, m) (!!(o&m))
 #endif

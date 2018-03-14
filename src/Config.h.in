@@ -12,4 +12,8 @@
  * Version string.
  */
 #define SSCE_VERSION "${SSCE_VERSION}"
+/*
+ * Logger module log file setting.
+ */
+#define MODULE_LOGGER_LOGFILE ${MODULE_LOGGER_LOGFILE}
 #endif /*SSCE_CONFIG_H*/

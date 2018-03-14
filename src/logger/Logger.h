@@ -45,7 +45,7 @@ void ssce_log(const LogLevel level, const int options, const char* fmt, ...);
  * If it is, it makes the whole program crash.
  * Also it logs a helpful(?) message.
  */
-#define ssce_checknull(p) if(p==NULL) {\
+#define ssce_checknull(p) if(p == NULL) {\
                             ssce_logf("Null pointer assertion at %s in %s:%d", __PRETTY_FUNCTION__, __FILE__, __LINE__);\
                           }
 /*
@@ -53,7 +53,12 @@ void ssce_log(const LogLevel level, const int options, const char* fmt, ...);
  * If it has, then it makes the whole program crash.
  * Also it logs the type of error (according to errno).
  */
-#define ssce_checkerrno(v) if(v!=0) {\
+#define ssce_checkerrno(v) if(v != 0) {\
                             logf("%s at %s in %s:%d", strerror(errno), __PRETTY_FUNCTION__, __FILE__, __LINE__);\
                           }
+#ifdef SSCE_LOADER
+//Internal functions, do not use outside of Lifecycle_<os>.c
+void setup_log_file();
+void close_log_file();
+#endif
 #endif /*SSCE_LOGGER_H*/
