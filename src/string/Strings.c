@@ -25,6 +25,6 @@ String ssce_multi_concat(const size_t count, ...) {
     memcpy(sp, cur.array, cur.len);
     sp += cur.len;
   }
-  *(sp+1) = '\0';
+  *(sp) = '\0';
   return final;
 }
