@@ -25,5 +25,8 @@ template <class... T> void loge(T... args) {
 template <class... T> void logf(T... args) {
   ssce_logf(args...);
 }
+inline void setLogLevel(LogLevel l) {
+  ssce_set_log_level(l);
+}
 }
 #endif /*SSCE_LOGGER_HPP*/

@@ -1,25 +1,28 @@
 #include "Clock.h"
 
 #include <float.h>
-#include "stdint.h"
+#include <stdint.h>
 #include <time.h>
 #include <unistd.h>
 
 /*
  * Clock implementation for linux systems.
  */
-const int SEC2NANO = 1000000000;
-const int MSEC2NANO = 1000000;
-const int MILLI2MICRO = 1000;
+const static int MILLI2MICRO = 1000;
+const static int MSEC2NANO = 1000000;
+const static int SEC2NANO = 1000000000;
+
 void ssce_msleep(int64_t msecs) {
     usleep(msecs*MILLI2MICRO);
 }
+
 void ssce_start(PerfClock* pc) {
     struct timespec tp;
     clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
     pc->last_query = tp.tv_nsec;
     pc->last_query_extra = tp.tv_sec;
 }
+
 void ssce_stop(PerfClock* pc) {
     struct timespec tp;
     clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
@@ -36,6 +39,7 @@ void ssce_stop(PerfClock* pc) {
         pc->min = delta;
     }
 }
+
 void ssce_reset(PerfClock* pc) {
     pc->count_query = 0;
     pc->delta_sum = 0;

@@ -28,10 +28,10 @@
 #define CYN "\x1B[36m"
 #define WHT "\x1B[37m"
 #define RESET "\x1B[0m"
-const String LEVEL2STRING[] = {StringStatic("ALL"), StringStatic("VERB"),
+const static String LEVEL2STRING[] = {StringStatic("ALL"), StringStatic("VERB"),
       StringStatic("DEBUG"), StringStatic("INFO"), StringStatic("WARN"),
       StringStatic("ERROR"), StringStatic("FATAL"), StringStatic("OFF")};
-const String LEVEL2COLOR[] = {StringStatic(WHT), StringStatic(WHT),
+const static String LEVEL2COLOR[] = {StringStatic(WHT), StringStatic(WHT),
       StringStatic(BLU), StringStatic(GRN), StringStatic(CYN),
       StringStatic(YEL), StringStatic(RED), StringStatic(RESET)};
 /*
