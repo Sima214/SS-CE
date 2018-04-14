@@ -33,6 +33,8 @@ set( MODULE_CLOCK TRUE CACHE BOOL "Enable the high accuracy clock module." )
 set( MODULE_THREADS TRUE CACHE BOOL "Enable thread cross-platform support." )
 set( MODULE_STRINGS TRUE CACHE BOOL "Enable strings util functions." )
 set( MODULE_LOGGER TRUE CACHE BOOL "Enable the logger module. Requires the strings and thread modules." )
+set( MODULE_CMDPARSER TRUE CACHE BOOL "Enable the command line parser module." )
+
 
 ## Extra configuration.
 set( MODULE_LOGGER_LOGFILE TRUE CACHE BOOL "Enable storing log files to disk." )
@@ -56,7 +58,7 @@ endif()
 
 ## Module definitions.
 set( SSCE_SRC "${SSCE_DIR_SRC}/Lifecycle_${SSCE_PLT}.c" )
-set( SSCE_INC "${SSCE_DIR_SRC}/Macros.h\;${SSCE_DIR_SRC}/Mkdir.h\;${SSCE_DIR_SRC}/Modules.h" )
+set( SSCE_INC "${SSCE_DIR_SRC}/Macros.h\;${SSCE_DIR_SRC}/Modules.h" )
 message( STATUS "######################################################" )
 message( STATUS "Configuring modules..." )
 message( STATUS "######################################################" )
@@ -65,10 +67,12 @@ handle_module( "MODULE_CLOCK" "${SSCE_DIR_SRC}/clock/Clock_${SSCE_PLT}.c" "${SSC
 handle_module( "MODULE_THREADS" "" "${SSCE_DIR_SRC}/thread/Threads.h\;${SSCE_DIR_SRC}/thread/Threads.hpp")
 handle_module( "MODULE_STRINGS" "${SSCE_DIR_SRC}/string/Strings_${SSCE_PLT}.c;${SSCE_DIR_SRC}/string/Strings.c" "${SSCE_DIR_SRC}/string/Strings.h\;${SSCE_DIR_SRC}/string/Strings.hpp")
 handle_module( "MODULE_LOGGER" "${SSCE_DIR_SRC}/logger/Logger.c" "${SSCE_DIR_SRC}/logger/Logger.h\;${SSCE_DIR_SRC}/logger/Logger.hpp")
+handle_module( "MODULE_CMDPARSER" "${SSCE_DIR_SRC}/cmdparser/CmdParser.c" "${SSCE_DIR_SRC}/cmdparser/CmdParser.h\;${SSCE_DIR_SRC}/cmdparser/CmdParser.hpp")
 ## More modules go here!!!
 
 ## Define the library.
 message( STATUS "Building shared library." )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wextra -Wno-expansion-to-defined" )
 add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${SSCE_INC} )
 target_include_directories( ${PROJECT_NAME} PRIVATE "${SSCE_DIR_SRC}" )

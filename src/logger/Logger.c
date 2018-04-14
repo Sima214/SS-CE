@@ -3,7 +3,6 @@
 #include <Config.h>
 #include <Macros.h>
 #include <math/MinMax.h>
-#include <Mkdir.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
@@ -14,11 +13,11 @@
 /*
  * Settings
  */
-#define LOGFILE_BUFLEN 32
+#define LOGFILE_BUFLEN 32U
 #define LOGFILE_DIR "logs"
-#define MESSAGE_BUFLEN 2048
-#define THREAD_BUFLEN 18
-#define TIME_BUFLEN 14
+#define MESSAGE_BUFLEN 2048U
+#define THREAD_BUFLEN 18U
+#define TIME_BUFLEN 14U
 #define THREAD_ERROR "INV"
 #define RED "\x1B[31m"
 #define GRN "\x1B[32m"
@@ -28,10 +27,10 @@
 #define CYN "\x1B[36m"
 #define WHT "\x1B[37m"
 #define RESET "\x1B[0m"
-const static String LEVEL2STRING[] = {StringStatic("ALL"), StringStatic("VERB"),
+static const String LEVEL2STRING[] = {StringStatic("ALL"), StringStatic("VERB"),
       StringStatic("DEBUG"), StringStatic("INFO"), StringStatic("WARN"),
       StringStatic("ERROR"), StringStatic("FATAL"), StringStatic("OFF")};
-const static String LEVEL2COLOR[] = {StringStatic(WHT), StringStatic(WHT),
+static const String LEVEL2COLOR[] = {StringStatic(WHT), StringStatic(WHT),
       StringStatic(BLU), StringStatic(GRN), StringStatic(CYN),
       StringStatic(YEL), StringStatic(RED), StringStatic(RESET)};
 /*
@@ -65,7 +64,7 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
   }
   if(log_file) {
     String file;
-    term = ssce_multi_concat(7, time, SEP0, LEVEL2STRING[l], SEP1, thread, SEP2, msg);
+    file = ssce_multi_concat(7, time, SEP0, LEVEL2STRING[l], SEP1, thread, SEP2, msg);
     if(file.array != NULL) {
       fputs(file.array, log_file);
       free(file.array);

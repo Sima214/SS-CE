@@ -1,6 +1,15 @@
 #ifndef SSCE_CLOCK_H
 #define SSCE_CLOCK_H
-#include "stdint.h"
+#include <stdint.h>
+#if defined(__linux__)
+  #define INTERNAL_STORAGE 2
+#elif defined(__APPLE__)
+  #define INTERNAL_STORAGE 0
+#elif defined(_WIN32)
+  #define INTERNAL_STORAGE 1
+#else
+  #error "Unknown platform."
+#endif
 /*
  * Cross platform clock intended for profiling code.
  * All the captured information is in
@@ -8,8 +17,7 @@
  */
 typedef struct {
   //Internal counters. Please ignore.
-  int64_t last_query;
-  int64_t last_query_extra;
+  int64_t intcnt[INTERNAL_STORAGE];
   //How many samples have been taken since last reset.
   int64_t count_query;
   //Total time that has passed since last reset.
@@ -23,6 +31,19 @@ typedef struct {
   //Biggest delta since last reset.
   float max;
 } PerfClock;
+/*
+ * This function should be called once
+ * before ssce_delay is used.
+ * Otherwise the result is undefined.
+ */
+extern void ssce_delay_hint();
+/*
+ * Creates a delay for the exact amount
+ * of time requested. Only for small delays.
+ * The argument is in microseconds and
+ * it must be smaller than 1000000.
+ */
+extern void ssce_delay(int64_t usecs);
 /*
  * Pause execution for the milliseconds
  * specified in the first argument.

@@ -1,0 +1,3 @@
+#ifndef SSCE_CMDPARSER_H
+#define SSCE_CMDPARSER_H
+#endif /*SSCE_CMDPARSER_H*/

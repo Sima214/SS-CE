@@ -39,12 +39,8 @@ This library is split into several modules which can be turned ON and OFF depend
 Provides some additional mathematical functions not available in the standard C library.
 
 ```C
-//MinMax.h
 min(a, b);
 max(a, b);
-//MinMax.hpp
-ssce::min(a, b);
-ssce::max(a, b);
 ```
 
 ### Clock _[MODULE\_CLOCK]_
@@ -52,17 +48,12 @@ ssce::max(a, b);
 Cross-platform high accuracy clock utilities. Usually implemented by calling the kernel.
 
 ```C
-//Clock.h
+ssce_delay_hint();
+ssce_delay(usecs);
 ssce_msleep(msecs);
 ssce_start(&pc);
 ssce_stop(&pc);
 ssce_reset(&pc);
-//Clock.hpp
-ssce::msleep(msecs);
-class ssce::PerformanceClock
-  start();
-  stop();
-  reset();
 ```
 
 ### Threads _[MODULE\_THREADS]_
@@ -77,16 +68,11 @@ Include one of the headers *Threads.h* or *Threads.hpp* to use this wrapper.
 ### Strings _[MODULE\_STRINGS]_
 
 Strings with semi predictable behaviour.
-<br>
-PS: This implies that all strings provided are encoded in UTF-8.
+Requires that all strings provided are encoded in UTF-8.
 
 ```C
-//Strings.h
 ssce_native_puts("Hello world");
 ssce_multi_concat(2, StringStatic("Hello"), StringStatic("world"));
-//Strings.hpp
-ssce::putsNative("Hello world");
-ssce::multiConcat(StringStatic("Hello"), StringStatic("world"));
 ```
 
 ### Logger _[MODULE\_LOGGER]_
@@ -94,7 +80,6 @@ ssce::multiConcat(StringStatic("Hello"), StringStatic("world"));
 Basic logger. I have plans to expand this on the future.
 
 ```C
-//Logger.h
 ssce_set_log_level(ALL);
 ssce_logv("%s", "Hello");
 ssce_logd("%s", "Hello");
@@ -104,8 +89,8 @@ ssce_loge("%s", "Hello");
 ssce_logf("%s", "Hello");
 ssce_checknull(p);
 ssce_checkerrno(call_return);
-//Logger.hpp
-ssce::setLogLevel(ALL);
-ssce::logi("%s", "Hello");
-//etc...
 ```
+
+### Command line parser _[MODULE\_CMDPARSER]_
+
+Command line parser.

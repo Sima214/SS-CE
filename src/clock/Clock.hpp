@@ -2,7 +2,7 @@
 #define SSCE_CLOCK_HPP
 #include <Macros.h>
 C_DECLS_START
-#include "Clock.h"
+#include <Clock.h>
 C_DECLS_END
 namespace ssce{
 class PerformanceClock {
@@ -37,6 +37,19 @@ class PerformanceClock {
   private:
     PerfClock pc;
 };
+/*
+ * This function should be called once
+ * before delay is used.
+ * Otherwise the result is undefined.
+ */
+extern void delay_hint();
+/*
+ * Creates a delay for the exact amount
+ * of time requested. Only for small delays.
+ * The argument is in microseconds and
+ * it must be smaller than 1000000.
+ */
+extern void delay(int64_t usecs);
 /*
  * Pause execution for the milliseconds
  * specified in the first argument.
