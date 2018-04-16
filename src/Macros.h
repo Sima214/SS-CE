@@ -28,11 +28,17 @@
 #ifndef SSCE_MASK_TEST
   #define SSCE_MASK_TEST(o, m) (!!(o&m))
 #endif
-#if IS_POSIX
-  #include <sys/stat.h>
-  #define ssce_mkdir(dir) mkdir(dir, 0664)
-#elif defined(_WIN32)
-  #define WIN32_LEAN_AND_MEAN
-  #include <windows.h>
-  #define ssce_mkdir(dir) _mkdir(dir)
+#ifndef strequal
+  #include <string.h>
+  #define strequal(s1, s2) strcmp(s1, s2) == 0
+#endif
+#ifndef ssce_mkdir
+  #if IS_POSIX
+    #include <sys/stat.h>
+    #define ssce_mkdir(dir) mkdir(dir, 0664)
+  #elif defined(_WIN32)
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #define ssce_mkdir(dir) _mkdir(dir)
+  #endif
 #endif

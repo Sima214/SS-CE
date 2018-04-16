@@ -16,7 +16,7 @@ static const int SEC2NANO = 1000000000;
 void ssce_delay_hint(){/*NO-OP for linux*/}
 
 void ssce_delay(int64_t usecs) {
-    if(usecs<=0 || usecs>=1000000){
+    if(usecs<=0 || usecs>=1000000) {
         return;
     }
     //Valid input - continue.
@@ -45,7 +45,7 @@ void ssce_stop(PerfClock* pc) {
     double delta = ((double)nano_delta)/MSEC2NANO;
     pc->count_query++;
     pc->delta_sum += delta;
-    pc->avg = pc->delta_sum/pc->count_query;
+    pc->avg = pc->delta_sum / pc->count_query;
     pc->delta = delta;
     if(delta > pc->max){
         pc->max = delta;
