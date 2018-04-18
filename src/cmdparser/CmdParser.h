@@ -3,15 +3,19 @@
 #include <Macros.h>
 #include <stddef.h>
 #include <stdint.h>
+
 /*
  * This collects all the non-option arguments.
  */
 #define SSCE_DEFAULT_NAME ""
+
 /*
  * Callback function for SSCE_TYPE_CALLBACK.
- * Must return 0 on success.
+ * Must return the number of read arguments on success.
+ * On failure must return a negative number.
  */
-typedef int (*CmdCallback)(const char* name, const char* arg);
+typedef int (*CmdCallback)(const char* name, int argc, char** argv);
+
 /*
  * Types of argument types that can be read.
  */
@@ -24,13 +28,15 @@ typedef enum {
   SSCE_TYPE_DOUBLE,
   SSCE_TYPE_CALLBACK
 } OPTION_TYPES;
+
 /*
  * Command line option entries.
- * full_name: required full name of option. '--' gets appended.
- * short_name: optional. '-' gets appended.
+ * full_name(required): full name of option(without the '--').
+ * short_name(optional): Short name for the option.(without the '-').
  * type: one of OPTION_TYPES.
- * data: pointer to where the data should be stored.
- * description: string to be displayed at the help screen.
+ * data: pointer to where the data should be stored or a callback function.
+ *       The type of the pointer depends on what 'type' is set to.
+ * description: help string to be displayed at the help screen.
  */
 typedef struct {
   const char* full_name;
@@ -39,11 +45,10 @@ typedef struct {
   void* data;
   const char* description;
 } CmdOption;
+
 /*
- * Parses command line arguments
- * based on the option entries.
- * Parameter 'o' is an array where last
- * element is {NULL}.
+ * Parses command line options based on a set of CmdOptions.
+ * Parameter 'o' must be an array where last element is {NULL}.
  */
-extern void parse_cmd_args(const CmdOption* o, int argc, char** argv);
+extern void ssce_parse_cmdln(const CmdOption* o, int argc, char** argv);
 #endif /*SSCE_CMDPARSER_H*/

@@ -15,8 +15,6 @@ pkg_check_modules( SSCE REQUIRED ssce )
 target_link_libraries( ${PROJECT_NAME} ${SSCE_CFLAGS} ${SSCE_LIBRARIES} )
 ```
 
-And then use SSCE_INCLUDE_DIRS, SSCE_CFLAGS, SSCE_LIBRARIES.
-
 ## Building
 
 This project uses cmake for generating makefiles for your system.
@@ -94,3 +92,7 @@ ssce_checkerrno(call_return);
 ### Command line parser _[MODULE\_CMDPARSER]_
 
 Command line parser.
+
+```C
+ssce_parse_cmdln({...}, argc, argv);
+```
