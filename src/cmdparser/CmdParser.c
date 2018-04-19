@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static const CmdOption HELP_DUMMY = {"help", 'h', SSCE_TYPE_NONE, NULL, NULL};
+static const CmdOption HELP_DUMMY = {"help", 'h', SSCE_TYPE_NONE, NULL, "Displays this help screen."};
+static void handle_help(size_t olen, const CmdOption* o);
 
 static size_t get_option_array_len(const CmdOption* o) {
   size_t r = 0;
@@ -17,10 +18,6 @@ static size_t get_option_array_len(const CmdOption* o) {
     o++;
   }
   return r;
-}
-
-static void handle_help(size_t olen, const CmdOption* o) {
-  //TODO: help
 }
 
 static const CmdOption* findopt_from_fname(size_t olen, const CmdOption* o, char* name) {
@@ -49,6 +46,33 @@ static const CmdOption* findopt_from_sname(size_t olen, const CmdOption* o, char
   return NULL;
 }
 
+static void handle_help(size_t olen, const CmdOption* o) {
+  const CmdOption* def = findopt_from_fname(olen, o, SSCE_DEFAULT_NAME);
+  if(def!=NULL && def->description!=NULL) {
+    printf("Usage: <progname> [OPTIONS]... %s\n\n", def->description);
+  }
+  else {
+    printf("Usage: <progname> [OPTIONS]...\n\n");
+  }
+  printf("Options: ");
+  for(size_t i=0; i<olen; i++) {
+    const CmdOption* c = o + i;
+    if(strequal(c->full_name, SSCE_DEFAULT_NAME)) continue;
+    const char* desc = c->description;
+    if(desc == NULL) {
+      desc = "";
+    }
+    if(c->short_name != 0){
+      printf("  -%c, --%-24s%s", c->short_name, c->full_name, desc);
+    }
+    else {
+      printf("      --%-24s%s", c->full_name, desc);
+    }
+  }
+  printf("  -%c, --%-24s%s", HELP_DUMMY.short_name, HELP_DUMMY.full_name, HELP_DUMMY.description);
+  exit(0);
+}
+
 static char* clone_string(const char* s) {
   size_t l = strlen(s);
   char* cloned = malloc(l + 1);
@@ -64,7 +88,7 @@ static char* clone_string(const char* s) {
 static void handle_argument(const CmdOption* o, const char* s) {
   switch(o->type){
     case SSCE_TYPE_STRING: *((char**)o->data) = clone_string(s);
-      break;
+    break;
     case SSCE_TYPE_INT32: {
       char* leftovers;
       errno = 0;
@@ -83,14 +107,68 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Success
         *((int32_t*)o->data) = tmp;
       }
+    }
+    break;
+    case SSCE_TYPE_INT64: {
+      char* leftovers;
+      errno = 0;
+      int64_t tmp = strtoll(s, &leftovers, 0);
+      if(*leftovers != '\0') {
+        //Not an integer.
+        fprintf(stderr, "Invalid value: --%s expects one long integer argument.\nGot: %s", o->full_name, s);
+        exit(1);
       }
-      break;
-    case SSCE_TYPE_INT64: *((int64_t*)o->data) = strtoll(s, NULL, 0);
-      break;
-    case SSCE_TYPE_FLOAT: *((float*)o->data) = atof(s);
-      break;
-    case SSCE_TYPE_DOUBLE: *((double*)o->data) = atof(s);
-      break;
+      else if(errno == ERANGE) {
+        //Out of range.
+        fprintf(stderr, "Integer argument %s is out of range.", s);
+        exit(1);
+      }
+      else {
+        //Success
+        *((int64_t*)o->data) = tmp;
+      }
+    }
+    break;
+    case SSCE_TYPE_FLOAT: {
+      char* leftovers;
+      errno = 0;
+      float tmp = strtod(s, &leftovers);
+      if(*leftovers != '\0') {
+        //Not a number.
+        fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s", o->full_name, s);
+        exit(1);
+      }
+      else if(errno == ERANGE) {
+        //Out of range.
+        fprintf(stderr, "Floating point argument %s is out of range.", s);
+        exit(1);
+      }
+      else {
+        //Success
+        *((float*)o->data) = tmp;
+      }
+    }
+    break;
+    case SSCE_TYPE_DOUBLE: {
+      char* leftovers;
+      errno = 0;
+      double tmp = strtod(s, &leftovers);
+      if(*leftovers != '\0') {
+        //Not a number.
+        fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s", o->full_name, s);
+        exit(1);
+      }
+      else if(errno == ERANGE) {
+        //Out of range.
+        fprintf(stderr, "Double floating point argument %s is out of range.", s);
+        exit(1);
+      }
+      else {
+        //Success
+        *((double*)o->data) = tmp;
+      }
+    }
+    break;
     default: {
       fprintf(stderr, "Unhandled enum: %i\nWrong library usage.\n", o->type);
       abort();

@@ -22,6 +22,9 @@
 #ifndef IS_POSIX
   #define IS_POSIX (defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)))
 #endif
+#ifndef MARK_PRINTF
+  #define MARK_PRINTF(fmt_index, start_index) __attribute__((format(printf, fmt_index, start_index)))
+#endif
 #ifndef SSCE_MASK_CREATE
   #define SSCE_MASK_CREATE(bit) (0x1<<(bit))
 #endif

@@ -30,7 +30,7 @@ void ssce_set_log_level(LogLevel);
 /*
  * Generic logger.
  */
-void ssce_log(const LogLevel level, const int options, const char* fmt, ...);
+void ssce_log(const LogLevel level, const int options, const char* fmt, ...) MARK_PRINTF(3, 4);
 /*
  * Special case loggers.
  */

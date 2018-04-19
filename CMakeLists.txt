@@ -73,6 +73,7 @@ handle_module( "MODULE_CMDPARSER" "${SSCE_DIR_SRC}/cmdparser/CmdParser.c" "${SSC
 ## Define the library.
 message( STATUS "Building shared library." )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -masm=intel -Wall -Wextra -Wno-expansion-to-defined" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
 add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${SSCE_INC} )
 target_include_directories( ${PROJECT_NAME} PRIVATE "${SSCE_DIR_SRC}" )
