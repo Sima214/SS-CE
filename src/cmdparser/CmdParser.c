@@ -54,7 +54,7 @@ static void handle_help(size_t olen, const CmdOption* o) {
   else {
     printf("Usage: <progname> [OPTIONS]...\n\n");
   }
-  printf("Options: ");
+  printf("Options: \n");
   for(size_t i=0; i<olen; i++) {
     const CmdOption* c = o + i;
     if(strequal(c->full_name, SSCE_DEFAULT_NAME)) continue;
@@ -63,13 +63,13 @@ static void handle_help(size_t olen, const CmdOption* o) {
       desc = "";
     }
     if(c->short_name != 0){
-      printf("  -%c, --%-24s%s", c->short_name, c->full_name, desc);
+      printf("  -%c, --%-24s%s\n", c->short_name, c->full_name, desc);
     }
     else {
-      printf("      --%-24s%s", c->full_name, desc);
+      printf("      --%-24s%s\n", c->full_name, desc);
     }
   }
-  printf("  -%c, --%-24s%s", HELP_DUMMY.short_name, HELP_DUMMY.full_name, HELP_DUMMY.description);
+  printf("  -%c, --%-24s%s\n", HELP_DUMMY.short_name, HELP_DUMMY.full_name, HELP_DUMMY.description);
   exit(0);
 }
 
@@ -77,7 +77,7 @@ static char* clone_string(const char* s) {
   size_t l = strlen(s);
   char* cloned = malloc(l + 1);
   if(cloned == NULL) {
-    fprintf(stderr, "Could not allocate memory.");
+    fprintf(stderr, "Could not allocate memory.\n");
     abort();
   }
   memcpy(cloned, s, l);
@@ -95,12 +95,12 @@ static void handle_argument(const CmdOption* o, const char* s) {
       int32_t tmp = strtol(s, &leftovers, 0);
       if(*leftovers != '\0') {
         //Not an integer.
-        fprintf(stderr, "Invalid value: --%s expects one integer argument.\nGot: %s", o->full_name, s);
+        fprintf(stderr, "Invalid value: --%s expects one integer argument.\nGot: %s\n", o->full_name, s);
         exit(1);
       }
       else if(errno == ERANGE) {
         //Out of range.
-        fprintf(stderr, "Integer argument %s is out of range.", s);
+        fprintf(stderr, "Integer argument %s is out of range.\n", s);
         exit(1);
       }
       else {
@@ -115,12 +115,12 @@ static void handle_argument(const CmdOption* o, const char* s) {
       int64_t tmp = strtoll(s, &leftovers, 0);
       if(*leftovers != '\0') {
         //Not an integer.
-        fprintf(stderr, "Invalid value: --%s expects one long integer argument.\nGot: %s", o->full_name, s);
+        fprintf(stderr, "Invalid value: --%s expects one long integer argument.\nGot: %s\n", o->full_name, s);
         exit(1);
       }
       else if(errno == ERANGE) {
         //Out of range.
-        fprintf(stderr, "Integer argument %s is out of range.", s);
+        fprintf(stderr, "Integer argument %s is out of range.\n", s);
         exit(1);
       }
       else {
@@ -135,12 +135,12 @@ static void handle_argument(const CmdOption* o, const char* s) {
       float tmp = strtod(s, &leftovers);
       if(*leftovers != '\0') {
         //Not a number.
-        fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s", o->full_name, s);
+        fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s\n", o->full_name, s);
         exit(1);
       }
       else if(errno == ERANGE) {
         //Out of range.
-        fprintf(stderr, "Floating point argument %s is out of range.", s);
+        fprintf(stderr, "Floating point argument %s is out of range.\n", s);
         exit(1);
       }
       else {
@@ -155,12 +155,12 @@ static void handle_argument(const CmdOption* o, const char* s) {
       double tmp = strtod(s, &leftovers);
       if(*leftovers != '\0') {
         //Not a number.
-        fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s", o->full_name, s);
+        fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s\n", o->full_name, s);
         exit(1);
       }
       else if(errno == ERANGE) {
         //Out of range.
-        fprintf(stderr, "Double floating point argument %s is out of range.", s);
+        fprintf(stderr, "Double floating point argument %s is out of range.\n", s);
         exit(1);
       }
       else {
@@ -177,14 +177,24 @@ static void handle_argument(const CmdOption* o, const char* s) {
 }
 
 static void handle_callback(int argc, char* argv[], int* index, const CmdOption* o) {
+  int def_arg = strequal(o->full_name, SSCE_DEFAULT_NAME);
   CmdCallback callp = (CmdCallback) o->data;
-  int arg_offset = *index + 1;
+  int arg_offset = def_arg? *index: *index+1;
   if(arg_offset < argc) {
     char** sub_argv = &argv[arg_offset];
     int read = callp(o->full_name, argc-arg_offset, sub_argv);
     if(read < 0) {
       fprintf(stderr, "Callback function for option --%s failed.\n", o->full_name);
-      abort();
+      exit(1);
+    }
+    else if(def_arg) {
+      if(read == 0) {
+        fprintf(stderr, "Callback function didn't read any default arguments.\n");
+        exit(1);
+      }
+      else {
+        *index += read - 1;
+      }
     }
     else {
       *index += read;
@@ -194,13 +204,14 @@ static void handle_callback(int argc, char* argv[], int* index, const CmdOption*
     //No arguments call.
     if(callp(o->full_name, 0, NULL) < 0){
       fprintf(stderr, "Callback function for option --%s failed.\n", o->full_name);
-      abort();
+      exit(1);
     }
   }
 }
 
 void ssce_parse_cmdln(const CmdOption* o, int argc, char* argv[]) {
   size_t olen = get_option_array_len(o);
+  int found_default = 0;
   for(int i=1; i<argc; i++) {
     char* arg = argv[i];
     if(arg[0] == '-') {
@@ -225,24 +236,29 @@ void ssce_parse_cmdln(const CmdOption* o, int argc, char* argv[]) {
           }
           else {
             //Not enough arguments.
-            fprintf(stderr, "Not enough arguments: Option %s requires one argument.\nUse --help (or -h) for help.", arg);
+            fprintf(stderr, "Not enough arguments: Option %s requires one argument.\nUse --help (or -h) for help.\n", arg);
           }
         }
       }
       else {
-        fprintf(stderr, "Invalid option: %s\nUse --help (or -h) for help.", arg);
+        fprintf(stderr, "Invalid option: %s\nUse --help (or -h) for help.\n", arg);
         exit(EXIT_FAILURE);
       }
     }
     else {
       const CmdOption* def = findopt_from_fname(olen, o, SSCE_DEFAULT_NAME);
       if(def != NULL) {
-        if(def->type == SSCE_TYPE_CALLBACK) {
+        if(found_default) {
+          fprintf(stderr, "Too many default arguments!\n");
+          exit(1);
+        }
+        else if(def->type == SSCE_TYPE_CALLBACK) {
           handle_callback(argc, argv, &i, def);
         }
         else if(def->type!=SSCE_TYPE_NONE && def->data!=NULL) {
           handle_argument(def, arg);
         }
+        found_default = 1;
       }
       else {
         fprintf(stderr, "This program does not accept default arguments.\n");
