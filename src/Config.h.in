@@ -15,5 +15,5 @@
 /*
  * Logger module log file setting.
  */
-#define MODULE_LOGGER_LOGFILE ${MODULE_LOGGER_LOGFILE}
+#define MODULE_LOGGER_FILE ${MODULE_LOGGER_FILE}
 #endif /*SSCE_CONFIG_H*/

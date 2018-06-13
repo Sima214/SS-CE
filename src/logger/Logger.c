@@ -3,12 +3,12 @@
 #include <Config.h>
 #include <Macros.h>
 #include <math/MinMax.h>
+#include <pthread.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string/Strings.h>
-#include <thread/Threads.h>
 
 /*
  * Settings
@@ -75,7 +75,7 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
  * Called by Lifecycle_<os>.c
  */
 void setup_log_file() {
-  #ifdef MODULE_LOGGER_LOGFILE
+  #ifdef MODULE_LOGGER_FILE
   //Get time.
   time_t curtime;
   struct tm curtime_table;
@@ -91,7 +91,7 @@ void setup_log_file() {
   #endif
 }
 void close_log_file() {
-  #ifdef MODULE_LOGGER_LOGFILE
+  #ifdef MODULE_LOGGER_FILE
   if(log_file){
     fclose(log_file);
   }
@@ -138,7 +138,7 @@ void ssce_log(const LogLevel l, const int o,  const char* fmt, ...) {
     }
   }
   //3. Get thread name.
-  if(ssce_thread_get_name(bthread, THREAD_BUFLEN) != 0) {
+  if(pthread_getname_np(pthread_self(), bthread, THREAD_BUFLEN) != 0) {
     //Use default id if an error occurs.
     memcpy(bthread, THREAD_ERROR, sizeof(THREAD_ERROR)/sizeof(char));
   }
@@ -148,7 +148,7 @@ void ssce_log(const LogLevel l, const int o,  const char* fmt, ...) {
   //5. Finalize.
   output_buffers(l, stime, sthread, smsg);
   //6. Extras
-  if(SSCE_MASK_TEST(o, SSCE_LOGGER_ABORT)) {
+  if(MASK_TEST(o, SSCE_LOGGER_ABORT)) {
     abort();
   }
 }

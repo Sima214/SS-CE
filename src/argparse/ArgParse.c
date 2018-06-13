@@ -1,7 +1,8 @@
-#include "CmdParser.h"
+#include "ArgParse.h"
 
 #include <errno.h>
 #include <Macros.h>
+#include <string.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,7 +21,7 @@ static size_t get_option_array_len(const CmdOption* o) {
   return r;
 }
 
-static const CmdOption* findopt_from_fname(size_t olen, const CmdOption* o, char* name) {
+static const CmdOption* findopt_from_fname(size_t olen, const CmdOption* o, const char* name) {
   if(strequal(name, "help")) {
     handle_help(olen, o);
     return &HELP_DUMMY;

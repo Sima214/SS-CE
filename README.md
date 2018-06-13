@@ -31,6 +31,7 @@ sudo make install
 ## Modules
 
 This library is split into several modules which can be turned ON and OFF depending on the requirements of the application you are building. In C++ code all functions are under the ssce namespace.
+Note that the documentation may not match the actual implementation because of constant changes.
 
 ### Math _[MODULE\_MATH]_
 

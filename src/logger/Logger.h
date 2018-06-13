@@ -20,7 +20,7 @@ typedef enum{
  * Masks for extra options passed to the logger.
  */
 /* Posts message and then aborts execution. */
-#define SSCE_LOGGER_ABORT SSCE_MASK_CREATE(0)
+#define SSCE_LOGGER_ABORT MASK_CREATE(0)
 /*
  * Set log level.
  * Any messages less important than
