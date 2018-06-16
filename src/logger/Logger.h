@@ -12,10 +12,10 @@
  * The enums ALL and OFF should
  * not be used for log messages.
  */
-typedef enum{
-            ALL, VERBOSE, DEBUG, INFO,
-            WARN, ERROR, FATAL, OFF
-            } LogLevel;
+typedef enum {
+  ALL, VERBOSE, DEBUG, INFO,
+  WARN, ERROR, FATAL, OFF
+} LogLevel;
 /*
  * Masks for extra options passed to the logger.
  */
