@@ -4,6 +4,6 @@
 #include "Interface.h"
 #include <stddef.h>
 
-void heapsort(void* array, size_t size, DataTypeInterface interface);
+void heapsort(void* array, size_t size, const DataTypeInterface* interface);
 
 #endif /*SSCE_SORT_H*/

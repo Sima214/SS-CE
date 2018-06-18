@@ -104,11 +104,11 @@ define_module( "MODULE_THREADS" "" "" )
 define_module( "MODULE_STRINGS" "${SSCE_DIR_SRC}/string/Strings_${SSCE_PLT}.c;${SSCE_DIR_SRC}/string/Strings.c" "${SSCE_DIR_SRC}/string/Strings.h\;${SSCE_DIR_SRC}/string/Strings.hpp" )
 define_module( "MODULE_LOGGER" "${SSCE_DIR_SRC}/logger/Logger.c" "${SSCE_DIR_SRC}/logger/Logger.h\;${SSCE_DIR_SRC}/logger/Logger.hpp" )
 define_module( "MODULE_ARGPARSE" "${SSCE_DIR_SRC}/argparse/ArgParse.c" "${SSCE_DIR_SRC}/argparse/ArgParse.h\;${SSCE_DIR_SRC}/argparse/ArgParse.hpp" )
-define_module( "MODULE_STRUCT" "${SSCE_DIR_SRC}/structures/Sort.c" "${SSCE_DIR_SRC}/structures/Sort.h\;${SSCE_DIR_SRC}/structures/Sort.hpp\;${SSCE_DIR_SRC}/structures/Interface.h" )
+define_module( "MODULE_STRUCT" "${SSCE_DIR_SRC}/structures/Heap.c\;${SSCE_DIR_SRC}/structures/Sort.c" "${SSCE_DIR_SRC}/structures/Interface.h\;${SSCE_DIR_SRC}/structures/Sort.h\;${SSCE_DIR_SRC}/structures/Sort.hpp\;${SSCE_DIR_SRC}/structures/Heap.h\;${SSCE_DIR_SRC}/structures/Heap.hpp" )
 ## End of modules definitions
 
 ## Define the library.
-## TODO: testing, jemalloc, cflags for ssce.pc, travis ci integration(x3)
+## TODO: jemalloc, cflags for ssce.pc, travis ci integration(x3)
 set( SHARED TRUE CACHE BOOL "Disable to build static libraries." )
 set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel -Wall -Wextra -Wno-expansion-to-defined" )

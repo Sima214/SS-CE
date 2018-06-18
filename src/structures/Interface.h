@@ -2,8 +2,9 @@
 #define SSCE_INTERFACE_H
 
 #include <stddef.h>
+#include <string.h>
 
-typedef int (*Compare)(void* data, size_t i, size_t j);
+typedef int (*Compare)(const void* data, size_t i, size_t j);
 typedef void (*Operate)(void* data, size_t i, size_t j);
 
 /*
@@ -21,4 +22,23 @@ typedef struct {
   // Swaps data[i] with data[j].
   Operate swap;
 } DataTypeInterface;
+
+#define dti_cmp_eq(arr, inter, i, j) (inter->cmp_eq?inter->cmp_eq(arr, i, j):(memcmp(arr+i, arr+j, inter->size)==0))
+
+#define dti_cmp_l(arr, inter, i, j) (inter->cmp_l?inter->cmp_l(arr, i, j):(memcmp(arr+i, arr+j, inter->size)<0))
+
+#define dti_cmp_le(arr, inter, i, j) (inter->cmp_le?inter->cmp_le(arr, i, j):(memcmp(arr+i, arr+j, inter->size)<=0))
+
+#define dti_op_swap(arr, inter, i, j) {\
+                                        if(inter->swap) {\
+                                          inter->swap(arr, i, j);\
+                                        }\
+                                        else {\
+                                          char tmp[inter->size];\
+                                          memcpy(tmp, arr+i, inter->size);\
+                                          memcpy(arr+i, arr+j, inter->size);\
+                                          memcpy(arr+j, tmp, inter->size);\
+                                        }\
+                                      }\
+
 #endif /*SSCE_INTERFACE_H*/
