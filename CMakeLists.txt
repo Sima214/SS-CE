@@ -112,7 +112,7 @@ define_module( "MODULE_STRUCT" "${SSCE_DIR_SRC}/structures/Heap.c\;${SSCE_DIR_SR
 set( SHARED TRUE CACHE BOOL "Disable to build static libraries." )
 set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel -Wall -Wextra -Wno-expansion-to-defined" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
 if(${SHARED})
     message( STATUS "Building shared library." )
     add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
