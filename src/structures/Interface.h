@@ -7,12 +7,23 @@
 typedef int (*Compare)(const void* data, size_t i, size_t j);
 typedef void (*Operate)(void* data, size_t i, size_t j);
 
+// TODO: docs
+#define SSCE_INTERFACE_CUSTOM
+#define SSCE_INTERFACE_FLOAT
+#define SSCE_INTERFACE_UNSIGNED
+
 /*
  * An interface for abstract data types.
  */
 typedef struct {
-  // Size of data type in bytes.
+  // Size of each element in bytes.
   size_t size;
+  // Offset to apply on each element start address.
+  size_t offset;
+  // Size of key of each element.
+  size_t key_size;
+  // The type of key. It's a bitfield of SSCE_INTERFACE_* values.
+  size_t key_type;
   // Returns true if data[i]==data[j].
   Compare cmp_eq;
   // Returns true if data[i]<data[j].

@@ -2,10 +2,16 @@
 
 #include <structures/Interface.h>
 #include <structures/Sort.h>
+#include <clock/Clock.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+/*
+ * Standard sort: 2700ns
+ * Heapsort v1: 3400ns
+ */
 
 #define KBYTES(kb) kb*1024
 #define MBYTES(mb) KBYTES(mb*1024)
@@ -28,6 +34,10 @@ static void int_swap(int* data, size_t i, size_t j) {
   data[j] = tmp;
 }
 
+static int int_cmp_gen(int* a, int* b) {
+  return *a - *b;
+}
+
 const DataTypeInterface iinterface = {sizeof(char), (Compare) int_cmp_eq,
   (Compare) int_cmp_l, (Compare) int_cmp_le, (Operate) int_swap};
 
@@ -45,14 +55,16 @@ static void fill_garbage(void* array, size_t bytes) {
     *p = r;
   }
   char* q;
-  for(q=p; q<end_bytes; q++) {
+  for(q=(char*)p; q<end_bytes; q++) {
     char r = rand()%256;
     *q = r;
   }
 }
 
+/*
+ * Test if array of integers is ascending order.
+ */
 static int is_sorted_i(int* a, size_t n) {
-  size_t i = 0;
   for(size_t i=1; i<n; i++) {
     if(!(a[i] >= a[i-1])) {
       return 0;
@@ -71,10 +83,18 @@ int main(int argc, char* argv[]) {
   /*
    * Split arrays to 64 chunks.
    */
+  PerfClock pc;
+  ssce_reset(&pc);
   for(size_t i=0; i<sizeof(test_area)/sizeof(int)/64; i++) {
     int* array = test_area + (i*64);
+    __builtin_prefetch(array);
+    ssce_start(&pc);
+    //qsort(array, 64, 4, int_cmp_gen);
     heapsort(array, 64, &iinterface);
+    ssce_stop(&pc);
   }
+  printf("method:\t AVG | MIN | MAX\n");
+  printf("heapsort: %6.4f | %6.4f | %6.4f\n", pc.avg, pc.min, pc.max);
   for(size_t i=0; i<sizeof(test_area)/sizeof(int)/64; i++) {
     int* array = test_area + (i*64);
     if(!is_sorted_i(array, 64)) {
