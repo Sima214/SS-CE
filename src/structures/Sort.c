@@ -9,7 +9,9 @@ void heapsort(void* array, size_t size, const DataTypeInterface* interface) {
   size_t end = size - 1;
   //TODO: avoid undeflow conditions.
   while(end > 0) {
-    dti_op_swap(array, interface, end, 0);
+    if(dti_custom(interface)) {
+      interface->swap(interface, addp(array, end*interface->size+interface->offset), array);
+    }
     end--;
     siftDownHeap(array, interface, 0, end);
   }

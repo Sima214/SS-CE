@@ -16,31 +16,6 @@
 #define KBYTES(kb) kb*1024
 #define MBYTES(mb) KBYTES(mb*1024)
 
-static int int_cmp_eq(const int* data, size_t i, size_t j) {
-  return data[i] == data[j];
-}
-
-static int int_cmp_l(const int* data, size_t i, size_t j) {
-  return data[i] < data[j];
-}
-
-static int int_cmp_le(const int* data, size_t i, size_t j) {
-  return data[i] <= data[j];
-}
-
-static void int_swap(int* data, size_t i, size_t j) {
-  int tmp = data[i];
-  data[i] = data[j];
-  data[j] = tmp;
-}
-
-static int int_cmp_gen(int* a, int* b) {
-  return *a - *b;
-}
-
-const DataTypeInterface iinterface = {sizeof(char), (Compare) int_cmp_eq,
-  (Compare) int_cmp_l, (Compare) int_cmp_le, (Operate) int_swap};
-
 /*
  * Fills an array with random data.
  */
@@ -90,7 +65,7 @@ int main(int argc, char* argv[]) {
     __builtin_prefetch(array);
     ssce_start(&pc);
     //qsort(array, 64, 4, int_cmp_gen);
-    heapsort(array, 64, &iinterface);
+    //heapsort(array, 64, &iinterface);
     ssce_stop(&pc);
   }
   printf("method:\t AVG | MIN | MAX\n");

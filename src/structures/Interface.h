@@ -1,28 +1,51 @@
 #ifndef SSCE_INTERFACE_H
 #define SSCE_INTERFACE_H
 
+#include <Macros.h>
 #include <stddef.h>
 #include <string.h>
 
-typedef int (*Compare)(const void* data, size_t i, size_t j);
-typedef void (*Operate)(void* data, size_t i, size_t j);
+struct DataTypeInterface;
+typedef struct DataTypeInterface DataTypeInterface;
 
-// TODO: docs
-#define SSCE_INTERFACE_CUSTOM
-#define SSCE_INTERFACE_FLOAT
-#define SSCE_INTERFACE_UNSIGNED
+typedef int (*Compare)(const DataTypeInterface*, void*, void*);
+typedef void (*Operate)(const DataTypeInterface*, void*, void*);
+
+/*
+ * When this option is used
+ * for key_type, you must provide
+ * all of the callback functions.
+ */
+#define SSCE_INTERFACE_CUSTOM MASK_CREATE(0)
+/*
+ * Interprets the key as a float if set.
+ * By default the key is interpreted as an integer.
+ */
+#define SSCE_INTERFACE_FLOAT MASK_CREATE(1)
+/*
+ * Interpret the key as an unsigned number.
+ */
+#define SSCE_INTERFACE_UNSIGNED MASK_CREATE(2)
 
 /*
  * An interface for abstract data types.
+ * Every element is of 'size' bytes.
+ * However only 'key_size' bytes after
+ * 'offset' bytes are used to compare
+ * elements based on the value of 'key_type'.
+ * NOTE: If SSCE_INTERFACE_CUSTOM is used for
+ * 'key_type', then all function pointers must
+ * be provided. Also the function pointers
+ * receive pointers with the offset preapplied.
  */
-typedef struct {
+struct DataTypeInterface {
   // Size of each element in bytes.
   size_t size;
-  // Offset to apply on each element start address.
+  // Offset in bytes to apply from the start of an element.
   size_t offset;
-  // Size of key of each element.
+  // Size of key for each element.
   size_t key_size;
-  // The type of key. It's a bitfield of SSCE_INTERFACE_* values.
+  // The type of key. Must be a bitfield of SSCE_INTERFACE_*
   size_t key_type;
   // Returns true if data[i]==data[j].
   Compare cmp_eq;
@@ -32,24 +55,9 @@ typedef struct {
   Compare cmp_le;
   // Swaps data[i] with data[j].
   Operate swap;
-} DataTypeInterface;
+};
 
-#define dti_cmp_eq(arr, inter, i, j) (inter->cmp_eq?inter->cmp_eq(arr, i, j):(memcmp(arr+i, arr+j, inter->size)==0))
-
-#define dti_cmp_l(arr, inter, i, j) (inter->cmp_l?inter->cmp_l(arr, i, j):(memcmp(arr+i, arr+j, inter->size)<0))
-
-#define dti_cmp_le(arr, inter, i, j) (inter->cmp_le?inter->cmp_le(arr, i, j):(memcmp(arr+i, arr+j, inter->size)<=0))
-
-#define dti_op_swap(arr, inter, i, j) {\
-                                        if(inter->swap) {\
-                                          inter->swap(arr, i, j);\
-                                        }\
-                                        else {\
-                                          char tmp[inter->size];\
-                                          memcpy(tmp, arr+i, inter->size);\
-                                          memcpy(arr+i, arr+j, inter->size);\
-                                          memcpy(arr+j, tmp, inter->size);\
-                                        }\
-                                      }\
+#define dti_custom(dti) MASK_TEST(dti->key_type, SSCE_INTERFACE_CUSTOM)
+#define addp(p, offset) (void*)(((char*)p) + offset)
 
 #endif /*SSCE_INTERFACE_H*/
