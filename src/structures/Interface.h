@@ -5,11 +5,11 @@
 #include <stddef.h>
 #include <string.h>
 
-struct DataTypeInterface;
-typedef struct DataTypeInterface DataTypeInterface;
+struct IDataType;
+typedef struct IDataType IDataType;
 
-typedef int (*Compare)(const DataTypeInterface*, void*, void*);
-typedef void (*Operate)(const DataTypeInterface*, void*, void*);
+typedef int (*Compare)(const IDataType*, void*, void*);
+typedef void (*Operate)(const IDataType*, void*, void*);
 
 /*
  * When this option is used
@@ -38,7 +38,7 @@ typedef void (*Operate)(const DataTypeInterface*, void*, void*);
  * be provided. Also the function pointers
  * receive pointers with the offset preapplied.
  */
-struct DataTypeInterface {
+struct IDataType {
   // Size of each element in bytes.
   size_t size;
   // Offset in bytes to apply from the start of an element.
@@ -57,7 +57,11 @@ struct DataTypeInterface {
   Operate swap;
 };
 
+#define add_offset(p, offset) (void*)(((char*)p) + offset)
+#define get_address(p, index, size) add_offset(p, index*size)
+#define dti_item(dti, p, index) add_offset(get_address(p, index, dti->size), dti->offset)
+#define dti_previous(dti, item) add_offset(item, -dti->size)
 #define dti_custom(dti) MASK_TEST(dti->key_type, SSCE_INTERFACE_CUSTOM)
-#define addp(p, offset) (void*)(((char*)p) + offset)
+
 
 #endif /*SSCE_INTERFACE_H*/

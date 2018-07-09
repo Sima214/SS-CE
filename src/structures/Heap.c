@@ -6,7 +6,7 @@
 #define leftChildHeap(i) (i*2+1)
 #define rightChildHeap(i) (i*2+2)
 
-void siftDownHeap(void* array, const DataTypeInterface* interface, size_t start, size_t end) {
+void siftDownHeap(void* array, const IDataType* interface, size_t start, size_t end) {
   size_t root = start;
   while(leftChildHeap(root) <= end) {
     size_t child = leftChildHeap(root);
@@ -30,7 +30,7 @@ void siftDownHeap(void* array, const DataTypeInterface* interface, size_t start,
   }
 }
 
-void createHeap(void* array, size_t size, const DataTypeInterface* interface) {
+void createHeap(void* array, size_t size, const IDataType* interface) {
   size_t start = parentHeap(size - 1) + 1;
   do {
     start -= 1;

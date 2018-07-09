@@ -4,15 +4,18 @@
 #include <structures/Heap.h>
 #include <stddef.h>
 
-void heapsort(void* array, size_t size, const DataTypeInterface* interface) {
+void heapsort(void* array, size_t size, const IDataType* interface) {
   createHeap(array, size, interface);
-  size_t end = size - 1;
-  //TODO: avoid undeflow conditions.
-  while(end > 0) {
+  void* first = dti_item(interface, array, 0);
+  void* end = dti_item(interface, array, size-1);
+  while(end > array) {
     if(dti_custom(interface)) {
-      interface->swap(interface, addp(array, end*interface->size+interface->offset), array);
+      interface->swap(interface, end, first);
     }
-    end--;
-    siftDownHeap(array, interface, 0, end);
+    else {
+      //TODO - string extensions.
+    }
+    end = dti_previous(interface, end);
+    siftDownHeap(array, interface, first, end);//TODO
   }
 }
