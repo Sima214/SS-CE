@@ -135,6 +135,7 @@ endif()
 enable_testing()
 find_package( Threads )
 define_test( "MODULE_STRUCT" "${SSCE_DIR_TEST}/struct.c" )
+define_test( "MODULE_STRINGS" "${SSCE_DIR_TEST}/strings.c" )
 
 ## Define installation.
 include(GNUInstallDirs)
