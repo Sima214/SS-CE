@@ -29,7 +29,8 @@ String ssce_multi_concat(const size_t count, ...);
 
 //TODO: cleanup
 void memswap_sse2(void* dst, void* src, size_t len);
-void memswap_generic(void* dst, void* src, size_t len);
+void memswap_generic64(void* dst, void* src, size_t len);
+void memswap_generic32(void* dst, void* src, size_t len);
 void memswap_avx(void* dst, void* src, size_t len);
 
 #endif /*SSCE_STRINGS_H*/

@@ -1,19 +1,59 @@
+#include "test_utils.h"
+
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
+#include <time.h>
 
 #include <string/Strings.h>
 #include <clock/Clock.h>
 
+int test_swap(void* orig0, void* orig1, void* swap0, void* swap1, size_t len) {
+  return memcmp(orig0, swap1, len)==0 && memcmp(orig1, swap0, len)==0;
+}
+
 int main(int argc, char* argv[]) {
-  char t1[] = {0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10, 11, 12, 13, 14, 15};
-  char t2[] = {16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
-  PerfClock pc;
-  ssce_reset(&pc);
-  ssce_start(&pc);
-  for(int i=0; i<1024*1024*512; i++) {
-    memswap_avx(t1, t2, 13);
+  srand(time(NULL));
+  static uint8_t garbage0[KBYTES(16)];
+  static uint8_t garbage1[KBYTES(16)];
+  static uint8_t test0[KBYTES(16)];
+  static uint8_t test1[KBYTES(16)];
+  fill_garbage(garbage0, sizeof(garbage0));
+  fill_garbage(garbage1, sizeof(garbage1));
+  // Do performance testing.
+  if(argc > 1) {
+    memcpy(test0, garbage0, sizeof(garbage0));
+    memcpy(test1, garbage1, sizeof(garbage0));
+    PerfClock pc;
+    for(size_t cl=1; cl<=KBYTES(16); cl++) {
+      ssce_reset(&pc);
+      for(int i=0; i<16; i++) {
+        ssce_start(&pc);
+        for(int j=0; j<1024*16; j++) {
+          memswap_avx(test0, test1, cl);
+        }
+        ssce_stop(&pc);
+      }
+      // Report results.
+      //printf("%5zu byte blocks: %6.4f | %6.4f | %6.4f\n", cl, pc.avg, pc.min, pc.max);
+      printf("%6.4f, %6.4f, %6.4f\n", pc.avg, pc.min, pc.max);
+    }
+    return EXIT_SUCCESS;
   }
-  ssce_stop(&pc);
-  printf("%f\n", pc.delta);
-  return 0;
+  for(size_t cl=1; cl<=KBYTES(16); cl++) {
+    printf("Testing %zu byte blocks\n", cl);
+    memcpy(test0, garbage0, cl);
+    memcpy(test1, garbage1, cl);
+    // Call method being tested.
+    memswap_sse2(test0, test1, cl);
+    // Confirm result.
+    if(!test_swap(garbage0, garbage1, test0, test1, cl)) {
+      return EXIT_FAILURE;
+    }
+  }
+  //PerfClock pc;
+  //ssce_reset(&pc);
+  //ssce_start(&pc);
+  //ssce_stop(&pc);
+  return EXIT_SUCCESS;
 }

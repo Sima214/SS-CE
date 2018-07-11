@@ -1,40 +1,18 @@
+#include "test_utils.h"
+
+#include <stddef.h>
 #include <stdio.h>
+#include <string.h>
+#include <time.h>
 
 #include <structures/Interface.h>
 #include <structures/Sort.h>
 #include <clock/Clock.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 /*
  * Standard sort: 2700ns
  * Heapsort v1: 3400ns
  */
-
-#define KBYTES(kb) kb*1024
-#define MBYTES(mb) KBYTES(mb*1024)
-
-/*
- * Fills an array with random data.
- */
-static void fill_garbage(void* array, size_t bytes) {
-  size_t words = bytes/4;
-  bytes = bytes%4;
-  int* p;
-  int* const end_words = ((int*)array) + words;
-  char* const end_bytes = ((char*)end_words) + bytes;
-  for(p=array; p<end_words; p++) {
-    int r = rand();
-    *p = r;
-  }
-  char* q;
-  for(q=(char*)p; q<end_bytes; q++) {
-    char r = rand()%256;
-    *q = r;
-  }
-}
 
 /*
  * Test if array of integers is ascending order.
