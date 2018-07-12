@@ -1,5 +1,6 @@
 #include "Strings.h"
 
+#include <Macros.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -58,12 +59,14 @@ String multi_concat(const size_t count, ...) {
             src = (void*) (srcp+1);\
           }
 
+MARK_UNUSED
 static void memswap_generic32(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, uint32_t);
   single_swap(dst, src, len, uint16_t);
   single_swap(dst, src, len, uint8_t);
 }
 
+MARK_UNUSED
 static void memswap_generic64(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, uint64_t);
   single_swap(dst, src, len, uint32_t);

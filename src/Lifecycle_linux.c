@@ -10,7 +10,7 @@
 /*
  * Early init procedure for Linux.
  */
-void __attribute__((constructor)) ssce_init(void) {
+static void __attribute__((constructor)) ssce_init(void) {
   #ifndef NDEBUG
   puts("Loading shared library ssce[" SSCE_VERSION "]");
   #endif
@@ -22,7 +22,7 @@ void __attribute__((constructor)) ssce_init(void) {
 /*
  * Exit procedure for Linux.
  */
-void __attribute__((destructor)) ssce_exit(void) {
+static void __attribute__((destructor)) ssce_exit(void) {
   #ifndef NDEBUG
   puts("Unloading shared library ssce[" SSCE_VERSION "]");
   #endif
