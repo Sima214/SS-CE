@@ -7,6 +7,6 @@
  * There is a environment variable to check this,
  * but I will not bother with that.
  */
-void ssce_native_puts(const char* str) {
+void native_puts(const char* str) {
   puts(str);
 }

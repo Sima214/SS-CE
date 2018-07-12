@@ -23,11 +23,13 @@ function(declare_module modname doc)
     ## Load variable from the cache.
     set( ${modname} TRUE CACHE BOOL "${doc}${deps}" )
     ## Check dependencies.
-    foreach(d ${ARGN})
-        if(NOT ${${d}})
-            message( SEND_ERROR "${modname} requires ${d}, but ${d} is disabled!" )
-        endif(NOT ${${d}})
-    endforeach(d)
+    if(${${modname}})
+        foreach(d ${ARGN})
+            if(NOT ${${d}})
+                message( SEND_ERROR "${modname} requires ${d}, but ${d} is disabled!" )
+            endif(NOT ${${d}})
+        endforeach(d)
+    endif(${${modname}})
 endfunction()
 
 function(define_module modname src inc)
@@ -64,6 +66,7 @@ set( PROJECT_NAME "ssce")
 project( ${PROJECT_NAME} VERSION ${SSCE_VERSION} DESCRIPTION "A random C/C++ library." )
 set( SSCE_DIR_SRC "${PROJECT_SOURCE_DIR}/src" )
 set( SSCE_DIR_TEST "${PROJECT_SOURCE_DIR}/test" )
+set( SSCE_DIR_DOCS "${PROJECT_SOURCE_DIR}/docs" )
 
 ## Module selection.
 declare_module( "MODULE_MATH" "Random math utilities." )
@@ -77,7 +80,7 @@ declare_module( "MODULE_STRUCT" "Enable the data structures module." )
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )
-file( WRITE "${PROJECT_SOURCE_DIR}/src/Modules.h" "/*\n * Auto generated from CMakeLists.txt.\n * This holds the definitions of the enabled modules.\n */\n" )
+file( WRITE "${PROJECT_SOURCE_DIR}/src/Modules.h" "#ifndef SSCE_MODULES_H\n#define SSCE_MODULES_H\n/*\n * Auto generated from CMakeLists.txt.\n * This holds the definitions of the enabled modules.\n */\n" )
 
 ## Platform detection.
 if( WIN32 )
@@ -107,15 +110,29 @@ define_module( "MODULE_STRINGS" "${SSCE_DIR_SRC}/string/Strings_${SSCE_PLT}.c;${
 define_module( "MODULE_LOGGER" "${SSCE_DIR_SRC}/logger/Logger.c" "${SSCE_DIR_SRC}/logger/Logger.h\;${SSCE_DIR_SRC}/logger/Logger.hpp" )
 define_module( "MODULE_ARGPARSE" "${SSCE_DIR_SRC}/argparse/ArgParse.c" "${SSCE_DIR_SRC}/argparse/ArgParse.h\;${SSCE_DIR_SRC}/argparse/ArgParse.hpp" )
 define_module( "MODULE_STRUCT" "${SSCE_DIR_SRC}/structures/Heap.c\;${SSCE_DIR_SRC}/structures/Sort.c" "${SSCE_DIR_SRC}/structures/Interface.h\;${SSCE_DIR_SRC}/structures/Sort.h\;${SSCE_DIR_SRC}/structures/Sort.hpp\;${SSCE_DIR_SRC}/structures/Heap.h\;${SSCE_DIR_SRC}/structures/Heap.hpp" )
+
 ## End of modules definitions
+file( APPEND "${PROJECT_SOURCE_DIR}/src/Modules.h" "#endif /*SSCE_MODULES_H*/" )
+
+## Build documentation.
+find_package( Doxygen )
+if( DOXYGEN_FOUND )
+    ## Configure config file.
+    string( REGEX REPLACE  "\;" " " DOXY_INPUT "${SSCE_INC}" )
+    configure_file("${SSCE_DIR_DOCS}/Doxyfile.in" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
+    ## Add make target.
+    add_custom_target( doc COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating documentation with Doxygen" VERBATIM )
+else( DOXYGEN_FOUND )
+    message( "Doxygen need to be installed to generate the doxygen documentation" )
+endif( DOXYGEN_FOUND )
 
 ## Define the library.
-## TODO: jemalloc, cflags for ssce.pc, travis ci integration(x3)
-set( SHARED TRUE CACHE BOOL "Disable to build static libraries." )
+set( BUILD_SHARED TRUE CACHE BOOL "Disable to build static libraries." )
 set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel -Wall -Wextra -Wno-expansion-to-defined" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
-if(${SHARED})
+if(${BUILD_SHARED})
     message( STATUS "Building shared library." )
     add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
 else()

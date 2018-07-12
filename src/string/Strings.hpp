@@ -1,26 +1,34 @@
 #ifndef SSCE_STRINGS_HPP
 #define SSCE_STRINGS_HPP
+/**
+ * @file
+ * @brief Extra string methods.
+ */
 
 #include <Macros.h>
+namespace std {
 C_DECLS_START
 #include <Strings.h>
 C_DECLS_END
+}
 
 namespace ssce {
-/*
- * Print a string to the console,
+/**
+ * Print a string to stdout,
  * using the encoding of the OS.
+ * 
+ * @param str The null terminated string to output.
  */
-inline void putsNative(const char* str) {
-  ssce_native_puts(str);
+inline void nativePuts(const char* str) {
+  std::native_puts(str);
 }
-/*
+/**
  * Not reccomended for C++ code.
- * Prefer the std lib string class.
+ * Prefer the STL string class.
  */
 template<typename... S>
 String multiConcat(const S... args) {
-    ssce_multi_concat(sizeof...(S), args...);
+    std::multi_concat(sizeof...(S), args...);
 }
 }
 #endif /*SSCE_STRINGS_HPP*/

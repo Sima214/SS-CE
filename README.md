@@ -30,8 +30,21 @@ sudo make install
 
 ## Modules
 
-This library is split into several modules which can be turned ON and OFF depending on the requirements of the application you are building. In C++ code all functions are under the ssce namespace.
-Note that the documentation may not match the actual implementation because of constant changes.
+This library is split into several modules which can be turned ON and OFF depending on the requirements of the application you are building.
+
+A list of available modules:
+
+- MODULE\_STRINGS
+
+## Documentation
+
+If [doxygen](www.doxygen.org) is installed then `make doc` becomes available. The docs are exported at doc_doxygen inside the build directory.
+
+---
+
+TODO: Under refactoring, jemalloc, travis ci integration(x3)
+
+---
 
 ### Math _[MODULE\_MATH]_
 
@@ -62,16 +75,6 @@ Include one of the headers *Threads.h* or *Threads.hpp* to use this wrapper.
 
 ```C
 //TODO
-```
-
-### Strings _[MODULE\_STRINGS]_
-
-Strings with semi predictable behaviour.
-Requires that all strings provided are encoded in UTF-8.
-
-```C
-ssce_native_puts("Hello world");
-ssce_multi_concat(2, StringStatic("Hello"), StringStatic("world"));
 ```
 
 ### Logger _[MODULE\_LOGGER]_
