@@ -7,6 +7,7 @@
 
 /*
  * Clock implementation for linux systems.
+ * TODO: clk
  */
 static const int MILLI2MICRO = 1000;
 static const int MICRO2NANO = 1000;

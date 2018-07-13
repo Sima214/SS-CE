@@ -5,8 +5,8 @@
 #include <string.h>
 #include <time.h>
 
-#include <string/Strings.h>
-#include <clock/Clock.h>
+#include <Strings.h>
+#include <Clock.h>
 
 static int test_swap(void* orig0, void* orig1, void* swap0, void* swap1, size_t len) {
   return memcmp(orig0, swap1, len)==0 && memcmp(orig1, swap0, len)==0;

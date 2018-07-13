@@ -1,0 +1,8 @@
+#ifndef SSCE_MODULES_H
+#define SSCE_MODULES_H
+/*
+ * Auto generated file. DO NOT EDIT!!!
+ * This holds definitions for all enabled modules.
+ */
+${MODULE_DEFINITIONS}
+#endif /*SSCE_MODULES_H*/
