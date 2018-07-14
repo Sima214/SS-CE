@@ -36,6 +36,7 @@ void native_puts(const char* str);
  * @param ... String structures passed in by value.
  * @return String structure which is the result of
  * concatenation of all the input String structures.
+ * Result is null terminated malloced pointer(the caller must free).
  */
 String multi_concat(const size_t count, ...);
 /**

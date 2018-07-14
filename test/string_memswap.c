@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 
+#include <Macros.h>
 #include <Strings.h>
 #include <Clock.h>
 
@@ -33,7 +34,7 @@ static int stress(uint8_t* garbage0, uint8_t* garbage1, uint8_t* test0, uint8_t*
   return EXIT_SUCCESS;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, MARK_UNUSED char* argv[]) {
   srand(time(NULL));
   static uint8_t garbage0[KBYTES(8)];
   static uint8_t garbage1[KBYTES(8)];

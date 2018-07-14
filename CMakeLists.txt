@@ -142,7 +142,7 @@ else()
     add_library( ${PROJECT_NAME} STATIC ${SSCE_SRC} )
 endif()
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
-target_include_directories( ${PROJECT_NAME} PRIVATE "${SSCE_DIR_SRC}" )
+include_directories( "${SSCE_DIR_SRC}" )
 
 ## Define installation.
 include(GNUInstallDirs)
@@ -175,5 +175,5 @@ endif( DOXYGEN_FOUND )
 ## Test configuration.
 enable_testing()
 find_package( Threads )
-define_test( "MODULE_STRING" "memswap" )
+define_test( "MODULE_STRING" "memswap" "multiconcat" )
 define_test( "MODULE_STRUCTURES" "heapsort" )
