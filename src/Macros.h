@@ -46,6 +46,19 @@
    */
   #define MARK_UNUSED __attribute__((unused))
 #endif
+#ifndef MARK_PACKED
+  /**
+   * Forces the compiler to not add padding to structures.
+   */
+  #define MARK_PACKED __attribute__((packed))
+#endif
+#ifndef MARK_CONST
+  /**
+   * Marks the functions as 'const' which helps the compiler.
+   * 'const' functions' result depend only on the value of their parameters.
+   */
+  #define MARK_CONST __attribute__((const))
+#endif
 #ifndef MASK_CREATE
   /**
    * Generates a mask with the bit-th bit turned on.

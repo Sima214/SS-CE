@@ -1,21 +1,23 @@
 #include "Sort.h"
 
-#include <structures/Interface.h>
-#include <structures/Heap.h>
 #include <stddef.h>
 
+#include <Interface.h>
+#include <Heap.h>
+#include <Strings.h>
+
 void heapsort(void* array, size_t size, const IDataType* interface) {
-  createHeap(array, size, interface);
-  void* first = dti_item(interface, array, 0);
-  void* end = dti_item(interface, array, size-1);
+  create_heap(array, size, interface);
+  void* first = dti_element(interface, array, 0);
+  void* end = dti_element(interface, array, size-1);
   while(end > array) {
     if(dti_custom(interface)) {
       interface->swap(interface, end, first);
     }
     else {
-      //TODO - string extensions.
+      memswap(end, first, interface->size);
     }
     end = dti_previous(interface, end);
-    siftDownHeap(array, interface, first, end);//TODO
+    sift_down_heap(array, first, end, interface);
   }
 }

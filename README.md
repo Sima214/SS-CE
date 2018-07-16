@@ -35,6 +35,7 @@ This library is split into several modules which can be turned ON and OFF depend
 A list of available modules:
 
 - MODULE\_STRINGS
+- MODULE\_STRUCTURES
 
 ## Documentation
 

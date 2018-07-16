@@ -5,13 +5,18 @@
 #include <string.h>
 #include <time.h>
 
-#include <structures/Interface.h>
-#include <structures/Sort.h>
-#include <clock/Clock.h>
+#include <Interface.h>
+#include <Strings.h>
+#include <Sort.h>
+#include <Clock.h>
+#include <Macros.h>
 
 /*
  * Standard sort: 2700ns
  * Heapsort v1: 3400ns
+ * Heapsort v2[def]: 4700ns
+ * Heapsort v2[custom]: 2600ns
+ * Heapsort v2[custom_memswap]: 3600ns
  */
 
 /*
@@ -26,7 +31,28 @@ static int is_sorted_i(int* a, size_t n) {
   return 1;
 }
 
-int main(int argc, char* argv[]) {
+int cst_cmp_e(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  return a==b;
+}
+
+int cst_cmp_l(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  return a<b;
+}
+
+int cst_cmp_le(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  return a<=b;
+}
+
+void cst_swap(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  memswap(a, b, 4);
+  //int tmp = *a;
+  //*a = *b;
+  //*b = tmp;
+}
+const IDataType DTI_CST = {4, 0, 4, INTERFACE_TYPE_CUSTOM, (Compare)cst_cmp_e, (Compare)cst_cmp_l, (Compare)cst_cmp_le, (Operate)cst_swap};
+const IDataType DTI_DEF = {4, 0, 4, 0, NULL, NULL, NULL, NULL};
+
+int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   srand(time(NULL));
   // Source data structure.
   static int garbage[MBYTES(4)];
@@ -42,8 +68,7 @@ int main(int argc, char* argv[]) {
     int* array = test_area + (i*64);
     __builtin_prefetch(array);
     ssce_start(&pc);
-    //qsort(array, 64, 4, int_cmp_gen);
-    //heapsort(array, 64, &iinterface);
+    heapsort(array, 64, &DTI_CST);
     ssce_stop(&pc);
   }
   printf("method:\t AVG | MIN | MAX\n");
