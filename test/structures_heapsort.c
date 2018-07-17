@@ -44,13 +44,16 @@ int cst_cmp_le(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
 }
 
 void cst_swap(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
-  memswap(a, b, 4);
-  //int tmp = *a;
-  //*a = *b;
-  //*b = tmp;
+  //memswap(a, b, 4);
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
 }
-const IDataType DTI_CST = {4, 0, 4, INTERFACE_TYPE_CUSTOM, (Compare)cst_cmp_e, (Compare)cst_cmp_l, (Compare)cst_cmp_le, (Operate)cst_swap};
+const IDataType DTI_CST = {4, 0, 4, INTERFACE_TYPE_CUSTOM, 
+                          (Compare)cst_cmp_e, (Compare)cst_cmp_l,
+                          (Compare)cst_cmp_le, (Operate)cst_swap};
 const IDataType DTI_DEF = {4, 0, 4, 0, NULL, NULL, NULL, NULL};
+const IDataType DTI_ODD = {4, 0, 3, 0, NULL, NULL, NULL, NULL};
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   srand(time(NULL));
@@ -68,7 +71,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
     int* array = test_area + (i*64);
     __builtin_prefetch(array);
     ssce_start(&pc);
-    heapsort(array, 64, &DTI_CST);
+    heapsort(array, 64, &DTI_DEF);
     ssce_stop(&pc);
   }
   printf("method:\t AVG | MIN | MAX\n");

@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <Macros.h>
+#include <Strings.h>
 
 struct IDataType;
 typedef struct IDataType IDataType;
@@ -81,6 +82,7 @@ struct IDataType {
 #define dti_previous(dti, item) add_offset(item, (-dti->size))
 #define dti_custom(dti) MASK_TEST(dti->key_type, INTERFACE_TYPE_CUSTOM)
 
+#if __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__
 /**
  * Transfer an odd sized unsigned int to cpu register.
  */
@@ -112,6 +114,7 @@ struct IDataType {
               }\
             }\
           }
+#endif
 
 MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2) {
   if(MASK_TEST(dti->key_type, INTERFACE_TYPE_FLOAT)) {
@@ -119,6 +122,11 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
       return *((double*)p1)<*((double*)p2);
     }
     else {
+      #ifndef NDEBUG
+      if(dti->key_size != sizeof(float)) {
+        native_puts("Invalid float size!!!");
+      }
+      #endif
       // 'Undefined' result if the item is neither double nor float type.
       return *((float*)p1)<*((float*)p2);
     }
@@ -133,11 +141,13 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((uint8_t*)p2);
       }
       break;
+      #if UINTMAX_MAX>=UINT16_MAX
       case 2: {
         cmp1 = *((uint16_t*)p1);
         cmp2 = *((uint16_t*)p2);
       }
       break;
+      #if UINTMAX_MAX>=UINT32_MAX
       case 3: {
         vuint2muint(cmp1, p1, 3);
         vuint2muint(cmp2, p2, 3);
@@ -148,6 +158,7 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((uint32_t*)p2);
       }
       break;
+      #if UINTMAX_MAX>=UINT64_MAX
       case 5: {
         vuint2muint(cmp1, p1, 5);
         vuint2muint(cmp2, p2, 5);
@@ -167,6 +178,9 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp1 = *((uint64_t*)p1);
         cmp2 = *((uint64_t*)p2);
       }
+      #endif
+      #endif
+      #endif
       break;
     }
     return cmp1 < cmp2;
@@ -180,11 +194,13 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((int8_t*)p2);
       }
       break;
+      #if INTMAX_MAX>=INT16_MAX
       case 2: {
         cmp1 = *((int16_t*)p1);
         cmp2 = *((int16_t*)p2);
       }
       break;
+      #if INTMAX_MAX>=INT32_MAX
       case 3: {
         vint2mint(cmp1, p1, 3);
         vint2mint(cmp2, p2, 3);
@@ -195,6 +211,7 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((int32_t*)p2);
       }
       break;
+      #if INTMAX_MAX>=INT64_MAX
       case 5: {
         vint2mint(cmp1, p1, 5);
         vint2mint(cmp2, p2, 5);
@@ -215,6 +232,9 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((uint64_t*)p2);
       }
       break;
+      #endif
+      #endif
+      #endif
     }
     return cmp1 < cmp2;
   }

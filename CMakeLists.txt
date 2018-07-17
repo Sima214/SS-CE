@@ -91,7 +91,7 @@ declare_module( "MODULE_THREADS" "Enable posix thread support." )
 declare_module( "MODULE_STRING" "Enable strings util functions." )
 declare_module( "MODULE_LOGGER" "Enable the logger module." "MODULE_STRINGS" "MODULE_THREADS" )
 declare_module( "MODULE_ARGPARSE" "Enable the argument parser module." )
-declare_module( "MODULE_STRUCTURES" "Enable the data structures module." )
+declare_module( "MODULE_STRUCTURES" "Enable the data structures module." "MODULE_STRING" )
 
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
