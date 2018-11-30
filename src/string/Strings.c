@@ -95,7 +95,7 @@ static void memswap_avx(void* dst, void* src, size_t len) {
 
 static void* resolve_memswap() {
   #if defined(__x86_64__)
-    __builtin_cpu_init();
+    cpu_init();
     if(__builtin_cpu_supports("avx")) {
       #ifndef NDEBUG
       native_puts("Selecting memswap_avx");
