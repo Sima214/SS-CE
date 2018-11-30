@@ -11,10 +11,10 @@
  * Size aware strings in C.
  */
 typedef struct {
-    /** Data pointer. May not be null terminated. */
-    char* array;
-    /** String length in bytes. */
-    size_t len;
+  /** Data pointer. May not be null terminated. */
+  char* array;
+  /** String length in bytes. */
+  size_t len;
 } String;
 
 /** String from static null terminated array. */

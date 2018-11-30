@@ -4,38 +4,40 @@
 C_DECLS_START
 #include <Clock.h>
 C_DECLS_END
-namespace ssce{
+namespace ssce {
 class PerformanceClock {
-  public:
-    /*
+ public:
+  /*
      * Constructor.
      */
-    PerformanceClock(): pc() {
-      ssce_reset(&pc);
-    }
-    /*
+  PerformanceClock()
+    : pc() {
+    ssce_reset(&pc);
+  }
+  /*
      * Start measuring.
      */
-    void start() {
-      ssce_start(&pc);
-    }
-    /*
+  void start() {
+    ssce_start(&pc);
+  }
+  /*
      * Stops measurement and calculates
      * new delta and updates statistics.
      */
-    void stop() {
-      ssce_stop(&pc);
-    }
-    /*
+  void stop() {
+    ssce_stop(&pc);
+  }
+  /*
      * Resets clock counters and statistics.
      * This function should also be called
      * to initialize a PerfClock structure.
      */
-    void reset() {
-      ssce_reset(&pc);
-    }
-  private:
-    PerfClock pc;
+  void reset() {
+    ssce_reset(&pc);
+  }
+
+ private:
+  PerfClock pc;
 };
 /*
  * This function should be called once
@@ -57,5 +59,5 @@ extern void delay(int64_t usecs);
 void msleep(int64_t t) {
   ssce_msleep(t);
 }
-}
+}  // namespace ssce
 #endif /*SSCE_CLOCK_HPP*/

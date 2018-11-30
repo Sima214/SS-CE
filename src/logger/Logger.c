@@ -5,9 +5,9 @@
 #include <math/MinMax.h>
 #include <pthread.h>
 #include <stdarg.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <string/Strings.h>
 
 /*
@@ -28,11 +28,11 @@
 #define WHT "\x1B[37m"
 #define RESET "\x1B[0m"
 static const String LEVEL2STRING[] = {StringStatic("ALL"), StringStatic("VERB"),
-      StringStatic("DEBUG"), StringStatic("INFO"), StringStatic("WARN"),
-      StringStatic("ERROR"), StringStatic("FATAL"), StringStatic("OFF")};
+                                      StringStatic("DEBUG"), StringStatic("INFO"), StringStatic("WARN"),
+                                      StringStatic("ERROR"), StringStatic("FATAL"), StringStatic("OFF")};
 static const String LEVEL2COLOR[] = {StringStatic(WHT), StringStatic(WHT),
-      StringStatic(BLU), StringStatic(GRN), StringStatic(CYN),
-      StringStatic(YEL), StringStatic(RED), StringStatic(RESET)};
+                                     StringStatic(BLU), StringStatic(GRN), StringStatic(CYN),
+                                     StringStatic(YEL), StringStatic(RED), StringStatic(RESET)};
 /*
  * State variables.
  */
@@ -45,7 +45,7 @@ static void create_time(String* str) {
   time(&curtime);
   localtime_r(&curtime, &curtime_table);
   size_t size = snprintf(str->array, TIME_BUFLEN, "%02i:%02i:%02i",
-    curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
+                         curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
   str->len = min(size, TIME_BUFLEN);
 }
 static void output_buffers(LogLevel l, String time, String thread, String msg) {
@@ -57,7 +57,7 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
   //Create colored output for console.
   String term;
   term = multi_concat(9, LEVEL2COLOR[l], time, SEP0, LEVEL2STRING[l],
-                            SEP1, thread, SEP2, msg, END);
+                      SEP1, thread, SEP2, msg, END);
   if(term.array != NULL) {
     native_puts(term.array);
     free(term.array);
@@ -86,13 +86,13 @@ void setup_log_file() {
   //Open file.
   char name[LOGFILE_BUFLEN];
   snprintf(name, LOGFILE_BUFLEN, "%s/%04i%02i%02i_%02i%02i%02i.log", LOGFILE_DIR, curtime_table.tm_year + 1900,
-    curtime_table.tm_mon, curtime_table.tm_mday, curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
+           curtime_table.tm_mon, curtime_table.tm_mday, curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
   log_file = fopen(name, "w");
   #endif
 }
 void close_log_file() {
   #ifdef MODULE_LOGGER_FILE
-  if(log_file){
+  if(log_file) {
     fclose(log_file);
   }
   #endif
@@ -101,20 +101,19 @@ void close_log_file() {
  * Api functions.
  */
 void ssce_set_log_level(LogLevel l) {
-  if(l<ALL || l>OFF) {
+  if(l < ALL || l > OFF) {
     printf("Log level: %i is invalid.\n", l);
     abort();
-  }
-  else {
+  } else {
     log_level = l;
   }
 }
 /*
  * Default implementation.
  */
-void ssce_log(const LogLevel l, const int o,  const char* fmt, ...) {
+void ssce_log(const LogLevel l, const int o, const char* fmt, ...) {
   //0. Quick exit if the current LogLevel is invalid.
-  if(l < log_level){
+  if(l < log_level) {
     return;
   }
   //1. Allocate stack space.
@@ -130,9 +129,9 @@ void ssce_log(const LogLevel l, const int o,  const char* fmt, ...) {
     va_start(vargs, fmt);
     size_t len = vsnprintf(bmsg, MESSAGE_BUFLEN, fmt, vargs);
     va_end(vargs);
-    if(len > 0){
+    if(len > 0) {
       smsg.len = min(MESSAGE_BUFLEN - 1, len);
-    }else{
+    } else {
       //If message formatting failed, then fail quietly.
       return;
     }
@@ -140,7 +139,7 @@ void ssce_log(const LogLevel l, const int o,  const char* fmt, ...) {
   //3. Get thread name.
   if(pthread_getname_np(pthread_self(), bthread, THREAD_BUFLEN) != 0) {
     //Use default id if an error occurs.
-    memcpy(bthread, THREAD_ERROR, sizeof(THREAD_ERROR)/sizeof(char));
+    memcpy(bthread, THREAD_ERROR, sizeof(THREAD_ERROR) / sizeof(char));
   }
   sthread.len = strlen(bthread);
   //4. Fill time string.

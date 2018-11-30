@@ -20,7 +20,7 @@ typedef int (*CmdCallback)(const char* name, int argc, char** argv);
  * Types of argument types that can be read.
  */
 typedef enum {
-  SSCE_TYPE_NONE=0,
+  SSCE_TYPE_NONE = 0,
   SSCE_TYPE_STRING,
   SSCE_TYPE_INT32,
   SSCE_TYPE_INT64,

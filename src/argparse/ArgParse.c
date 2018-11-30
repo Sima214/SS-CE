@@ -1,12 +1,12 @@
 #include "ArgParse.h"
 
-#include <errno.h>
 #include <Macros.h>
-#include <string.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static const CmdOption HELP_DUMMY = {"help", 'h', SSCE_TYPE_NONE, NULL, "Displays this help screen."};
 static void handle_help(size_t olen, const CmdOption* o);
@@ -14,7 +14,7 @@ static void handle_help(size_t olen, const CmdOption* o);
 static size_t get_option_array_len(const CmdOption* o) {
   size_t r = 0;
   CmdOption c;
-  while((c=*o).full_name != NULL){
+  while((c = *o).full_name != NULL) {
     r++;
     o++;
   }
@@ -26,7 +26,7 @@ static const CmdOption* findopt_from_fname(size_t olen, const CmdOption* o, cons
     handle_help(olen, o);
     return &HELP_DUMMY;
   }
-  for(size_t i=0; i<olen; i++) {
+  for(size_t i = 0; i < olen; i++) {
     if(strequal((o[i]).full_name, name)) {
       return o + i;
     }
@@ -39,7 +39,7 @@ static const CmdOption* findopt_from_sname(size_t olen, const CmdOption* o, char
     handle_help(olen, o);
     return &HELP_DUMMY;
   }
-  for(size_t i=0; i<olen; i++) {
+  for(size_t i = 0; i < olen; i++) {
     if((o[i]).short_name == name) {
       return o + i;
     }
@@ -49,24 +49,23 @@ static const CmdOption* findopt_from_sname(size_t olen, const CmdOption* o, char
 
 static void handle_help(size_t olen, const CmdOption* o) {
   const CmdOption* def = findopt_from_fname(olen, o, SSCE_DEFAULT_NAME);
-  if(def!=NULL && def->description!=NULL) {
+  if(def != NULL && def->description != NULL) {
     printf("Usage: <progname> [OPTIONS]... %s\n\n", def->description);
-  }
-  else {
+  } else {
     printf("Usage: <progname> [OPTIONS]...\n\n");
   }
   printf("Options: \n");
-  for(size_t i=0; i<olen; i++) {
+  for(size_t i = 0; i < olen; i++) {
     const CmdOption* c = o + i;
-    if(strequal(c->full_name, SSCE_DEFAULT_NAME)) continue;
+    if(strequal(c->full_name, SSCE_DEFAULT_NAME))
+      continue;
     const char* desc = c->description;
     if(desc == NULL) {
       desc = "";
     }
-    if(c->short_name != 0){
+    if(c->short_name != 0) {
       printf("  -%c, --%-24s%s\n", c->short_name, c->full_name, desc);
-    }
-    else {
+    } else {
       printf("      --%-24s%s\n", c->full_name, desc);
     }
   }
@@ -87,9 +86,10 @@ static char* clone_string(const char* s) {
 }
 
 static void handle_argument(const CmdOption* o, const char* s) {
-  switch(o->type){
-    case SSCE_TYPE_STRING: *((char**)o->data) = clone_string(s);
-    break;
+  switch(o->type) {
+    case SSCE_TYPE_STRING:
+      *((char**)o->data) = clone_string(s);
+      break;
     case SSCE_TYPE_INT32: {
       char* leftovers;
       errno = 0;
@@ -98,18 +98,15 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not an integer.
         fprintf(stderr, "Invalid value: --%s expects one integer argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      }
-      else if(errno == ERANGE) {
+      } else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Integer argument %s is out of range.\n", s);
         exit(1);
-      }
-      else {
+      } else {
         //Success
         *((int32_t*)o->data) = tmp;
       }
-    }
-    break;
+    } break;
     case SSCE_TYPE_INT64: {
       char* leftovers;
       errno = 0;
@@ -118,18 +115,15 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not an integer.
         fprintf(stderr, "Invalid value: --%s expects one long integer argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      }
-      else if(errno == ERANGE) {
+      } else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Integer argument %s is out of range.\n", s);
         exit(1);
-      }
-      else {
+      } else {
         //Success
         *((int64_t*)o->data) = tmp;
       }
-    }
-    break;
+    } break;
     case SSCE_TYPE_FLOAT: {
       char* leftovers;
       errno = 0;
@@ -138,18 +132,15 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not a number.
         fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      }
-      else if(errno == ERANGE) {
+      } else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Floating point argument %s is out of range.\n", s);
         exit(1);
-      }
-      else {
+      } else {
         //Success
         *((float*)o->data) = tmp;
       }
-    }
-    break;
+    } break;
     case SSCE_TYPE_DOUBLE: {
       char* leftovers;
       errno = 0;
@@ -158,18 +149,15 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not a number.
         fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      }
-      else if(errno == ERANGE) {
+      } else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Double floating point argument %s is out of range.\n", s);
         exit(1);
-      }
-      else {
+      } else {
         //Success
         *((double*)o->data) = tmp;
       }
-    }
-    break;
+    } break;
     default: {
       fprintf(stderr, "Unhandled enum: %i\nWrong library usage.\n", o->type);
       abort();
@@ -179,31 +167,27 @@ static void handle_argument(const CmdOption* o, const char* s) {
 
 static void handle_callback(int argc, char* argv[], int* index, const CmdOption* o) {
   int def_arg = strequal(o->full_name, SSCE_DEFAULT_NAME);
-  CmdCallback callp = (CmdCallback) o->data;
-  int arg_offset = def_arg? *index: *index+1;
+  CmdCallback callp = (CmdCallback)o->data;
+  int arg_offset = def_arg ? *index : *index + 1;
   if(arg_offset < argc) {
     char** sub_argv = &argv[arg_offset];
-    int read = callp(o->full_name, argc-arg_offset, sub_argv);
+    int read = callp(o->full_name, argc - arg_offset, sub_argv);
     if(read < 0) {
       fprintf(stderr, "Callback function for option --%s failed.\n", o->full_name);
       exit(1);
-    }
-    else if(def_arg) {
+    } else if(def_arg) {
       if(read == 0) {
         fprintf(stderr, "Callback function didn't read any default arguments.\n");
         exit(1);
-      }
-      else {
+      } else {
         *index += read - 1;
       }
-    }
-    else {
+    } else {
       *index += read;
     }
-  }
-  else {
+  } else {
     //No arguments call.
-    if(callp(o->full_name, 0, NULL) < 0){
+    if(callp(o->full_name, 0, NULL) < 0) {
       fprintf(stderr, "Callback function for option --%s failed.\n", o->full_name);
       exit(1);
     }
@@ -213,55 +197,47 @@ static void handle_callback(int argc, char* argv[], int* index, const CmdOption*
 void ssce_parse_cmdln(const CmdOption* o, int argc, char* argv[]) {
   size_t olen = get_option_array_len(o);
   int found_default = 0;
-  for(int i=1; i<argc; i++) {
+  for(int i = 1; i < argc; i++) {
     char* arg = argv[i];
     if(arg[0] == '-') {
       const CmdOption* f;
       if(arg[1] == '-') {
         //Full option.
-        f = findopt_from_fname(olen, o, arg+2);
-      }
-      else {
+        f = findopt_from_fname(olen, o, arg + 2);
+      } else {
         //Half option.
         f = findopt_from_sname(olen, o, arg[1]);
       }
-      if(f != NULL){
+      if(f != NULL) {
         if(f->type == SSCE_TYPE_CALLBACK) {
           handle_callback(argc, argv, &i, f);
-        }
-        else if(f->type!=SSCE_TYPE_NONE && f->data!=NULL) {
+        } else if(f->type != SSCE_TYPE_NONE && f->data != NULL) {
           //Check if there is an argument after the option.
           //If there is, collect it and handle it.
           if((++i) < argc) {
             handle_argument(f, argv[i]);
-          }
-          else {
+          } else {
             //Not enough arguments.
             fprintf(stderr, "Not enough arguments: Option %s requires one argument.\nUse --help (or -h) for help.\n", arg);
           }
         }
-      }
-      else {
+      } else {
         fprintf(stderr, "Invalid option: %s\nUse --help (or -h) for help.\n", arg);
         exit(EXIT_FAILURE);
       }
-    }
-    else {
+    } else {
       const CmdOption* def = findopt_from_fname(olen, o, SSCE_DEFAULT_NAME);
       if(def != NULL) {
         if(found_default) {
           fprintf(stderr, "Too many default arguments!\n");
           exit(1);
-        }
-        else if(def->type == SSCE_TYPE_CALLBACK) {
+        } else if(def->type == SSCE_TYPE_CALLBACK) {
           handle_callback(argc, argv, &i, def);
-        }
-        else if(def->type!=SSCE_TYPE_NONE && def->data!=NULL) {
+        } else if(def->type != SSCE_TYPE_NONE && def->data != NULL) {
           handle_argument(def, arg);
         }
         found_default = 1;
-      }
-      else {
+      } else {
         fprintf(stderr, "This program does not accept default arguments.\n");
         exit(EXIT_FAILURE);
       }

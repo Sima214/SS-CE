@@ -10,7 +10,7 @@ namespace std {
 C_DECLS_START
 #include <Strings.h>
 C_DECLS_END
-}
+}  // namespace std
 
 namespace ssce {
 /**
@@ -28,7 +28,7 @@ inline void nativePuts(const char* str) {
  */
 template<typename... S>
 String multiConcat(const S... args) {
-    std::multi_concat(sizeof...(S), args...);
+  std::multi_concat(sizeof...(S), args...);
 }
-}
+}  // namespace ssce
 #endif /*SSCE_STRINGS_HPP*/

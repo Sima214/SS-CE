@@ -59,7 +59,6 @@ local function main(sourcefile)
                 print(string.format("The order of the commands may have changed(%s->%s)!", o.command, command))
             end
             local add_level = find(IDENT_ADD_COMMANDS, command) and 1 or 0
-            print(command, add_level)
             next_ident_level = o.whitespace_count + add_level
             whitespace = string.rep(BASE_WHITESPACE, o.whitespace_count)
             local final = whitespace..trim(l)
