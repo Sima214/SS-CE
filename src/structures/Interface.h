@@ -120,7 +120,8 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
   if(MASK_TEST(dti->key_type, INTERFACE_TYPE_FLOAT)) {
     if(dti->key_size == sizeof(double)) {
       return *((double*)p1) < *((double*)p2);
-    } else {
+    }
+    else {
       #ifndef NDEBUG
       if(dti->key_size != sizeof(float)) {
         native_puts("Invalid float size!!!");
@@ -175,7 +176,8 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
       break;
     }
     return cmp1 < cmp2;
-  } else {
+  }
+  else {
     intmax_t cmp1 = 0;
     intmax_t cmp2 = 0;
     switch(dti->key_size) {

@@ -74,7 +74,11 @@ local function main(sourcefile)
     end
     f:close()
 
-    -- 3: Write final version.
+    -- 3: Post mods.
+    -- Fix else statements.
+    s = s:gsub("( *)(} else {)", "%1}\n%1else {")
+
+    -- 4: Write final version.
     local f = assert(io.open(sourcefile, "w"))
     f:write(s)
     f:close()

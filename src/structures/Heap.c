@@ -38,7 +38,8 @@ void sift_down_heap(void* array, void* start, void* end, const IDataType* interf
       if(swap == root) {
         // Exit.
         return;
-      } else {
+      }
+      else {
         // Remove offset.
         void* root_noof = add_offset(root, -interface->offset);
         void* swap_noof = add_offset(swap, -interface->offset);
@@ -46,7 +47,8 @@ void sift_down_heap(void* array, void* start, void* end, const IDataType* interf
         root = swap;
       }
     }
-  } else {
+  }
+  else {
     while(heap_left(root, child_cache) <= end) {
       void* child = heap_left(root, child_cache);
       void* swap = root;
@@ -62,7 +64,8 @@ void sift_down_heap(void* array, void* start, void* end, const IDataType* interf
       if(swap == root) {
         // Exit.
         return;
-      } else {
+      }
+      else {
         // Remove offset.
         void* root_noof = add_offset(root, -interface->offset);
         void* swap_noof = add_offset(swap, -interface->offset);

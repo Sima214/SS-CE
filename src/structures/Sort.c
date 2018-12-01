@@ -13,7 +13,8 @@ void heapsort(void* array, size_t size, const IDataType* interface) {
   while(end > array) {
     if(dti_custom(interface)) {
       interface->swap(interface, end, first);
-    } else {
+    }
+    else {
       memswap(end, first, interface->size);
     }
     end = dti_previous(interface, end);

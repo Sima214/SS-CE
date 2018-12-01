@@ -99,8 +99,9 @@ static void* resolve_memswap() {
     native_puts("Selecting memswap_avx");
       #endif
     return memswap_avx;
-  } else {
-// x86_64 always supports SSE2
+  }
+  else {
+    // x86_64 always supports SSE2
       #ifndef NDEBUG
     native_puts("Selecting memswap_sse");
       #endif
@@ -118,7 +119,8 @@ static void* resolve_memswap() {
     native_puts("Selecting memswap_sse2");
       #endif
     return memswap_sse2;
-  } else {
+  }
+  else {
       #ifndef NDEBUG
     native_puts("Selecting memswap_generic32");
       #endif

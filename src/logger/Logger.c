@@ -104,7 +104,8 @@ void ssce_set_log_level(LogLevel l) {
   if(l < ALL || l > OFF) {
     printf("Log level: %i is invalid.\n", l);
     abort();
-  } else {
+  }
+  else {
     log_level = l;
   }
 }
@@ -131,7 +132,8 @@ void ssce_log(const LogLevel l, const int o, const char* fmt, ...) {
     va_end(vargs);
     if(len > 0) {
       smsg.len = min(MESSAGE_BUFLEN - 1, len);
-    } else {
+    }
+    else {
       //If message formatting failed, then fail quietly.
       return;
     }
