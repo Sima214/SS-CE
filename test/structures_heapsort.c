@@ -25,6 +25,7 @@
  */
 static int is_sorted_i(int* a, size_t n) {
   for(size_t i = 1; i < n; i++) {
+    printf("a[%i] = %i\n", i, a[i]);
     if(!(a[i] >= a[i - 1])) {
       return 0;
     }
@@ -50,11 +51,7 @@ void cst_swap(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
   *a = *b;
   *b = tmp;
 }
-const IDataType DTI_CST = {4, 0, 4, INTERFACE_TYPE_CUSTOM,
-                           (Compare)cst_cmp_e, (Compare)cst_cmp_l,
-                           (Compare)cst_cmp_le, (Operate)cst_swap};
-const IDataType DTI_DEF = {4, 0, 4, 0, NULL, NULL, NULL, NULL};
-const IDataType DTI_ODD = {4, 0, 3, 0, NULL, NULL, NULL, NULL};
+const IDataType DTI_CST = {4, 0, 4, (Compare)cst_cmp_e, (Compare)cst_cmp_l, (Compare)cst_cmp_le, (Operate)cst_swap};
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   srand(time(NULL));
@@ -72,7 +69,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
     int* array = test_area + (i * 64);
     __builtin_prefetch(array);
     ssce_start(&pc);
-    heapsort(array, 64, &DTI_DEF);
+    heapsort(array, 64, &DTI_CST);
     ssce_stop(&pc);
   }
   printf("method:\t AVG | MIN | MAX\n");

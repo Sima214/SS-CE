@@ -22,56 +22,28 @@ void sift_down_heap(void* array, void* start, void* end, const IDataType* interf
   void* root = add_offset(start, interface->offset);
   end = add_offset(end, interface->offset);
   uintptr_t child_cache = heap_child_cache(array, interface);
-  if(dti_custom(interface)) {
-    while(heap_left(root, child_cache) <= end) {
-      void* child = heap_left(root, child_cache);
-      void* swap = root;
-      // Test left child.
-      if(interface->cmp_l(interface, swap, child)) {
-        swap = child;
-      }
-      // Test right child.
-      child = heap_right(child, interface);
-      if(child <= end && interface->cmp_l(interface, swap, child)) {
-        swap = child;
-      }
-      if(swap == root) {
-        // Exit.
-        return;
-      }
-      else {
-        // Remove offset.
-        void* root_noof = add_offset(root, -interface->offset);
-        void* swap_noof = add_offset(swap, -interface->offset);
-        interface->swap(interface, root_noof, swap_noof);
-        root = swap;
-      }
+  while(heap_left(root, child_cache) <= end) {
+    void* child = heap_left(root, child_cache);
+    void* swap = root;
+    // Test left child.
+    if(interface->cmp_l(interface, swap, child)) {
+      swap = child;
     }
-  }
-  else {
-    while(heap_left(root, child_cache) <= end) {
-      void* child = heap_left(root, child_cache);
-      void* swap = root;
-      // Test left child.
-      if(dti_cmp_l(interface, swap, child)) {
-        swap = child;
-      }
-      // Test right child.
-      child = heap_right(child, interface);
-      if(child <= end && dti_cmp_l(interface, swap, child)) {
-        swap = child;
-      }
-      if(swap == root) {
-        // Exit.
-        return;
-      }
-      else {
-        // Remove offset.
-        void* root_noof = add_offset(root, -interface->offset);
-        void* swap_noof = add_offset(swap, -interface->offset);
-        memswap(root_noof, swap_noof, interface->size);
-        root = swap;
-      }
+    // Test right child.
+    child = heap_right(child, interface);
+    if(child <= end && interface->cmp_l(interface, swap, child)) {
+      swap = child;
+    }
+    if(swap == root) {
+      // Exit.
+      return;
+    }
+    else {
+      // Remove offset.
+      void* root_noof = add_offset(root, -interface->offset);
+      void* swap_noof = add_offset(swap, -interface->offset);
+      interface->swap(interface, root_noof, swap_noof);
+      root = swap;
     }
   }
 }

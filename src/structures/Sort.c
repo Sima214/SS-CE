@@ -11,12 +11,7 @@ void heapsort(void* array, size_t size, const IDataType* interface) {
   void* first = dti_element(interface, array, 0);
   void* end = dti_element(interface, array, size - 1);
   while(end > array) {
-    if(dti_custom(interface)) {
-      interface->swap(interface, end, first);
-    }
-    else {
-      memswap(end, first, interface->size);
-    }
+    interface->swap(interface, end, first);
     end = dti_previous(interface, end);
     sift_down_heap(array, first, end, interface);
   }
