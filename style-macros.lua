@@ -51,6 +51,8 @@ local function main(sourcefile)
     local f = assert(io.open(sourcefile, "r"))
     local s = ""
     local next_ident_level = 0
+    local last_ident_level = -1
+    local block_level = 0
     for l in f:lines() do
         local whitespace, command = l:match("^( *)#([%w_]+)")
         if whitespace then
@@ -59,6 +61,12 @@ local function main(sourcefile)
                 print(string.format("The order of the commands may have changed(%s->%s)!", o.command, command))
             end
             local add_level = find(IDENT_ADD_COMMANDS, command) and 1 or 0
+            if add_level == 1 then
+                last_ident_level = -1
+                block_level = block_level + 1
+            elseif block_level > 0 then
+                block_level = block_level - 1
+            end
             next_ident_level = o.whitespace_count + add_level
             whitespace = string.rep(BASE_WHITESPACE, o.whitespace_count)
             local final = whitespace..trim(l)
@@ -68,6 +76,23 @@ local function main(sourcefile)
             whitespace = string.rep(BASE_WHITESPACE, ident)
             local final = whitespace..l
             s = append(s, final)
+        elseif block_level>0 then
+            local whitespace, content = l:match("^( *)([^\n]+)")
+            local level = math.modf(#whitespace / TAB_SIZE)
+            if last_ident_level == -1 then
+                -- Reset ident level.
+                last_ident_level = level
+            elseif level > last_ident_level then
+                -- Set new ident level.
+                last_ident_level = level
+                next_ident_level = next_ident_level + 1
+            elseif level < last_ident_level then
+                -- Set new ident level.
+                last_ident_level = level
+                next_ident_level = next_ident_level - 1
+            end
+            local whitespace = BASE_WHITESPACE:rep(next_ident_level)
+            s = append(s, whitespace..content)
         else
             s = append(s, l)
         end
@@ -76,9 +101,13 @@ local function main(sourcefile)
 
     -- 3: Post mods.
     -- Fix else statements.
-    s = s:gsub("( *)(} else {)", "%1}\n%1else {")
+    s = s:gsub("( *)} (else {)", "%1}\n%1%2")
+    -- Fix else if statements (lua cannot match optional words).
+    s = s:gsub("( *)} (else if%b() {)", "%1}\n%1%2")
     -- Fix single line if statements.
     s = s:gsub("(if *%b())\n *([^\n]+;)", "%1 %2")
+    -- Attributes always go above functions.
+    s = s:gsub("(__attribute__%b()) ([%w()_,%* ]+ {)", "%1\n%2")
 
     -- 4: Write final version.
     local f = assert(io.open(sourcefile, "w"))

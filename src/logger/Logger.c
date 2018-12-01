@@ -76,25 +76,25 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
  */
 void setup_log_file() {
   #ifdef MODULE_LOGGER_FILE
-  //Get time.
-  time_t curtime;
-  struct tm curtime_table;
-  time(&curtime);
-  localtime_r(&curtime, &curtime_table);
-  //Make subdirectory.
-  ssce_mkdir(LOGFILE_DIR);
-  //Open file.
-  char name[LOGFILE_BUFLEN];
-  snprintf(name, LOGFILE_BUFLEN, "%s/%04i%02i%02i_%02i%02i%02i.log", LOGFILE_DIR, curtime_table.tm_year + 1900,
-           curtime_table.tm_mon, curtime_table.tm_mday, curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
-  log_file = fopen(name, "w");
+    //Get time.
+    time_t curtime;
+    struct tm curtime_table;
+    time(&curtime);
+    localtime_r(&curtime, &curtime_table);
+    //Make subdirectory.
+    ssce_mkdir(LOGFILE_DIR);
+    //Open file.
+    char name[LOGFILE_BUFLEN];
+    snprintf(name, LOGFILE_BUFLEN, "%s/%04i%02i%02i_%02i%02i%02i.log", LOGFILE_DIR, curtime_table.tm_year + 1900,
+      curtime_table.tm_mon, curtime_table.tm_mday, curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
+    log_file = fopen(name, "w");
   #endif
 }
 void close_log_file() {
   #ifdef MODULE_LOGGER_FILE
-  if(log_file) {
-    fclose(log_file);
-  }
+    if(log_file) {
+      fclose(log_file);
+    }
   #endif
 }
 /*

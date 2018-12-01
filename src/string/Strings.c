@@ -8,6 +8,8 @@
 #include <string.h>
 #include <x86intrin.h>
 
+typedef void(memswap_t)(void*, void*, size_t);
+
 String multi_concat(const size_t count, ...) {
   String cache[count];
   String final = {NULL, 0};
@@ -74,7 +76,8 @@ static void memswap_generic64(void* dst, void* src, size_t len) {
   single_swap(dst, src, len, uint8_t);
 }
 
-__attribute__((__target__("sse2"), optimize("no-tree-vectorize"))) static void memswap_sse2(void* dst, void* src, size_t len) {
+__attribute__((__target__("sse2"), optimize("no-tree-vectorize")))
+static void memswap_sse2(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, __m128i_u);
   single_swap(dst, src, len, uint64_t);
   single_swap(dst, src, len, uint32_t);
@@ -82,7 +85,8 @@ __attribute__((__target__("sse2"), optimize("no-tree-vectorize"))) static void m
   single_swap(dst, src, len, uint8_t);
 }
 
-__attribute__((__target__("avx"), optimize("no-tree-vectorize"))) static void memswap_avx(void* dst, void* src, size_t len) {
+__attribute__((__target__("avx"), optimize("no-tree-vectorize")))
+static void memswap_avx(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, __m256i_u);
   single_swap(dst, src, len, __m128i_u);
   single_swap(dst, src, len, uint64_t);
@@ -91,38 +95,39 @@ __attribute__((__target__("avx"), optimize("no-tree-vectorize"))) static void me
   single_swap(dst, src, len, uint8_t);
 }
 
-static void* resolve_memswap() {
+static memswap_t* resolve_memswap() {
   #if defined(__x86_64__)
-  cpu_init();
-  if(__builtin_cpu_supports("avx")) {
+    cpu_init();
+    if(__builtin_cpu_supports("avx")) {
       #ifndef NDEBUG
-    native_puts("Selecting memswap_avx");
+        native_puts("Selecting memswap_avx");
       #endif
-    return memswap_avx;
-  }
-  else {
-    // x86_64 always supports SSE2
+      return memswap_avx;
+    }
+    else {
+      // x86_64 always supports SSE2
       #ifndef NDEBUG
-    native_puts("Selecting memswap_sse");
+        native_puts("Selecting memswap_sse");
       #endif
-    return memswap_sse2;
-  }
+      return memswap_sse2;
+    }
   #elif defined(__i386__)
   __builtin_cpu_init();
   if(__builtin_cpu_supports("avx")) {
       #ifndef NDEBUG
-    native_puts("Selecting memswap_avx");
+        native_puts("Selecting memswap_avx");
       #endif
     return memswap_avx;
-  } else if(__builtin_cpu_supports("sse2")) {
+  }
+  else if(__builtin_cpu_supports("sse2")) {
       #ifndef NDEBUG
-    native_puts("Selecting memswap_sse2");
+        native_puts("Selecting memswap_sse2");
       #endif
     return memswap_sse2;
   }
   else {
       #ifndef NDEBUG
-    native_puts("Selecting memswap_generic32");
+        native_puts("Selecting memswap_generic32");
       #endif
     return memswap_generic32;
   }

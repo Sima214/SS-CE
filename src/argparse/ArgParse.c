@@ -99,7 +99,8 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not an integer.
         fprintf(stderr, "Invalid value: --%s expects one integer argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      } else if(errno == ERANGE) {
+      }
+      else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Integer argument %s is out of range.\n", s);
         exit(1);
@@ -117,7 +118,8 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not an integer.
         fprintf(stderr, "Invalid value: --%s expects one long integer argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      } else if(errno == ERANGE) {
+      }
+      else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Integer argument %s is out of range.\n", s);
         exit(1);
@@ -135,7 +137,8 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not a number.
         fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      } else if(errno == ERANGE) {
+      }
+      else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Floating point argument %s is out of range.\n", s);
         exit(1);
@@ -153,7 +156,8 @@ static void handle_argument(const CmdOption* o, const char* s) {
         //Not a number.
         fprintf(stderr, "Invalid value: --%s expects one float argument.\nGot: %s\n", o->full_name, s);
         exit(1);
-      } else if(errno == ERANGE) {
+      }
+      else if(errno == ERANGE) {
         //Out of range.
         fprintf(stderr, "Double floating point argument %s is out of range.\n", s);
         exit(1);
@@ -180,7 +184,8 @@ static void handle_callback(int argc, char* argv[], int* index, const CmdOption*
     if(read < 0) {
       fprintf(stderr, "Callback function for option --%s failed.\n", o->full_name);
       exit(1);
-    } else if(def_arg) {
+    }
+    else if(def_arg) {
       if(read == 0) {
         fprintf(stderr, "Callback function didn't read any default arguments.\n");
         exit(1);
@@ -220,7 +225,8 @@ void ssce_parse_cmdln(const CmdOption* o, int argc, char* argv[]) {
       if(f != NULL) {
         if(f->type == SSCE_TYPE_CALLBACK) {
           handle_callback(argc, argv, &i, f);
-        } else if(f->type != SSCE_TYPE_NONE && f->data != NULL) {
+        }
+        else if(f->type != SSCE_TYPE_NONE && f->data != NULL) {
           //Check if there is an argument after the option.
           //If there is, collect it and handle it.
           if((++i) < argc) {
@@ -243,9 +249,11 @@ void ssce_parse_cmdln(const CmdOption* o, int argc, char* argv[]) {
         if(found_default) {
           fprintf(stderr, "Too many default arguments!\n");
           exit(1);
-        } else if(def->type == SSCE_TYPE_CALLBACK) {
+        }
+        else if(def->type == SSCE_TYPE_CALLBACK) {
           handle_callback(argc, argv, &i, def);
-        } else if(def->type != SSCE_TYPE_NONE && def->data != NULL) {
+        }
+        else if(def->type != SSCE_TYPE_NONE && def->data != NULL) {
           handle_argument(def, arg);
         }
         found_default = 1;

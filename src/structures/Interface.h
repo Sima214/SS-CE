@@ -84,8 +84,8 @@ struct IDataType {
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   /**
- * Transfer an odd sized unsigned int to cpu register.
- */
+  * Transfer an odd sized unsigned int to cpu register.
+  */
 #define vuint2muint(dst, src, bytes) \
   {                                  \
     const char* srcp = src;          \
@@ -123,14 +123,15 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
     }
     else {
       #ifndef NDEBUG
-      if(dti->key_size != sizeof(float)) {
-        native_puts("Invalid float size!!!");
-      }
+        if(dti->key_size != sizeof(float)) {
+          native_puts("Invalid float size!!!");
+        }
       #endif
       // 'Undefined' result if the item is neither double nor float type.
       return *((float*)p1) < *((float*)p2);
     }
-  } else if(MASK_TEST(dti->key_type, INTERFACE_TYPE_UNSIGNED)) {
+  }
+  else if(MASK_TEST(dti->key_type, INTERFACE_TYPE_UNSIGNED)) {
     // Move the numbers to cmp1 and cmp2. Then compare those two.
     uintmax_t cmp1 = 0;
     uintmax_t cmp2 = 0;
@@ -140,36 +141,36 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((uint8_t*)p2);
       } break;
       #if UINTMAX_MAX >= UINT16_MAX
-      case 2: {
-        cmp1 = *((uint16_t*)p1);
-        cmp2 = *((uint16_t*)p2);
-      } break;
+        case 2: {
+          cmp1 = *((uint16_t*)p1);
+          cmp2 = *((uint16_t*)p2);
+        } break;
       #if UINTMAX_MAX >= UINT32_MAX
-      case 3: {
-        vuint2muint(cmp1, p1, 3);
-        vuint2muint(cmp2, p2, 3);
-      } break;
-      case 4: {
-        cmp1 = *((uint32_t*)p1);
-        cmp2 = *((uint32_t*)p2);
-      } break;
+        case 3: {
+          vuint2muint(cmp1, p1, 3);
+          vuint2muint(cmp2, p2, 3);
+        } break;
+        case 4: {
+          cmp1 = *((uint32_t*)p1);
+          cmp2 = *((uint32_t*)p2);
+        } break;
       #if UINTMAX_MAX >= UINT64_MAX
-      case 5: {
-        vuint2muint(cmp1, p1, 5);
-        vuint2muint(cmp2, p2, 5);
-      } break;
-      case 6: {
-        vuint2muint(cmp1, p1, 6);
-        vuint2muint(cmp2, p2, 6);
-      } break;
-      case 7: {
-        vuint2muint(cmp1, p1, 7);
-        vuint2muint(cmp2, p2, 7);
-      } break;
-      case 8: {
-        cmp1 = *((uint64_t*)p1);
-        cmp2 = *((uint64_t*)p2);
-      }
+        case 5: {
+          vuint2muint(cmp1, p1, 5);
+          vuint2muint(cmp2, p2, 5);
+        } break;
+        case 6: {
+          vuint2muint(cmp1, p1, 6);
+          vuint2muint(cmp2, p2, 6);
+        } break;
+        case 7: {
+          vuint2muint(cmp1, p1, 7);
+          vuint2muint(cmp2, p2, 7);
+        } break;
+        case 8: {
+          cmp1 = *((uint64_t*)p1);
+          cmp2 = *((uint64_t*)p2);
+        }
       #endif
       #endif
       #endif
@@ -186,36 +187,36 @@ MARK_CONST static inline int dti_cmp_l(const IDataType* dti, void* p1, void* p2)
         cmp2 = *((int8_t*)p2);
       } break;
       #if INTMAX_MAX >= INT16_MAX
-      case 2: {
-        cmp1 = *((int16_t*)p1);
-        cmp2 = *((int16_t*)p2);
-      } break;
+        case 2: {
+          cmp1 = *((int16_t*)p1);
+          cmp2 = *((int16_t*)p2);
+        } break;
       #if INTMAX_MAX >= INT32_MAX
-      case 3: {
-        vint2mint(cmp1, p1, 3);
-        vint2mint(cmp2, p2, 3);
-      } break;
-      case 4: {
-        cmp1 = *((int32_t*)p1);
-        cmp2 = *((int32_t*)p2);
-      } break;
+        case 3: {
+          vint2mint(cmp1, p1, 3);
+          vint2mint(cmp2, p2, 3);
+        } break;
+        case 4: {
+          cmp1 = *((int32_t*)p1);
+          cmp2 = *((int32_t*)p2);
+        } break;
       #if INTMAX_MAX >= INT64_MAX
-      case 5: {
-        vint2mint(cmp1, p1, 5);
-        vint2mint(cmp2, p2, 5);
-      } break;
-      case 6: {
-        vint2mint(cmp1, p1, 6);
-        vint2mint(cmp2, p2, 6);
-      } break;
-      case 7: {
-        vint2mint(cmp1, p1, 7);
-        vint2mint(cmp2, p2, 7);
-      } break;
-      case 8: {
-        cmp1 = *((uint64_t*)p1);
-        cmp2 = *((uint64_t*)p2);
-      } break;
+        case 5: {
+          vint2mint(cmp1, p1, 5);
+          vint2mint(cmp2, p2, 5);
+        } break;
+        case 6: {
+          vint2mint(cmp1, p1, 6);
+          vint2mint(cmp2, p2, 6);
+        } break;
+        case 7: {
+          vint2mint(cmp1, p1, 7);
+          vint2mint(cmp2, p2, 7);
+        } break;
+        case 8: {
+          cmp1 = *((uint64_t*)p1);
+          cmp2 = *((uint64_t*)p2);
+        } break;
       #endif
       #endif
       #endif
