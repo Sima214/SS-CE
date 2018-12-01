@@ -119,3 +119,5 @@ for _, v in ipairs(sources) do
     print("Styling "..v.."!")
     main(v)
 end
+
+--TODO: fix comments inside #if blocks and neautral (#else) blocks.
