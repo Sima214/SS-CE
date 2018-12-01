@@ -77,6 +77,8 @@ local function main(sourcefile)
     -- 3: Post mods.
     -- Fix else statements.
     s = s:gsub("( *)(} else {)", "%1}\n%1else {")
+    -- Fix single line if statements.
+    s = s:gsub("(if *%b())\n *([^\n]+;)", "%1 %2")
 
     -- 4: Write final version.
     local f = assert(io.open(sourcefile, "w"))

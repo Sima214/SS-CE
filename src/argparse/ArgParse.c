@@ -58,8 +58,7 @@ static void handle_help(size_t olen, const CmdOption* o) {
   printf("Options: \n");
   for(size_t i = 0; i < olen; i++) {
     const CmdOption* c = o + i;
-    if(strequal(c->full_name, SSCE_DEFAULT_NAME))
-      continue;
+    if(strequal(c->full_name, SSCE_DEFAULT_NAME)) continue;
     const char* desc = c->description;
     if(desc == NULL) {
       desc = "";
