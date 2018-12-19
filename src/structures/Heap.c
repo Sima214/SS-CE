@@ -18,9 +18,10 @@
 #define heap_left(e, c) (void*)(2 * (uintptr_t)e + c)
 #define heap_right(left, dti) add_offset(left, dti->size)
 
-void sift_down_heap(void* array, void* start, void* end, const IDataType* interface) {
+void heap_sift_down(void* array, void* start, void* end, const IDataType* interface) {
   void* root = add_offset(start, interface->offset);
   end = add_offset(end, interface->offset);
+  // Cache some address calculations.
   uintptr_t child_cache = heap_child_cache(array, interface);
   while(heap_left(root, child_cache) <= end) {
     void* child = heap_left(root, child_cache);
@@ -48,10 +49,11 @@ void sift_down_heap(void* array, void* start, void* end, const IDataType* interf
   }
 }
 
-void create_heap(void* array, size_t size, const IDataType* interface) {
+void heap_create(void* array, size_t size, const IDataType* interface) {
   size_t start = heap_parent_index(size - 1) + 1;
   do {
     start -= 1;
-    sift_down_heap(array, dti_element(interface, array, start), dti_element(interface, array, size - 1), interface);
+    heap_sift_down(array, dti_element(interface, array, start),
+                   dti_element(interface, array, size - 1), interface);
   } while(start != 0);
 }

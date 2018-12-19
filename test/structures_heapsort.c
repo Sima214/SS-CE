@@ -20,29 +20,16 @@
  *  Heapsort v2[custom_memswap]: 3600ns
  */
 
-/*
- * Test if array of integers is ascending order.
- */
-static int is_sorted_i(int* a, size_t n) {
-  for(size_t i = 1; i < n; i++) {
-    printf("a[%i] = %i\n", i, a[i]);
-    if(!(a[i] >= a[i - 1])) {
-      return 0;
-    }
-  }
-  return 1;
-}
-
 int cst_cmp_e(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
-  return a == b;
+  return *a == *b;
 }
 
 int cst_cmp_l(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
-  return a < b;
+  return *a < *b;
 }
 
 int cst_cmp_le(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
-  return a <= b;
+  return *a <= *b;
 }
 
 void cst_swap(MARK_UNUSED const IDataType* ignored, int* a, int* b) {

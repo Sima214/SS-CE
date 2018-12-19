@@ -1,0 +1,17 @@
+rule-configurations:
+  - key: LONG_CLASS
+    value: 2048
+  - key: LONG_LINE
+    value: 96
+  - key: LONG_METHOD
+    value: 82
+  - key: LONG_VARIABLE_NAME
+    value: 16
+  - key: NCSS_METHOD
+    value: 56
+  - key: NESTED_BLOCK_DEPTH	
+    value: 4
+  - key: SHORT_VARIABLE_NAME
+    value: 1
+  - key: TOO_MANY_PARAMETERS
+    value: 8

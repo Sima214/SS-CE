@@ -29,4 +29,16 @@ static inline void fill_garbage(void* array, size_t bytes) {
     *q = r;
   }
 }
+
+/*
+ * Test if array of integers is in ascending order.
+ */
+static inline int is_sorted_i(int* a, size_t n) {
+  for(size_t i = 1; i < n; i++) {
+    if(!(a[i] >= a[i - 1])) {
+      return 0;
+    }
+  }
+  return 1;
+}
 #endif /*TEST_UTILS_H*/

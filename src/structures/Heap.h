@@ -18,7 +18,7 @@
  * @param interface A pointer to a IDataType structure
  * defining how interpret array elements.
  */
-void sift_down_heap(void* array, void* start, void* end, const IDataType* interface);
+void heap_sift_down(void* array, void* start, void* end, const IDataType* interface);
 
 /**
  * Given an array, move the elements around so the array is also a heap.
@@ -29,6 +29,6 @@ void sift_down_heap(void* array, void* start, void* end, const IDataType* interf
  * @param interface A pointer to a IDataType structure
  * defining how interpret array elements.
  */
-void create_heap(void* array, size_t size, const IDataType* interface);
+void heap_create(void* array, size_t size, const IDataType* interface);
 
 #endif /*SSCE_HEAP_H*/

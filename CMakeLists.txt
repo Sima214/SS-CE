@@ -60,7 +60,7 @@ function(define_module modname src inc)
             set( LINT_INCLUDE ${LINT_INCLUDE} PARENT_SCOPE )
             ## Generate the final arguments.
             separate_arguments( arguments UNIX_COMMAND "${LINT_OPTIONS} -o ${CMAKE_CURRENT_BINARY_DIR}/lint/${mn}.html -p ${CMAKE_CURRENT_BINARY_DIR} ${srcliststr} -- ${CMAKE_C_FLAGS} ${LINT_INCLUDE} ${LINT_QUIRKS} || true" )
-            add_custom_command( OUTPUT "lint/${mn}.html" COMMAND ${BUILD_LINT} ${arguments} WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lint" DEPENDS ${srclist} VERBATIM )
+            add_custom_command( OUTPUT "lint/${mn}.html" COMMAND ${BUILD_LINT} ${arguments} WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lint" DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/lint/.oclint" ${srclist} VERBATIM )
             if( DEFINED LINT_LIST )
                 set( LINT_LIST "${LINT_LIST}\;lint/${mn}.html" PARENT_SCOPE)
             else( DEFINED LINT_LIST )
@@ -212,7 +212,7 @@ endif( DOXYGEN_FOUND )
 enable_testing()
 find_package( Threads )
 define_test( "MODULE_STRING" "memswap" "multiconcat" )
-define_test( "MODULE_STRUCTURES" "heapsort" )
+define_test( "MODULE_STRUCTURES" "heapsort" "heap" )
 
 ## Codestyle.
 find_program( BUILD_LUA NAMES lua DOC "The path to the lua executable. Used for fixing preprocessor formatting." )
@@ -231,6 +231,9 @@ else()
     add_custom_target(style "lua" "${PROJECT_SOURCE_DIR}/style-macros.lua" ${SSCE_INC} ${SSCE_SRC} DEPENDS ${SSCE_INC} ${SSCE_SRC} )
 endif()
 
-## Add linter make targets.
-file( MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lint" )
-add_custom_target( lint DEPENDS ${LINT_LIST} )
+if( EXISTS ${BUILD_LINT} )
+    ## Add linter make targets and copy config file.
+    file( MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lint" )
+    add_custom_target( lint DEPENDS ${LINT_LIST} )
+    configure_file("${PROJECT_SOURCE_DIR}/.oclint" "${CMAKE_CURRENT_BINARY_DIR}/lint/.oclint" COPYONLY)
+endif( EXISTS ${BUILD_LINT} )
