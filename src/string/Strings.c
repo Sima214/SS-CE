@@ -35,64 +35,75 @@ String multi_concat(const size_t count, ...) {
   return final;
 }
 
-#define bulk_swap(dst, src, len, type) \
-  while(len >= sizeof(type)) {         \
-    len -= sizeof(type);               \
-    type* dstp = dst;                  \
-    type* srcp = src;                  \
-    type tmp0 = *dstp;                 \
-    type tmp1 = *srcp;                 \
-    *srcp = tmp0;                      \
-    *dstp = tmp1;                      \
-    dst = (void*)(dstp + 1);           \
-    src = (void*)(srcp + 1);           \
+/*
+ * Generate unaligned load/store functions to feed the swap macros.
+ */
+#define GENERATE_DEFAULT_LOAD_STORE(type)               \
+  static inline type load_##type(type* src) {          \
+    return *src;                                        \
+  }                                                     \
+  static inline void store_##type(type* dst, type v) { \
+    *dst = v;                                           \
   }
 
-#define single_swap(dst, src, len, type) \
-  if((len / sizeof(type)) == 1) {        \
-    len -= sizeof(type);                 \
-    type* dstp = dst;                    \
-    type* srcp = src;                    \
-    type tmp0 = *dstp;                   \
-    type tmp1 = *srcp;                   \
-    *srcp = tmp0;                        \
-    *dstp = tmp1;                        \
-    dst = (void*)(dstp + 1);             \
-    src = (void*)(srcp + 1);             \
+GENERATE_DEFAULT_LOAD_STORE(uint8_t);
+GENERATE_DEFAULT_LOAD_STORE(uint16_t);
+GENERATE_DEFAULT_LOAD_STORE(uint32_t);
+GENERATE_DEFAULT_LOAD_STORE(uint64_t);
+
+#define block_swap(dst, src, len, type, load_func, store_func) \
+  len -= sizeof(type);                                         \
+  type* dstp = dst;                                            \
+  type* srcp = src;                                            \
+  type tmp0 = load_func(dstp);                                 \
+  type tmp1 = load_func(srcp);                                 \
+  store_func(srcp, tmp0);                                      \
+  store_func(dstp, tmp1);                                      \
+  dst = (void*)(dstp + 1);                                     \
+  src = (void*)(srcp + 1);
+
+#define bulk_swap(dst, src, len, type, load_func, store_func) \
+  while(len >= sizeof(type)) {                                \
+    block_swap(dst, src, len, type, load_func, store_func)    \
+  }
+
+#define single_swap(dst, src, len, type, load_func, store_func) \
+  if((len / sizeof(type)) == 1) {                               \
+    block_swap(dst, src, len, type, load_func, store_func)      \
   }
 
 MARK_UNUSED
 static void memswap_generic32(void* dst, void* src, size_t len) {
-  bulk_swap(dst, src, len, uint32_t);
-  single_swap(dst, src, len, uint16_t);
-  single_swap(dst, src, len, uint8_t);
+  bulk_swap(dst, src, len, uint32_t, load_uint32_t, store_uint32_t);
+  single_swap(dst, src, len, uint16_t, load_uint16_t, store_uint16_t);
+  single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
 MARK_UNUSED
 static void memswap_generic64(void* dst, void* src, size_t len) {
-  bulk_swap(dst, src, len, uint64_t);
-  single_swap(dst, src, len, uint32_t);
-  single_swap(dst, src, len, uint16_t);
-  single_swap(dst, src, len, uint8_t);
+  bulk_swap(dst, src, len, uint64_t, load_uint64_t, store_uint64_t);
+  single_swap(dst, src, len, uint32_t, load_uint32_t, store_uint32_t);
+  single_swap(dst, src, len, uint16_t, load_uint16_t, store_uint16_t);
+  single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
 __attribute__((__target__("sse2"), optimize("no-tree-vectorize")))
 static void memswap_sse2(void* dst, void* src, size_t len) {
-  bulk_swap(dst, src, len, __m128i_u);
-  single_swap(dst, src, len, uint64_t);
-  single_swap(dst, src, len, uint32_t);
-  single_swap(dst, src, len, uint16_t);
-  single_swap(dst, src, len, uint8_t);
+  bulk_swap(dst, src, len, __m128i, _mm_loadu_si128, _mm_storeu_si128);
+  single_swap(dst, src, len, uint64_t, load_uint64_t, store_uint64_t);
+  single_swap(dst, src, len, uint32_t, load_uint32_t, store_uint32_t);
+  single_swap(dst, src, len, uint16_t, load_uint16_t, store_uint16_t);
+  single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
 __attribute__((__target__("avx"), optimize("no-tree-vectorize")))
 static void memswap_avx(void* dst, void* src, size_t len) {
-  bulk_swap(dst, src, len, __m256i_u);
-  single_swap(dst, src, len, __m128i_u);
-  single_swap(dst, src, len, uint64_t);
-  single_swap(dst, src, len, uint32_t);
-  single_swap(dst, src, len, uint16_t);
-  single_swap(dst, src, len, uint8_t);
+  bulk_swap(dst, src, len, __m256i, _mm256_loadu_si256, _mm256_storeu_si256);
+  single_swap(dst, src, len, __m128i, _mm_loadu_si128, _mm_storeu_si128);
+  single_swap(dst, src, len, uint64_t, load_uint64_t, store_uint64_t);
+  single_swap(dst, src, len, uint32_t, load_uint32_t, store_uint32_t);
+  single_swap(dst, src, len, uint16_t, load_uint16_t, store_uint16_t);
+  single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
 static memswap_t* resolve_memswap() {
