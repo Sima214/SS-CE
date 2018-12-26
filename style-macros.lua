@@ -4,9 +4,10 @@ local function main(sourcefile)
     -- Settings
     local TAB_SIZE = 2
     local BASE_WHITESPACE = string.rep(" ", TAB_SIZE)
-    local IDENT_ADD_COMMANDS = {"if", "ifdef", "ifndef"}
-    local IDENT_NEUTRAL_COMMANDS = {}
-    local IDENT_SUB_COMMANDS = {}
+    local IDENT_ADD_COMMANDS = {"if", "ifdef", "ifndef", "else", "elif"}
+    local IDENT_NEUTRAL_COMMANDS = {"define", "include", "error", "pragma"}
+    local IDENT_SUB_COMMANDS = {"endif"}
+    --local IDENT_STATEMENTS_COMMANDS = {}
 
     -- Utils
     local function append(s, l)
@@ -57,6 +58,7 @@ local function main(sourcefile)
     local block_level = 0
     for l in f:lines() do
         local whitespace, command = l:match("^( *)#([%w_]+)")
+        local new_line = l
         if whitespace then
             local o = table.remove(list, 1)
             if o.command ~= command then
@@ -87,20 +89,20 @@ local function main(sourcefile)
                 end
             else
                 -- Neutral case.
-                last_ident_level = -1
+                -- last_ident_level = -1
                 -- block_level = block_level
             end
             next_ident_level = o.whitespace_count + add_level
             whitespace = string.rep(BASE_WHITESPACE, o.whitespace_count)
             local final = whitespace..trim(l)
-            s = append(s, final)
+            new_line = final
         elseif l:match("/%*%*") then
             local ident = next_ident_level
             whitespace = string.rep(BASE_WHITESPACE, ident)
             local final = whitespace..l
-            s = append(s, final)
-        elseif block_level>0 then
-            local whitespace, content = l:match("^( *)([^\n]+)")
+            new_line = final
+        elseif block_level > 0 then
+            local whitespace, content = l:match("^( *)([^\n]*)")
             local level = math.modf(#whitespace / TAB_SIZE)
             if last_ident_level == -1 then
                 -- Reset ident level.
@@ -115,10 +117,20 @@ local function main(sourcefile)
                 next_ident_level = next_ident_level - 1
             end
             local whitespace = BASE_WHITESPACE:rep(next_ident_level)
-            s = append(s, whitespace..content)
-        else
-            s = append(s, l)
+            new_line = whitespace..content
         end
+        -- Post fix C style comments.
+        local whitespace, comment = new_line:match("^( *)%* ([^\n]*)$")
+        if whitespace and (#whitespace % 2)==0 then
+            -- Force whitespace to be an odd count.
+            new_line = whitespace.." * "..comment
+        end
+        -- Fix comment close 'tag'.
+        local whitespace = new_line:match("^( *)%*/")
+        if whitespace and (#whitespace % 2)==0 then
+            new_line = whitespace.." */"
+        end
+        s = append(s, new_line)
     end
     f:close()
 
@@ -129,7 +141,7 @@ local function main(sourcefile)
     s = s:gsub("( *)} (else if%b() {)", "%1}\n%1%2")
     -- Fix single line if statements.
     s = s:gsub("(if *%b())\n *([^\n]+;)", "%1 %2")
-    -- Attributes always go above functions.
+    -- Attributes always go above functions in a separate line.
     s = s:gsub("(__attribute__%b()) ([%w()_,%* ]+ {)", "%1\n%2")
 
     -- 4: Write final version.
@@ -137,10 +149,12 @@ local function main(sourcefile)
     f:write(s)
     f:close()
 end
+
+-- Main
 local sources = table.pack(...)
 for _, v in ipairs(sources) do
     print("Styling "..v.."!")
     main(v)
 end
 
---TODO: fix comments inside #if blocks and neautral (#else) blocks.
+--TODO: fix comments inside #if blocks and neutral (#else) blocks.
