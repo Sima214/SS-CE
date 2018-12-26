@@ -5,6 +5,8 @@ local function main(sourcefile)
     local TAB_SIZE = 2
     local BASE_WHITESPACE = string.rep(" ", TAB_SIZE)
     local IDENT_ADD_COMMANDS = {"if", "ifdef", "ifndef"}
+    local IDENT_NEUTRAL_COMMANDS = {}
+    local IDENT_SUB_COMMANDS = {}
 
     -- Utils
     local function append(s, l)
@@ -60,12 +62,33 @@ local function main(sourcefile)
             if o.command ~= command then
                 print(string.format("The order of the commands may have changed(%s->%s)!", o.command, command))
             end
-            local add_level = find(IDENT_ADD_COMMANDS, command) and 1 or 0
+            local add_level = nil
+            if find(IDENT_ADD_COMMANDS, command) then
+                add_level = 1
+            elseif find(IDENT_SUB_COMMANDS, command) then
+                add_level = -1
+            elseif find(IDENT_NEUTRAL_COMMANDS, command) then
+                add_level = 0
+            else
+                add_level = 0
+                print("Unrecognized preprocessor command: "..command)
+            end
             if add_level == 1 then
+                -- New preprocessor block.
                 last_ident_level = -1
                 block_level = block_level + 1
-            elseif block_level > 0 then
-                block_level = block_level - 1
+            elseif add_level == -1 then
+                -- New preprocessor block.
+                if block_level > 0 then
+                    last_ident_level = -1
+                    block_level = block_level - 1
+                else
+                    print("Preprocessor ident underflow!")
+                end
+            else
+                -- Neutral case.
+                last_ident_level = -1
+                -- block_level = block_level
             end
             next_ident_level = o.whitespace_count + add_level
             whitespace = string.rep(BASE_WHITESPACE, o.whitespace_count)

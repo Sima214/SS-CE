@@ -10,7 +10,7 @@
 
 typedef void(memswap_t)(void*, void*, size_t);
 
-String multi_concat(const size_t count, ...) {
+EXPORT_API String multi_concat(const size_t count, ...) {
   String cache[count];
   String final = {NULL, 0};
   //Prepare vargs.
@@ -38,12 +38,12 @@ String multi_concat(const size_t count, ...) {
 /*
  * Generate unaligned load/store functions to feed the swap macros.
  */
-#define GENERATE_DEFAULT_LOAD_STORE(type)               \
+#define GENERATE_DEFAULT_LOAD_STORE(type)              \
   static inline type load_##type(type* src) {          \
-    return *src;                                        \
-  }                                                     \
+    return *src;                                       \
+  }                                                    \
   static inline void store_##type(type* dst, type v) { \
-    *dst = v;                                           \
+    *dst = v;                                          \
   }
 
 GENERATE_DEFAULT_LOAD_STORE(uint8_t);
@@ -106,10 +106,27 @@ static void memswap_avx(void* dst, void* src, size_t len) {
   single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
+__attribute__((__target__("avx512f"), optimize("no-tree-vectorize")))
+static void memswap_avx512(void* dst, void* src, size_t len) {
+  bulk_swap(dst, src, len, __m512i, _mm512_loadu_si512, _mm512_storeu_si512);
+  single_swap(dst, src, len, __m256i, _mm256_loadu_si256, _mm256_storeu_si256);
+  single_swap(dst, src, len, __m128i, _mm_loadu_si128, _mm_storeu_si128);
+  single_swap(dst, src, len, uint64_t, load_uint64_t, store_uint64_t);
+  single_swap(dst, src, len, uint32_t, load_uint32_t, store_uint32_t);
+  single_swap(dst, src, len, uint16_t, load_uint16_t, store_uint16_t);
+  single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
+}
+
 static memswap_t* resolve_memswap() {
   #if defined(__x86_64__)
     cpu_init();
-    if(__builtin_cpu_supports("avx")) {
+    if(__builtin_cpu_supports("avx512f")) {
+      #ifndef NDEBUG
+        native_puts("Selecting memswap_avx512");
+      #endif
+      return memswap_avx512;
+    }
+    else if(__builtin_cpu_supports("avx")) {
       #ifndef NDEBUG
         native_puts("Selecting memswap_avx");
       #endif
@@ -123,7 +140,7 @@ static memswap_t* resolve_memswap() {
       return memswap_sse2;
     }
   #elif defined(__i386__)
-  __builtin_cpu_init();
+  cpu_init();
   if(__builtin_cpu_supports("avx")) {
       #ifndef NDEBUG
         native_puts("Selecting memswap_avx");
@@ -147,5 +164,4 @@ static memswap_t* resolve_memswap() {
   #endif
 }
 
-void memswap(void*, void*, size_t)
-  __attribute__((ifunc("resolve_memswap")));
+EXPORT_API_RUNTIME(resolve_memswap) void memswap(void*, void*, size_t);

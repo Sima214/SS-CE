@@ -15,7 +15,8 @@ compiler:
 before_script:
   - mkdir build
   - cd build
-  - cmake ..
+  - # Force Makefile generation on all platforms.
+  - cmake -G "Unix Makefiles" ..
 
 script:
   - make

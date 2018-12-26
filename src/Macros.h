@@ -84,6 +84,19 @@
   */
   #define MASK_TOOGLE(o, m) o ^= m
 #endif
+#ifndef EXPORT_API
+  /**
+  * Export symbol to linker.
+  * Only affects shared builds.
+  */
+  #define EXPORT_API __attribute__((visibility("default")))
+#endif
+#ifndef EXPORT_API_RUNTIME
+  /**
+  * Defines a function which gets resolved at runtime.
+  */
+  #define EXPORT_API_RUNTIME(resolver) __attribute__((ifunc(#resolver)))
+#endif
 #ifndef strequal
   /**
   * Tests if two strings are equal.
