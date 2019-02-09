@@ -85,11 +85,27 @@
   #define MASK_TOOGLE(o, m) o ^= m
 #endif
 #ifndef EXPORT_API
+  #if defined(_WIN32)
+  #if defined(SSCE_IMPORT)
+  /**
+   * Export symbol to linker.
+   * Only affects shared builds.
+   */
+  #define EXPORT_API __declspec(dllimport)
+  #else
+  /**
+   * Export symbol to linker.
+   * Only affects shared builds.
+   */
+  #define EXPORT_API __declspec(dllexport)
+  #endif
+  #else
   /**
    * Export symbol to linker.
    * Only affects shared builds.
    */
   #define EXPORT_API __attribute__((visibility("default")))
+  #endif
 #endif
 #ifndef EXPORT_API_RUNTIME
   /**

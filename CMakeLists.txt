@@ -118,7 +118,7 @@ endif()
 ## Configure compiler.
 include_directories( "${SSCE_DIR_SRC}" )
 set( CMAKE_C_STANDARD 99 )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel -Wall -Wextra -Wno-expansion-to-defined -fvisibility=hidden" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel -Wall -Wextra -Wno-expansion-to-defined -fvisibility=hidden -fvisibility-inlines-hidden" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
 
 ## Module selection.

@@ -9,4 +9,4 @@ Version: @PROJECT_VERSION@
 
 Requires:
 Libs: -L${libdir} -l@PROJECT_NAME@
-Cflags: -I${includedir}
+Cflags: -DSSCE_IMPORT -I${includedir}
