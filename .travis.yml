@@ -15,9 +15,17 @@ compiler:
 before_script:
   - mkdir build
   - cd build
-  - # Force Makefile generation on all platforms.
-  - cmake -G "Unix Makefiles" ..
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then
+      cmake .. -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND";
+    else
+      cmake ..;
+    fi
 
 script:
-  - make
-  - make test
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then
+      mingw32-make;
+      mingw32-make test;
+    else
+      make;
+      make test;
+    fi
