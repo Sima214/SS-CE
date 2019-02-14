@@ -211,6 +211,7 @@ endif( DOXYGEN_FOUND )
 ## Test configuration.
 enable_testing()
 find_package( Threads )
+define_test( "MODULE_CLOCK" "timings" )
 define_test( "MODULE_STRING" "memswap" "multiconcat" )
 define_test( "MODULE_STRUCTURES" "heapsort" "heap" )
 

@@ -1,10 +1,10 @@
 /*
  * Linux initialization script.
  */
-#define SSCE_LOADER
 #include <Config.h>
 #include <Modules.h>
 #include <logger/Logger.h>
+#include <clock/Clock.h>
 #include <stdio.h>
 
 /*
@@ -14,6 +14,9 @@ static void __attribute__((constructor))
 ssce_init(void) {
   #ifndef NDEBUG
     puts("Loading shared library ssce[" SSCE_VERSION "]");
+  #endif
+  #if defined(MODULE_CLOCK)
+    internal_clock_init();
   #endif
   #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
     setup_log_file();
@@ -25,10 +28,13 @@ ssce_init(void) {
  */
 static void __attribute__((destructor))
 ssce_exit(void) {
-  #ifndef NDEBUG
-    puts("Unloading shared library ssce[" SSCE_VERSION "]");
+  #if defined(MODULE_CLOCK)
+    internal_clock_exit();
   #endif
   #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
     close_log_file();
+  #endif
+  #ifndef NDEBUG
+    puts("Unloaded shared library ssce[" SSCE_VERSION "]");
   #endif
 }

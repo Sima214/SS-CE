@@ -64,9 +64,7 @@ void ssce_log(const LogLevel level, const int options, const char* fmt, ...) MAR
   if(v != 0) {                                                                           \
     logf("%s at %s in %s:%d", strerror(errno), __PRETTY_FUNCTION__, __FILE__, __LINE__); \
   }
-#ifdef SSCE_LOADER
-  //Internal functions, do not use outside of Lifecycle_<os>.c
-  void setup_log_file();
-  void close_log_file();
-#endif
+//Internal functions, do not use outside of Lifecycle_<os>.c
+void setup_log_file();
+void close_log_file();
 #endif /*SSCE_LOGGER_H*/

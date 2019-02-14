@@ -18,13 +18,13 @@ static int stress(uint8_t* garbage0, uint8_t* garbage1, uint8_t* test0, uint8_t*
   memcpy(test1, garbage1, len);
   PerfClock pc;
   for(size_t cl = 1; cl <= KBYTES(8); cl += 1) {
-    ssce_reset(&pc);
+    clock_reset(&pc);
     for(int i = 0; i < 128; i++) {
-      ssce_start(&pc);
+      clock_start(&pc);
       for(int j = 0; j < 4096; j++) {
         memswap(test0, test1, cl);
       }
-      ssce_stop(&pc);
+      clock_stop(&pc);
     }
     // Report results.
     printf("%5zu byte blocks: %6.4f | %6.4f | %6.4f\n", cl, pc.avg, pc.min, pc.max);

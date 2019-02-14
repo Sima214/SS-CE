@@ -1,63 +1,77 @@
 #ifndef SSCE_CLOCK_HPP
 #define SSCE_CLOCK_HPP
+/**
+ * @file
+ * @brief High performance time measurement and delays.
+ */
+
 #include <Macros.h>
 C_DECLS_START
 #include <Clock.h>
 C_DECLS_END
+
 namespace ssce {
+
+/**
+ * High accuracy stopwatch.
+ */
 class PerformanceClock {
- public:
-  /*
-     * Constructor.
-     */
-  PerformanceClock()
-    : pc() {
-    ssce_reset(&pc);
+public:
+  /**
+   * Constructor.
+   */
+  PerformanceClock(): pc() {
+    clock_reset(&pc);
   }
-  /*
-     * Start measuring.
-     */
+  /**
+   * Start measuring.
+   */
   void start() {
-    ssce_start(&pc);
+    clock_start(&pc);
   }
-  /*
-     * Stops measurement and calculates
-     * new delta and updates statistics.
-     */
+  /**
+   * Stops measurement and calculates
+   * new delta and updates statistics.
+   */
   void stop() {
-    ssce_stop(&pc);
+    clock_stop(&pc);
   }
-  /*
-     * Resets clock counters and statistics.
-     * This function should also be called
-     * to initialize a PerfClock structure.
-     */
+  /**
+   * Resets clock counters and statistics.
+   * This function should also be called
+   * to initialize a PerfClock structure.
+   */
   void reset() {
-    ssce_reset(&pc);
+    clock_reset(&pc);
   }
 
- private:
+private:
+  /**
+   * Interface with the C portion.
+   */
   PerfClock pc;
 };
-/*
- * This function should be called once
- * before delay is used.
- * Otherwise the result is undefined.
- */
-extern void delay_hint();
-/*
+
+/**
  * Creates a delay for the exact amount
  * of time requested. Only for small delays.
  * The argument is in microseconds and
- * it must be smaller than 1000000.
+ * it must be smaller than 1000000(1 second).
  */
-extern void delay(int64_t usecs);
-/*
+inline void delay(int64_t usecs) {
+  clock_delay(usecs);
+}
+
+/**
  * Pause execution for the milliseconds
  * specified in the first argument.
+ * This is less accurate then delay,
+ * but it usually has a more
+ * efficient implementation.
  */
-void msleep(int64_t t) {
-  ssce_msleep(t);
+inline void msleep(int64_t t) {
+  clock_msleep(t);
 }
-}  // namespace ssce
+
+} // namespace ssce
 #endif /*SSCE_CLOCK_HPP*/
