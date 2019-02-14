@@ -32,10 +32,11 @@ sudo make install
 
 This library is split into several modules which can be turned ON and OFF depending on the requirements of the application you are building.
 
-A list of available modules:
+The list of available modules:
 
-- MODULE\_STRINGS
-- MODULE\_STRUCTURES
+- MATH
+- STRINGS
+- STRUCTURES
 
 ## Documentation
 
@@ -43,18 +44,9 @@ If [doxygen](www.doxygen.org) is installed then run `make doc` to generate the d
 
 ---
 
-TODO: Under refactoring, jemalloc, travis ci integration(x3)
+TODO: Under refactoring, jemalloc
 
 ---
-
-### Math _[MODULE\_MATH]_
-
-Provides some additional mathematical functions not available in the standard C library.
-
-```C
-min(a, b);
-max(a, b);
-```
 
 ### Clock _[MODULE\_CLOCK]_
 
