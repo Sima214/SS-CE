@@ -35,31 +35,19 @@ This library is split into several modules which can be turned ON and OFF depend
 The list of available modules:
 
 - MATH
+- CLOCK
 - STRINGS
 - STRUCTURES
 
 ## Documentation
 
-If [doxygen](www.doxygen.org) is installed then run `make doc` to generate the documentation. The docs are exported at doc_doxygen inside the build directory.
+If [doxygen](www.doxygen.org) is installed then run `make doc` to generate the documentation. The docs are generated at doc_doxygen inside the build directory.
 
 ---
 
 TODO: Under refactoring, jemalloc
 
 ---
-
-### Clock _[MODULE\_CLOCK]_
-
-Cross-platform high accuracy clock utilities. Usually implemented by calling the kernel.
-
-```C
-ssce_delay_hint();
-ssce_delay(usecs);
-ssce_msleep(msecs);
-ssce_start(&pc);
-ssce_stop(&pc);
-ssce_reset(&pc);
-```
 
 ### Threads _[MODULE\_THREADS]_
 

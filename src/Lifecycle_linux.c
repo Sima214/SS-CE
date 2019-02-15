@@ -3,9 +3,9 @@
  */
 #include <Config.h>
 #include <Modules.h>
-#include <logger/Logger.h>
 #include <clock/Clock.h>
-#include <stdio.h>
+#include <logger/Logger.h>
+#include <string/Strings.h>
 
 /*
  * Early init procedure for Linux.
@@ -13,7 +13,7 @@
 static void __attribute__((constructor))
 ssce_init(void) {
   #ifndef NDEBUG
-    puts("Loading shared library ssce[" SSCE_VERSION "]");
+    native_puts("Loading shared library ssce[" SSCE_VERSION "]");
   #endif
   #if defined(MODULE_CLOCK)
     internal_clock_init();
@@ -28,13 +28,13 @@ ssce_init(void) {
  */
 static void __attribute__((destructor))
 ssce_exit(void) {
-  #if defined(MODULE_CLOCK)
-    internal_clock_exit();
-  #endif
   #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
     close_log_file();
   #endif
+  #if defined(MODULE_CLOCK)
+    internal_clock_exit();
+  #endif
   #ifndef NDEBUG
-    puts("Unloaded shared library ssce[" SSCE_VERSION "]");
+    native_puts("Unloaded shared library ssce[" SSCE_VERSION "]");
   #endif
 }

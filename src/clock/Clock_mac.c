@@ -3,10 +3,11 @@
 #include <string/Strings.h>
 
 #include <float.h>
-#include <stdint.h>
-#include <time.h>
 #include <mach/clock.h>
 #include <mach/mach.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
 
 static clock_serv_t kernel_clock;
 
