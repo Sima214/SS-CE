@@ -130,7 +130,6 @@
      */
     #define ssce_mkdir(dir) mkdir(dir, 0664)
   #elif defined(_WIN32)
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     /**
      * Creates a directory with default privileges.

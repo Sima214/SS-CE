@@ -33,13 +33,14 @@ static void ssce_exit() {
   #endif
 }
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+BOOL WINAPI DllMain(MARK_UNUSED HINSTANCE hinstDLL, MARK_UNUSED DWORD fdwReason, MARK_UNUSED LPVOID lpvReserved) {
   switch (fdwReason) {
     case DLL_PROCESS_ATTACH:
       ssce_init();
-      return TRUE;
+      break;
     case DLL_PROCESS_DETACH:
       ssce_exit();
-      return TRUE;
+      break;
   }
+  return TRUE;
 }
