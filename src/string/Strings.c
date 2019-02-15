@@ -121,42 +121,30 @@ static memswap_t* resolve_memswap() {
   #if defined(__x86_64__)
     cpu_init();
     if(__builtin_cpu_supports("avx512f")) {
-      #ifndef NDEBUG
-        native_puts("Selecting memswap_avx512");
-      #endif
+      EARLY_TRACE("Selecting memswap_avx512");
       return memswap_avx512;
     }
     else if(__builtin_cpu_supports("avx")) {
-      #ifndef NDEBUG
-        native_puts("Selecting memswap_avx");
-      #endif
+      EARLY_TRACE("Selecting memswap_avx");
       return memswap_avx;
     }
     else {
       // x86_64 always supports SSE2
-      #ifndef NDEBUG
-        native_puts("Selecting memswap_sse");
-      #endif
+      EARLY_TRACE("Selecting memswap_sse");
       return memswap_sse2;
     }
   #elif defined(__i386__)
   cpu_init();
   if(__builtin_cpu_supports("avx")) {
-      #ifndef NDEBUG
-        native_puts("Selecting memswap_avx");
-      #endif
+      EARLY_TRACE("Selecting memswap_avx");
     return memswap_avx;
   }
   else if(__builtin_cpu_supports("sse2")) {
-      #ifndef NDEBUG
-        native_puts("Selecting memswap_sse2");
-      #endif
+      EARLY_TRACE("Selecting memswap_sse2");
     return memswap_sse2;
   }
   else {
-      #ifndef NDEBUG
-        native_puts("Selecting memswap_generic32");
-      #endif
+    EARLY_TRACE("Selecting memswap_generic32");
     return memswap_generic32;
   }
   #else

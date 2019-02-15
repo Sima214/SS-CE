@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.6 )
+cmake_minimum_required( VERSION 3.9.4 )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 if( NOT CMAKE_BUILD_TYPE )
 	message( STATUS "Setting build type to 'Release' as none was specified." )
@@ -81,7 +81,7 @@ function(define_test modname)
             message( STATUS "\tAdding ${d} test." )
             set( subname "${name}_${d}" )
             add_executable( "test_${subname}" "${SSCE_DIR_TEST}/${subname}.c" )
-            target_link_libraries( "test_${subname}" ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} )
+            target_link_libraries( "test_${subname}" ${PROJECT_NAME} Threads::Threads )
             add_test( NAME ${subname} COMMAND "test_${subname}" )
         endforeach(d)
     endif(${${modname}})
@@ -117,21 +117,18 @@ else()
     message( FATAL_ERROR "Unsupported os!!!" )
 endif()
 
-## Configure compiler.
-include_directories( "${SSCE_DIR_SRC}" )
-set( CMAKE_C_STANDARD 99 )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-expansion-to-defined -fvisibility=hidden" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fexec-charset=UTF-8" ) 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel" ) 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
+# Architecture detection.
+
+# Prepare external libraries.
+set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
+set( THREADS_PREFER_PTHREAD_FLAG TRUE )
+find_package( Threads REQUIRED )
 
 ## Module selection.
 declare_module( "MODULE_MATH" "Random math utilities." )
 declare_module( "MODULE_CLOCK" "Enable the high accuracy clock module." )
-declare_module( "MODULE_THREADS" "Enable posix thread support." )
 declare_module( "MODULE_STRING" "Enable strings util functions." )
-declare_module( "MODULE_LOGGER" "Enable the logger module." "MODULE_STRINGS" "MODULE_THREADS" )
-declare_module( "MODULE_ARGPARSE" "Enable the argument parser module." )
+declare_module( "MODULE_LOGGER" "Enable the logger module." "MODULE_STRINGS" )
 declare_module( "MODULE_STRUCTURES" "Enable the data structures module." "MODULE_STRING" )
 
 ## Extra configuration.
@@ -165,10 +162,8 @@ message( STATUS "Configuring modules..." )
 message( STATUS "######################################################" )
 define_module( "MODULE_MATH" "" "MinMax.h;MinMax.hpp" )
 define_module( "MODULE_CLOCK" "Clock_${SSCE_PLT}.c" "Clock.h;Clock.hpp" )
-define_module( "MODULE_THREADS" "" "" )
 define_module( "MODULE_STRING" "Strings_${SSCE_PLT}.c;Strings.c" "Strings.h;Strings.hpp" )
 define_module( "MODULE_LOGGER" "Logger.c" "Logger.h;Logger.hpp" )
-define_module( "MODULE_ARGPARSE" "ArgParse.c" "ArgParse.h;ArgParse.hpp" )
 define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c" "Interface.h;Sort.h;Sort.hpp;Heap.h;Heap.hpp" )
 
 ## End of modules definitions.
@@ -178,11 +173,29 @@ set( BUILD_SHARED TRUE CACHE BOOL "Disable to build static libraries." )
 if( ${BUILD_SHARED} )
     message( STATUS "Building shared library." )
     add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
+    target_link_libraries( ${PROJECT_NAME} Threads::Threads )
 else()
     message( STATUS "Building static library." )
     add_library( ${PROJECT_NAME} STATIC ${SSCE_SRC} )
+    target_link_libraries( ${PROJECT_NAME} Threads::Threads )
 endif()
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
+
+## Configure compiler.
+include_directories( "${SSCE_DIR_SRC}" )
+set( CMAKE_C_STANDARD 99 )
+include( CheckIPOSupported )
+check_ipo_supported( RESULT ipo_supported OUTPUT ipo_error )
+if( ${ipo_supported} )
+    message(STATUS "IPO/LTO is supported and enabled")
+    set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+else( ${ipo_supported} )
+    message(STATUS "IPO/LTO is not supported: <${ipo_error}>")
+endif( ${ipo_supported} )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-expansion-to-defined -fvisibility=hidden" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fexec-charset=UTF-8" ) 
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel" ) 
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
 
 ## Define installation.
 include( GNUInstallDirs )
@@ -214,7 +227,6 @@ endif( DOXYGEN_FOUND )
 
 ## Test configuration.
 enable_testing()
-find_package( Threads )
 define_test( "MODULE_CLOCK" "timings" )
 define_test( "MODULE_STRING" "memswap" "multiconcat" )
 define_test( "MODULE_STRUCTURES" "heapsort" "heap" )

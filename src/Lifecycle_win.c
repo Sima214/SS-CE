@@ -2,17 +2,18 @@
  * Windows dll initialization.
  */
 #include <Config.h>
+#include <Macros.h>
 #include <Modules.h>
 #include <clock/Clock.h>
 #include <logger/Logger.h>
-#include <string/Strings.h>
 
 #include <windows.h>
 
+/*
+ * Early init procedure for Win32.
+ */
 static void ssce_init() {
-  #ifndef NDEBUG
-    native_puts("Loading shared library ssce[" SSCE_VERSION "]");
-  #endif
+  EARLY_TRACE("Loading shared library ssce[" SSCE_VERSION "]");
   #if defined(MODULE_CLOCK)
     internal_clock_init();
   #endif
@@ -21,6 +22,9 @@ static void ssce_init() {
   #endif
 }
 
+/*
+ * Exit procedure for Win32.
+ */
 static void ssce_exit() {
   #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
     close_log_file();
@@ -28,11 +32,12 @@ static void ssce_exit() {
   #if defined(MODULE_CLOCK)
     internal_clock_exit();
   #endif
-  #ifndef NDEBUG
-    native_puts("Unloaded shared library ssce[" SSCE_VERSION "]");
-  #endif
+  EARLY_TRACE("Unloaded shared library ssce[" SSCE_VERSION "]");
 }
 
+/*
+ * Part of 'Dll' ABI.
+ */
 BOOL WINAPI DllMain(MARK_UNUSED HINSTANCE hinstDLL, MARK_UNUSED DWORD fdwReason, MARK_UNUSED LPVOID lpvReserved) {
   switch (fdwReason) {
     case DLL_PROCESS_ATTACH:

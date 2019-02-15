@@ -2,19 +2,17 @@
  * OSX initialization script.
  */
 #include <Config.h>
+#include <Macros.h>
 #include <Modules.h>
 #include <clock/Clock.h>
 #include <logger/Logger.h>
-#include <string/Strings.h>
 
 /*
- * Early init procedure for Linux.
+ * Early init procedure for MacOS.
  */
 static void __attribute__((constructor))
 ssce_init(void) {
-  #ifndef NDEBUG
-    native_puts("Loading shared library ssce[" SSCE_VERSION "]");
-  #endif
+  EARLY_TRACE("Loading shared library ssce[" SSCE_VERSION "]");
   #if defined(MODULE_CLOCK)
     internal_clock_init();
   #endif
@@ -24,7 +22,7 @@ ssce_init(void) {
 }
 
 /*
- * Exit procedure for Linux.
+ * Exit procedure for MacOS.
  */
 static void __attribute__((destructor))
 ssce_exit(void) {
@@ -34,7 +32,5 @@ ssce_exit(void) {
   #if defined(MODULE_CLOCK)
     internal_clock_exit();
   #endif
-  #ifndef NDEBUG
-    native_puts("Unloaded shared library ssce[" SSCE_VERSION "]");
-  #endif
+  EARLY_TRACE("Unloaded shared library ssce[" SSCE_VERSION "]");
 }

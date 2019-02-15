@@ -36,8 +36,8 @@ The list of available modules:
 
 - MATH
 - CLOCK
-- STRINGS
-- STRUCTURES
+- TODO: STRINGS
+- TODO: STRUCTURES
 
 ## Documentation
 
@@ -48,15 +48,6 @@ If [doxygen](www.doxygen.org) is installed then run `make doc` to generate the d
 TODO: Under refactoring, jemalloc
 
 ---
-
-### Threads _[MODULE\_THREADS]_
-
-Pthreads but also work on Windows. Also adds a more 'C++' style header for C++ code.
-Include one of the headers *Threads.h* or *Threads.hpp* to use this wrapper.
-
-```C
-//TODO
-```
 
 ### Logger _[MODULE\_LOGGER]_
 
@@ -72,12 +63,4 @@ ssce_loge("%s", "Hello");
 ssce_logf("%s", "Hello");
 ssce_checknull(p);
 ssce_checkerrno(call_return);
-```
-
-### Command line parser _[MODULE\_CMDPARSER]_
-
-Command line parser.
-
-```C
-ssce_parse_cmdln({...}, argc, argv);
 ```

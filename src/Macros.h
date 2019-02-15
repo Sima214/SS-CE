@@ -146,3 +146,18 @@
    */
   #define cpu_init __builtin_cpu_init
 #endif
+#ifndef EARLY_TRACE
+  #include <Strings.h>
+  #ifndef NDEBUG
+    /**
+     * Low level trace function.
+     * Simple prints out msg onto the console.
+     */
+    #define EARLY_TRACE(msg) native_puts(msg)
+  #else
+    /**
+     * Disable tracing on release builds.
+     */
+    #define EARLY_TRACE(msg) 
+  #endif
+#endif

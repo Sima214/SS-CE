@@ -15,12 +15,10 @@ static int64_t clock_frequency;
 static uint32_t timer_reset;
 
 void clock_delay(int64_t usecs) {
-  #ifndef NDEBUG
-    if(usecs <= 0 || usecs >= 1000000) {
-      native_puts("clock_delay input out of bounds!");
-      return;
-    }
-  #endif
+  if(usecs <= 0 || usecs >= 1000000) {
+    native_puts("clock_delay input out of bounds!");
+    return;
+  }
   // Valid input - continue.
   LARGE_INTEGER delay;
   // Convert input to relative 100ns units.

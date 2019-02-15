@@ -1,6 +1,7 @@
 #include "Clock.h"
 
 #include <string/Strings.h>
+#include <Macros.h>
 
 #include <float.h>
 #include <mach/clock.h>
@@ -12,12 +13,10 @@
 static clock_serv_t kernel_clock;
 
 void clock_delay(int64_t usecs) {
-  #ifndef NDEBUG
-    if(usecs <= 0 || usecs >= 1000000) {
-      native_puts("clock_delay input out of bounds!");
-      return;
-    }
-  #endif
+  if(usecs <= 0 || usecs >= 1000000) {
+    EARLY_TRACE("clock_delay input out of bounds!");
+    return;
+  }
   // Valid input - continue.
   struct timespec towait = {0, usecs * MICRO2NANO};
   struct timespec remain = {0, 0};

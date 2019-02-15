@@ -51,13 +51,13 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
    * Split arrays to 64 chunks.
    */
   PerfClock pc;
-  ssce_reset(&pc);
+  clock_reset(&pc);
   for(size_t i = 0; i < sizeof(test_area) / sizeof(int) / 64; i++) {
     int* array = test_area + (i * 64);
     __builtin_prefetch(array);
-    ssce_start(&pc);
+    clock_start(&pc);
     heapsort(array, 64, &DTI_CST);
-    ssce_stop(&pc);
+    clock_stop(&pc);
   }
   printf("method:\t AVG | MIN | MAX\n");
   printf("heapsort: %6.4f | %6.4f | %6.4f\n", pc.avg, pc.min, pc.max);
