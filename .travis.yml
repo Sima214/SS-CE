@@ -15,7 +15,9 @@ compiler:
 before_script:
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then
       export CC=clang-cl;
+      export CXX=clang-cl;
       export CC_FOR_BUILD=clang-cl;
+      export CXX_FOR_BUILD=clang-cl;
       clang-cl --version;
     fi
   - mkdir build
