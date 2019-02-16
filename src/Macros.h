@@ -55,7 +55,9 @@
 #ifndef MARK_CONST
   /**
    * Marks the functions as 'const' which helps the compiler.
-   * 'const' functions' result depend only on the value of their parameters.
+   * 'const' functions' result depend only on the value of their parameters,
+   * aka they do not change the 'global' state.
+   * Note that dereferencing a pointer is considered changing the 'global' state.
    */
   #define MARK_CONST __attribute__((const))
 #endif
@@ -156,8 +158,33 @@
     #define EARLY_TRACE(msg) native_puts(msg)
   #else
     /**
-     * Disable tracing on release builds.
+     * NOP on release builds.
      */
     #define EARLY_TRACE(msg) 
+  #endif
+#endif
+#ifndef TARGET_EXT
+  #if defined(__GNUC__)
+    /**
+     * Mark this function as 'hand coded' for target instruction extension 'ext'.
+     * Instructs the compiler to generate code for target extension while
+     * also minimizing compiler optimizations.
+     */
+    #define TARGET_EXT(ext) __attribute__((__target__(#ext), optimize("-Os")))
+  #elif defined(__clang__)
+    /**
+     * Mark this function as 'hand coded' for target instruction extension 'ext'.
+     * Instructs the compiler to generate code for target extension while
+     * also minimizing compiler optimizations.
+     */
+    #define TARGET_EXT(ext) __attribute__((__target__(#ext), minsize))
+  #else
+    #warning Unknown compiler: generated code might not be optimal!
+    /**
+     * Mark this function as 'hand coded' for target instruction extension 'ext'.
+     * Instructs the compiler to generate code for target extension while
+     * also minimizing compiler optimizations.
+     */
+    #define TARGET_EXT(ext)
   #endif
 #endif

@@ -87,8 +87,7 @@ static void memswap_generic64(void* dst, void* src, size_t len) {
   single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
-__attribute__((__target__("sse2"), optimize("no-tree-vectorize")))
-static void memswap_sse2(void* dst, void* src, size_t len) {
+TARGET_EXT(sse2) static void memswap_sse2(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, __m128i, _mm_loadu_si128, _mm_storeu_si128);
   single_swap(dst, src, len, uint64_t, load_uint64_t, store_uint64_t);
   single_swap(dst, src, len, uint32_t, load_uint32_t, store_uint32_t);
@@ -96,8 +95,7 @@ static void memswap_sse2(void* dst, void* src, size_t len) {
   single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
-__attribute__((__target__("avx"), optimize("no-tree-vectorize")))
-static void memswap_avx(void* dst, void* src, size_t len) {
+TARGET_EXT(avx) static void memswap_avx(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, __m256i, _mm256_loadu_si256, _mm256_storeu_si256);
   single_swap(dst, src, len, __m128i, _mm_loadu_si128, _mm_storeu_si128);
   single_swap(dst, src, len, uint64_t, load_uint64_t, store_uint64_t);
@@ -106,8 +104,7 @@ static void memswap_avx(void* dst, void* src, size_t len) {
   single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
-__attribute__((__target__("avx512f"), optimize("no-tree-vectorize")))
-static void memswap_avx512(void* dst, void* src, size_t len) {
+TARGET_EXT(avx512f) static void memswap_avx512(void* dst, void* src, size_t len) {
   bulk_swap(dst, src, len, __m512i, _mm512_loadu_si512, _mm512_storeu_si512);
   single_swap(dst, src, len, __m256i, _mm256_loadu_si256, _mm256_storeu_si256);
   single_swap(dst, src, len, __m128i, _mm_loadu_si128, _mm_storeu_si128);
