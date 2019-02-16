@@ -13,6 +13,11 @@ compiler:
   - clang
 
 before_script:
+  - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then
+      export CC=clang-cl;
+      export CC_FOR_BUILD=clang-cl;
+      clang-cl --version;
+    fi
   - mkdir build
   - cd build
   - if [ "$TRAVIS_OS_NAME" == "windows" ]; then
@@ -23,9 +28,7 @@ before_script:
 
 script:
   - if [ "$TRAVIS_OS_NAME" == "windows" ]; then
-      mingw32-make;
-      mingw32-make test;
+      mingw32-make VERBOSE=1 && mingw32-make test;
     else
-      make;
-      make test;
+      make && make test;
     fi

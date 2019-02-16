@@ -164,20 +164,20 @@
   #endif
 #endif
 #ifndef TARGET_EXT
-  #if defined(__GNUC__)
-    /**
-     * Mark this function as 'hand coded' for target instruction extension 'ext'.
-     * Instructs the compiler to generate code for target extension while
-     * also minimizing compiler optimizations.
-     */
-    #define TARGET_EXT(ext) __attribute__((__target__(#ext), optimize("-Os")))
-  #elif defined(__clang__)
+  #if defined(__clang__)
     /**
      * Mark this function as 'hand coded' for target instruction extension 'ext'.
      * Instructs the compiler to generate code for target extension while
      * also minimizing compiler optimizations.
      */
     #define TARGET_EXT(ext) __attribute__((__target__(#ext), minsize))
+  #elif defined(__GNUC__)
+    /**
+     * Mark this function as 'hand coded' for target instruction extension 'ext'.
+     * Instructs the compiler to generate code for target extension while
+     * also minimizing compiler optimizations.
+     */
+    #define TARGET_EXT(ext) __attribute__((__target__(#ext), optimize("-Os")))
   #else
     #warning Unknown compiler: generated code might not be optimal!
     /**
