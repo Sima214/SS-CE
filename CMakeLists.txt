@@ -145,7 +145,7 @@ else( ${SYSTEM_JEMALLOC} )
                          STAMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          TMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          URL "https://github.com/jemalloc/jemalloc/releases/download/5.1.0/jemalloc-5.1.0.tar.bz2"
-                         CONFIGURE_COMMAND ./configure --prefix=${CMAKE_BINARY_DIR}/jemalloc
+                         CONFIGURE_COMMAND sh ./configure --prefix=${CMAKE_BINARY_DIR}/jemalloc
                          BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} -j2 build_lib_shared
                          INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install_include install_lib_shared
                          TEST_EXCLUDE_FROM_MAIN 1
