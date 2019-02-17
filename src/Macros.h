@@ -61,6 +61,18 @@
    */
   #define MARK_CONST __attribute__((const))
 #endif
+#ifndef HOT
+  /**
+   * Marks a function as 'hot'.
+   */
+  #define HOT __attribute__((hot))
+#endif
+#ifndef COLD
+  /**
+   * Marks a function as 'cold'.
+   */
+  #define COLD __attribute__((cold))
+#endif
 #ifndef MASK_CREATE
   /**
    * Generates a mask with the bit-th bit turned on.
@@ -177,7 +189,7 @@
      * Instructs the compiler to generate code for target extension while
      * also minimizing compiler optimizations.
      */
-    #define TARGET_EXT(ext) __attribute__((__target__(#ext), optimize("-Os")))
+    #define TARGET_EXT(ext) __attribute__((__target__(#ext), optimize("no-tree-vectorize")))
   #else
     #warning Unknown compiler: generated code might not be optimal!
     /**
@@ -187,4 +199,18 @@
      */
     #define TARGET_EXT(ext)
   #endif
+#endif
+#ifndef COLD_BRANCH
+  /**
+   * Marks a branch as unlikely.
+   * Use only when compiler is beeing stupid.
+   */
+  #define COLD_BRANCH(cond) __builtin_expect(cond, 0)
+#endif
+#ifndef HOT_BRANCH
+  /**
+   * Marks a branch as likely.
+   * Use only when compiler is beeing stupid.
+   */
+  #define HOT_BRANCH(cond) __builtin_expect(cond, 1)
 #endif

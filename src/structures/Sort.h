@@ -5,9 +5,10 @@
  * @brief A collection of different sort algorithms.
  */
 
-#include <stddef.h>
-
+#include <Macros.h>
 #include <Interface.h>
+
+#include <stddef.h>
 
 /**
  * Sort an array using the heapsort algorithm.
@@ -17,6 +18,6 @@
  * @param interface A pointer to a IDataType structure
  * defining how interpret array elements.
  */
-void heapsort(void* array, size_t size, const IDataType* interface);
+EXPORT_API void heapsort(void* array, size_t size, const IDataType* interface);
 
 #endif /*SSCE_SORT_H*/

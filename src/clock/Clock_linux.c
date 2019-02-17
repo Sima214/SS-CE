@@ -3,6 +3,7 @@
 #include <Macros.h>
 #include <string/Strings.h>
 
+#include <errno.h>
 #include <float.h>
 #include <stdint.h>
 #include <time.h>
@@ -13,14 +14,14 @@
  */
 
 void clock_delay(int64_t usecs) {
-  if(usecs <= 0 || usecs >= 1000000) {
+  if(COLD_BRANCH(usecs <= 0 || usecs >= 1000000)) {
     EARLY_TRACE("clock_delay input out of bounds!");
     return;
   }
   // Valid input - continue.
   struct timespec towait = {0, usecs * MICRO2NANO};
   struct timespec remain = {0, 0};
-  while(nanosleep(&towait, &remain) == -1) {
+  while(nanosleep(&towait, &remain) == -1 && errno == EINTR) {
     towait = remain;
   }
 }

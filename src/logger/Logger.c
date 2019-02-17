@@ -56,7 +56,7 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
   const String END = StringStatic(RESET);
   //Create colored output for console.
   String term;
-  term = multi_concat(9, LEVEL2COLOR[l], time, SEP0, LEVEL2STRING[l],
+  term = string_concat(9, LEVEL2COLOR[l], time, SEP0, LEVEL2STRING[l],
                       SEP1, thread, SEP2, msg, END);
   if(term.array != NULL) {
     native_puts(term.array);
@@ -64,7 +64,7 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
   }
   if(log_file) {
     String file;
-    file = multi_concat(7, time, SEP0, LEVEL2STRING[l], SEP1, thread, SEP2, msg);
+    file = string_concat(7, time, SEP0, LEVEL2STRING[l], SEP1, thread, SEP2, msg);
     if(file.array != NULL) {
       fputs(file.array, log_file);
       free(file.array);

@@ -36,7 +36,8 @@ The list of available modules:
 
 - MATH
 - CLOCK
-- TODO: STRINGS
+- TODO: MEMORY
+- STRINGS
 - TODO: STRUCTURES
 
 ## Documentation

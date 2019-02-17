@@ -15,7 +15,7 @@ static int64_t clock_frequency;
 static uint32_t timer_reset;
 
 void clock_delay(int64_t usecs) {
-  if(usecs <= 0 || usecs >= 1000000) {
+  if(COLD_BRANCH(usecs <= 0 || usecs >= 1000000)) {
     native_puts("clock_delay input out of bounds!");
     return;
   }
