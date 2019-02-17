@@ -12,6 +12,13 @@ compiler:
   - gcc
   - clang
 
+matrix:
+  exclude:
+  - os: osx
+    compiler: gcc
+  - os: windows
+    compiler: clang
+
 before_script:
   - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then
       export CC=clang-cl;
