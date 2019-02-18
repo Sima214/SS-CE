@@ -137,8 +137,16 @@ find_package( PkgConfig )
 include( ExternalProject )
 set( SYSTEM_JEMALLOC FALSE CACHE BOOL "Link against system jemalloc library." )
 if( ${SYSTEM_JEMALLOC} )
-    message( STATUS "Using system jemalloc." )
-    pkg_check_modules( JEMALLOC REQUIRED jemalloc )
+    if( WIN32 )
+        # If you manage to make this work on windows, then good for you.
+        # I cannot, so just dump the jemalloc installation in <build>/jemalloc
+        add_library( jemalloc SHARED IMPORTED )
+        set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/jemalloc/lib/libjemalloc.${DYNLIB_EXT}" )
+        set( JEMALLOC_LIBRARIES jemalloc )
+    else( WIN32 )
+        message( STATUS "Using system jemalloc." )
+        pkg_check_modules( JEMALLOC REQUIRED jemalloc )
+    endif( WIN32 )
 else( ${SYSTEM_JEMALLOC} )
     message( STATUS "Using built-in jemalloc." )
     ExternalProject_Add( jemalloc-build
@@ -147,7 +155,7 @@ else( ${SYSTEM_JEMALLOC} )
                          BINARY_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
                          STAMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          TMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
-                         URL "https://github.com/jemalloc/jemalloc/releases/download/5.1.0/jemalloc-5.1.0.tar.bz2"
+                         URL "https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/src/jemalloc.tar.bz2"
                          CONFIGURE_COMMAND sh ./configure --prefix=${CMAKE_BINARY_DIR}/jemalloc
                          BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} -j2 build_lib_shared
                          INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install_include install_lib_shared

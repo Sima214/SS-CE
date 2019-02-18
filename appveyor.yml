@@ -1,21 +1,43 @@
-version: '{build}'
+# Windows (https://github.com/travis-ci-tester/toolchain-table)
 
 environment:
   matrix:
-  - BUILD_TYPE: Release
-    COMPILER: MinGW-w64
-    PLATFORM: x64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      GENERATOR: "MinGW Makefiles"
 
 install:
-  # Rename sh.exe as sh.exe in PATH interferes with MinGW
-  - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
-  - choco -y install mingw
-  - gcc --version
-  - mingw32-make --version
-  - cmake --version
+  # Python 3
+  - cmd: set PATH=C:\Python34-x64;C:\Python34-x64\Scripts;%PATH%
 
-before_build:
-  - cmake -B build -G "MinGW Makefiles"
+  # Install Python package 'requests'
+  - cmd: pip install requests
+
+  # Install latest Polly toolchains and scripts
+  - cmd: appveyor DownloadFile https://github.com/ruslo/polly/archive/master.zip
+  - cmd: 7z x master.zip
+  - cmd: set POLLY_ROOT=%cd%\polly-master
+
+  # Install dependencies (CMake, Ninja)
+  - cmd: python %POLLY_ROOT%\bin\install-ci-dependencies.py
+
+  # Tune locations
+  - cmd: set PATH=%cd%\_ci\cmake\bin;%PATH%
+
+  - cmd: git submodule update --init --recursive
+
+  # Remove entry with sh.exe from PATH to fix error with MinGW toolchain
+  # (For MinGW make to work correctly sh.exe must NOT be in your path)
+  # * http://stackoverflow.com/a/3870338/2288008
+  - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+
+  - cmd: set MINGW_PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
+
+  # Download prebuilt dependencies.
+  - cmd: appveyor DownloadFile https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/jemalloc-x86_64.7z
+  - cmd: 7z x jemalloc-x86_64.7z
+
+  # MSYS2 location
+  - cmd: set MSYS_PATH=C:\msys64\usr\bin
 
 build_script:
-  - cmake --build build --target all 
+  - cmd: python .\windows.py --generator "%GENERATOR%"

@@ -1,28 +1,22 @@
 language: cpp
 
 os:
-  - linux
   - osx
-
-dist:
-  - xenial
 
 compiler:
   - gcc
   - clang
 
 addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      packages:
-        - gcc-7
-        - g++-7
+  homebrew:
+    packages:
+    - libtool
+    - gcc
 
-before_script: 
-  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CC" == "gcc" ]; then
-      export CC=gcc-7 ;
-      export CXX=g++-7;
+before_script:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then
+      export CC=$(ls /usr/local/Cellar/gcc/*/bin/gcc-?);
+      export CXX=$(ls /usr/local/Cellar/gcc/*/bin/g++-?);
     fi
   - mkdir build
   - cd build

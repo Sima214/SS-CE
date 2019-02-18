@@ -1,0 +1,29 @@
+clang:
+  tags:
+    - clang
+  variables:
+    CC: clang
+    CXX: clang++
+  before_script:
+    - rm -rf build-clang
+  script:
+    - mkdir build-clang
+    - cd build-clang
+    - cmake ..
+    - make
+    - make test
+
+gcc:
+  tags:
+    - gcc
+  variables:
+    CC: gcc
+    CXX: g++
+  before_script:
+    - rm -rf build-gcc
+  script:
+    - mkdir build-gcc
+    - cd build-gcc
+    - cmake ..
+    - make
+    - make test
