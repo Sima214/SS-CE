@@ -1,0 +1,21 @@
+version: '{build}'
+
+environment:
+  matrix:
+  - BUILD_TYPE: Release
+    COMPILER: MinGW-w64
+    PLATFORM: x64
+
+install:
+  # Rename sh.exe as sh.exe in PATH interferes with MinGW
+  - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe"
+  - choco -y install mingw
+  - gcc --version
+  - mingw32-make --version
+  - cmake --version
+
+before_build:
+  - cmake -B build -G "MinGW Makefiles"
+
+build_script:
+  - cmake --build build --target all 

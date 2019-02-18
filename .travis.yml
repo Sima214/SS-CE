@@ -3,7 +3,6 @@ language: cpp
 os:
   - linux
   - osx
-  - windows
 
 dist:
   - xenial
@@ -12,32 +11,23 @@ compiler:
   - gcc
   - clang
 
-matrix:
-  exclude:
-  - os: osx
-    compiler: gcc
-  - os: windows
-    compiler: clang
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      packages:
+        - gcc-7
+        - g++-7
 
-before_script:
-  - if [ "$TRAVIS_OS_NAME" == "windows" ] && [ "$CC" == "clang" ]; then
-      export CC=clang-cl;
-      export CXX=clang-cl;
-      export CC_FOR_BUILD=clang-cl;
-      export CXX_FOR_BUILD=clang-cl;
-      clang-cl --version;
+before_script: 
+  - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CC" == "gcc" ]; then
+      export CC=gcc-7 ;
+      export CXX=g++-7;
     fi
   - mkdir build
   - cd build
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then
-      cmake .. -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND";
-    else
-      cmake ..;
-    fi
+  - cmake ..
 
 script:
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then
-      mingw32-make VERBOSE=1 && mingw32-make test;
-    else
-      make && make test;
-    fi
+  - make
+  - make test
