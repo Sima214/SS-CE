@@ -1,13 +1,16 @@
 #include "test_utils.h"
 
+#include <Clock.h>
+#include <Macros.h>
+#include <Memory.h>
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-#include <Clock.h>
-#include <Macros.h>
-#include <Strings.h>
+#define UNALIGNED_MAX_OFFSET 512
+#define UNALIGNED_SAMPLE_SIZE 2048
 
 static int test_swap(void* orig0, void* orig1, void* swap0, void* swap1, size_t len) {
   return memcmp(orig0, swap1, len) == 0 && memcmp(orig1, swap0, len) == 0;
@@ -42,10 +45,11 @@ int main(int argc, MARK_UNUSED char* argv[]) {
   static uint8_t test1[KBYTES(8)];
   fill_garbage(garbage0, sizeof(garbage0));
   fill_garbage(garbage1, sizeof(garbage1));
-  // Do performance testing.
+  // Do performance testing(interactive only).
   if(argc > 1) {
     return stress(garbage0, garbage1, test0, test1, KBYTES(8));
   }
+  // Standard testing.
   for(size_t cl = 1; cl <= KBYTES(8); cl++) {
     printf("Testing %zu byte blocks\n", cl);
     memcpy(test0, garbage0, cl);
@@ -55,6 +59,22 @@ int main(int argc, MARK_UNUSED char* argv[]) {
     // Confirm result.
     if(!test_swap(garbage0, garbage1, test0, test1, cl)) {
       return EXIT_FAILURE;
+    }
+  }
+  // Unaligned tests.
+  for(int i = 0; i <= 512; i++) {
+    for(int j = 0; j <= 512; j++) {
+      printf("Testing (%d, %d, %d) unaligned byte blocks\n", i, j, UNALIGNED_SAMPLE_SIZE);
+      uint8_t* test0_u = test0 + i;
+      uint8_t* test1_u = test1 + j;
+      memcpy(test0_u, garbage0, UNALIGNED_SAMPLE_SIZE);
+      memcpy(test1_u, garbage1, UNALIGNED_SAMPLE_SIZE);
+      // Call method being tested.
+      memswap(test0_u, test1_u, UNALIGNED_SAMPLE_SIZE);
+      // Confirm result.
+      if(!test_swap(garbage0, garbage1, test0_u, test1_u, UNALIGNED_SAMPLE_SIZE)) {
+        return EXIT_FAILURE;
+      }
     }
   }
   return EXIT_SUCCESS;

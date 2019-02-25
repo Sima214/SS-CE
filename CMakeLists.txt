@@ -157,7 +157,7 @@ else( ${SYSTEM_JEMALLOC} )
                          TMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          URL "https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/src/jemalloc.tar.bz2"
                          CONFIGURE_COMMAND sh ./configure --prefix=${CMAKE_BINARY_DIR}/jemalloc
-                         BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} -j2 build_lib_shared
+                         BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} build_lib_shared
                          INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install_include install_lib_shared
                          TEST_EXCLUDE_FROM_MAIN 1
                          BUILD_ALWAYS 1
