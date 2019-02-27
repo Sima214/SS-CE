@@ -17,8 +17,8 @@ static void ssce_init() {
   #if defined(MODULE_CLOCK)
     internal_clock_init();
   #endif
-  #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
-    setup_log_file();
+  #if defined(MODULE_LOGGER)
+    internal_logger_init();
   #endif
 }
 
@@ -26,8 +26,8 @@ static void ssce_init() {
  * Exit procedure for Win32.
  */
 static void ssce_exit() {
-  #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
-    close_log_file();
+  #if defined(MODULE_LOGGER)
+    internal_logger_exit();
   #endif
   #if defined(MODULE_CLOCK)
     internal_clock_exit();

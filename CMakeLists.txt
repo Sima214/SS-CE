@@ -168,15 +168,16 @@ else( ${SYSTEM_JEMALLOC} )
 endif( ${SYSTEM_JEMALLOC} )
 
 ## Module selection.
-declare_module( "MODULE_MATH" "Enable extra math functions." )
-declare_module( "MODULE_CLOCK" "Enable the high accuracy clock module." )
+declare_module( "MODULE_MATH" "Enable extra math functions" )
+declare_module( "MODULE_CLOCK" "Enable the high accuracy clock module" )
 declare_module( "MODULE_MEMORY" "Enable memory manipulation utilities" )
-declare_module( "MODULE_STRING" "Enable strings util functions." )
-declare_module( "MODULE_LOGGER" "Enable the logger module." "MODULE_STRINGS" )
-declare_module( "MODULE_STRUCTURES" "Enable the data structures module." "MODULE_STRING" )
+declare_module( "MODULE_STRING" "Enable strings util functions" "MODULE_MEMORY" )
+declare_module( "MODULE_STRUCTURES" "Enable the data structures module" "MODULE_STRING" )
+declare_module( "MODULE_LOGGER" "Enable the logger module" "MODULE_MEMORY" "MODULE_STRINGS" "MODULE_STRUCTURES" )
 
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
+set( MODULE_LOGGER_FILE_PREFIX "logs/ssce" CACHE STRING "If logger files are enabled, this sets the path prefix of the file." )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Modules.h.in" "${PROJECT_SOURCE_DIR}/src/Modules.h" )
 
@@ -208,8 +209,8 @@ define_module( "MODULE_MATH" "" "MinMax.h;MinMax.hpp" )
 define_module( "MODULE_CLOCK" "Clock_${SSCE_PLT}.c" "Clock.h;Clock.hpp" )
 define_module( "MODULE_MEMORY" "Swap_${SSCE_ARCH}.c" "Memory.h;Memory.hpp" )
 define_module( "MODULE_STRING" "Strings_${SSCE_PLT}.c;Strings.c" "Strings.h;Strings.hpp" )
-define_module( "MODULE_LOGGER" "Logger.c" "Logger.h;Logger.hpp" )
 define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c" "Interface.h;Sort.h;Sort.hpp;Heap.h;Heap.hpp" )
+define_module( "MODULE_LOGGER" "Logger.c" "Logger.h;Logger.hpp" )
 
 ## End of modules definitions.
 
@@ -286,9 +287,10 @@ endif( DOXYGEN_FOUND )
 ## Test configuration.
 enable_testing()
 define_test( "MODULE_CLOCK" "timings" )
-define_test( "MODULE_MEMORY" "swap" )
+define_test( "MODULE_MEMORY" "swap" "jemalloc" )
 define_test( "MODULE_STRING" "concat" "puts" )
 define_test( "MODULE_STRUCTURES" "heapsort" "heap" )
+define_test( "MODULE_LOGGER" "core" )
 
 ## Codestyle.
 find_program( BUILD_LUA NAMES lua DOC "The path to the lua executable. Used for fixing preprocessor formatting." )

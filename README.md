@@ -41,6 +41,7 @@ The list of available modules:
 - TODO: MEMORY
 - STRINGS
 - TODO: STRUCTURES
+- LOGGER
 
 ## Documentation
 
@@ -51,19 +52,3 @@ If [doxygen](www.doxygen.org) is installed then run `make doc` to generate the d
 TODO: Under refactoring, jemalloc
 
 ---
-
-### Logger _[MODULE\_LOGGER]_
-
-Basic logger. I have plans to expand this on the future.
-
-```C
-ssce_set_log_level(ALL);
-ssce_logv("%s", "Hello");
-ssce_logd("%s", "Hello");
-ssce_logi("%s", "Hello");
-ssce_logw("%s", "Hello");
-ssce_loge("%s", "Hello");
-ssce_logf("%s", "Hello");
-ssce_checknull(p);
-ssce_checkerrno(call_return);
-```

@@ -11,7 +11,7 @@
 
 #define ITER_COUNT_SMALL 1024
 
-#define print_stats(pc, delay) printf("%.3f\t: %.3f\t%.3f\t%.3f\n", delay, pc.min, pc.avg, pc.max)
+#define print_stats(pc, delay) printf("%d\t: %.3f\t%.3f\t%.3f\n", delay, pc.min, pc.avg, pc.max)
 
 #define measure_large(pc, delay)              \
   for(int i = 0; i < ITER_COUNT_LARGE; i++) { \
@@ -33,11 +33,11 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   PerfClock pc;
   clock_reset(&pc);
   printf("T\t: MIN\tAVG\tMAX\n");
-  measure_large(pc, 33.3333333);
+  measure_large(pc, 33);
   clock_reset(&pc);
-  measure_large(pc, 16.6666667);
+  measure_large(pc, 16);
   clock_reset(&pc);
-  measure_large(pc, 6.94444444);
+  measure_large(pc, 7);
   clock_reset(&pc);
   measure_small(pc, 6944);
   clock_reset(&pc);

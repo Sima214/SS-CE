@@ -13,7 +13,11 @@
  */
 #define SSCE_VERSION "${SSCE_VERSION}"
 /*
- * Logger module log file setting.
+ * Logger module log file output support.
  */
-#define MODULE_LOGGER_FILE ${MODULE_LOGGER_FILE}
+#define LOGGER_FILE ${MODULE_LOGGER_FILE}
+/*
+ * Logger module log file prefix.
+ */
+#define LOGGER_FILE_PREFIX "${MODULE_LOGGER_FILE_PREFIX}"
 #endif /*SSCE_CONFIG_H*/

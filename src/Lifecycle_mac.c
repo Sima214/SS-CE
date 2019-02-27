@@ -16,8 +16,8 @@ ssce_init(void) {
   #if defined(MODULE_CLOCK)
     internal_clock_init();
   #endif
-  #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
-    setup_log_file();
+  #if defined(MODULE_LOGGER)
+    internal_logger_init();
   #endif
 }
 
@@ -26,8 +26,8 @@ ssce_init(void) {
  */
 static void __attribute__((destructor))
 ssce_exit(void) {
-  #if defined(MODULE_LOGGER) && defined(MODULE_LOGGER_FILE)
-    close_log_file();
+  #if defined(MODULE_LOGGER)
+    internal_logger_exit();
   #endif
   #if defined(MODULE_CLOCK)
     internal_clock_exit();
