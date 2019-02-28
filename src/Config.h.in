@@ -1,23 +1,33 @@
 #ifndef SSCE_CONFIG_H
 #define SSCE_CONFIG_H
-/*
+/**
+ * @file
+ * @brief Compile time options.
+ */
+
+/**
  * Major version number.
  */
 #define SSCE_VERSION_MAJOR ${SSCE_VERSION_MAJOR}
-/*
+
+/**
  * Minor version number.
  */
 #define SSCE_VERSION_MINOR ${SSCE_VERSION_MINOR}
-/*
+
+/**
  * Version string.
  */
 #define SSCE_VERSION "${SSCE_VERSION}"
-/*
+
+/**
  * Logger module log file output support.
  */
 #define LOGGER_FILE ${MODULE_LOGGER_FILE}
-/*
+
+/**
  * Logger module log file prefix.
  */
 #define LOGGER_FILE_PREFIX "${MODULE_LOGGER_FILE_PREFIX}"
+
 #endif /*SSCE_CONFIG_H*/

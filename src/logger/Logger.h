@@ -126,7 +126,7 @@ EXPORT_API void logger_log(const LogLevel level, const int options, const char* 
   }
 
 /**
- * Checks \p exp evaluates to 0 (false).
+ * Checks if \p exp evaluates to 0 (false).
  * If it does, then it makes the whole program crash.
  * Also it logs the type of error that occurred if \p exp sets errno.
  * If errno was not set, then a generic error message is printed instead.

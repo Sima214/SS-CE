@@ -56,7 +56,7 @@ static void create_time(String* str) {
   localtime_r(&curtime, &curtime_table);
   size_t size = snprintf(str->array, TIME_BUFLEN, "%02i:%02i:%02i",
                          curtime_table.tm_hour, curtime_table.tm_min, curtime_table.tm_sec);
-  str->len = min(size, TIME_BUFLEN);
+  str->len = math_min(size, TIME_BUFLEN);
 }
 
 static void output_buffers(LogLevel l, String time, String thread, String msg) {
@@ -146,7 +146,7 @@ void logger_log(const LogLevel l, const int o, const char* fmt, ...) {
     size_t len = vsnprintf(bmsg, MESSAGE_BUFLEN, fmt, vargs);
     va_end(vargs);
     if(HOT_BRANCH(len > 0)) {
-      smsg.len = min(MESSAGE_BUFLEN - 1, len);
+      smsg.len = math_min(MESSAGE_BUFLEN - 1, len);
     }
     else {
       //If message formatting failed, then fail quietly.

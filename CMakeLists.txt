@@ -200,8 +200,8 @@ else()
 endif()
 
 ## Module definitions.
-set( SSCE_SRC "${SSCE_DIR_SRC}/Lifecycle_${SSCE_PLT}.c" )
-set( SSCE_INC "${SSCE_DIR_SRC}/Macros.h;${SSCE_DIR_SRC}/Modules.h" )
+set( SSCE_SRC "${SSCE_DIR_SRC}/core/Lifecycle_${SSCE_PLT}.c" )
+set( SSCE_INC "${SSCE_DIR_SRC}/Macros.h;${SSCE_DIR_SRC}/Modules.h;${SSCE_DIR_SRC}/Config.h" )
 message( STATUS "######################################################" )
 message( STATUS "Configuring modules..." )
 message( STATUS "######################################################" )

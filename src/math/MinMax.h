@@ -8,7 +8,7 @@
 /**
  * Returns the maximum of the two inputs.
  */
-#define max(a, b)           \
+#define math_max(a, b)           \
   ({                        \
     __typeof__(a) _a = (a); \
     __typeof__(b) _b = (b); \
@@ -18,7 +18,7 @@
 /**
  * Returns the minimum of the two inputs.
  */
-#define min(a, b)           \
+#define math_min(a, b)           \
   ({                        \
     __typeof__(a) _a = (a); \
     __typeof__(b) _b = (b); \

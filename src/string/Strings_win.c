@@ -69,7 +69,7 @@ void native_puts(const char* str) {
   }
   // Get console and TODO: verify
   HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-  uint32_t written = 0;
+  DWORD written = 0;
   int success = WriteConsole(console, str_u16, actual_count - 1, &written, NULL);
   if(COLD_BRANCH(success == 0)) {
     #ifndef NDEBUG

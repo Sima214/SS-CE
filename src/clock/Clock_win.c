@@ -6,11 +6,12 @@
 #include <float.h>
 #include <stdint.h>
 #include <windows.h>
+#include <winternl.h>
 
 /**
  * This should give us approximately 300Hz.
  */
-const static uint32_t timer_preferred = 33333;
+static const uint32_t timer_preferred = 33333;
 static int64_t clock_frequency;
 static uint32_t timer_reset;
 

@@ -26,4 +26,4 @@ gcc:
     - cd build-gcc
     - cmake ..
     - make
-    - make test
+    - ctest -VV

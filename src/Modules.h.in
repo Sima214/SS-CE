@@ -1,8 +1,11 @@
 #ifndef SSCE_MODULES_H
 #define SSCE_MODULES_H
-/*
+/**
+ * @file
  * Auto generated file. DO NOT EDIT!!!
- * This holds definitions for all enabled modules.
+ * @brief This holds the list of all compile time enabled modules.
  */
+
 ${MODULE_DEFINITIONS}
+
 #endif /*SSCE_MODULES_H*/
