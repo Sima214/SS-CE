@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ITER_COUNT_LARGE 128
+#define ITER_COUNT_LARGE 32
 
-#define ITER_COUNT_SMALL 1024
+#define ITER_COUNT_SMALL 256
 
 #define print_stats(pc, delay) printf("%d\t: %.3f\t%.3f\t%.3f\n", delay, pc.min, pc.avg, pc.max)
 

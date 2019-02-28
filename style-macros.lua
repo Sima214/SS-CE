@@ -5,7 +5,7 @@ local function main(sourcefile)
     local TAB_SIZE = 2
     local BASE_WHITESPACE = string.rep(" ", TAB_SIZE)
     local IDENT_ADD_COMMANDS = {"if", "ifdef", "ifndef"}
-    local IDENT_NEUTRAL_COMMANDS = {"define", "include", "error", "pragma", "else", "elif"}
+    local IDENT_NEUTRAL_COMMANDS = {"define", "include", "error", "pragma", "else", "elif", "warning"}
     local IDENT_SUB_COMMANDS = {"endif"}
     --local IDENT_STATEMENTS_COMMANDS = {}
 

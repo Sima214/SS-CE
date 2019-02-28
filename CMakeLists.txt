@@ -177,7 +177,7 @@ declare_module( "MODULE_LOGGER" "Enable the logger module" "MODULE_MEMORY" "MODU
 
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
-set( MODULE_LOGGER_FILE_PREFIX "logs/ssce" CACHE STRING "If logger files are enabled, this sets the path prefix of the file." )
+set( MODULE_LOGGER_FILE_PREFIX "logs/ssce_" CACHE STRING "If logger files are enabled, this sets the path prefix of the file." )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Modules.h.in" "${PROJECT_SOURCE_DIR}/src/Modules.h" )
 

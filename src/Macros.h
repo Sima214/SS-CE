@@ -142,9 +142,14 @@
      * @param dir The directory to create.
      * @return Returns zero on success.
      */
-    #define ssce_mkdir(dir) mkdir(dir, 0664)
+    #define ssce_mkdir(dir)       \
+      ({                          \
+        mode_t mask = umask(0);   \
+        umask(mask);              \
+        mkdir(dir, 0777 & ~mask); \
+      })
   #elif defined(_WIN32)
-    #include <windows.h>
+    #include <direct.h>
     /**
      * Creates a directory with default privileges.
      * 
@@ -152,6 +157,23 @@
      * @return Returns zero on success.
      */
     #define ssce_mkdir(dir) _mkdir(dir)
+  #endif
+#endif
+#ifndef ssce_localtime
+  #if IS_POSIX
+    /**
+     * Converts time into a time table in a thread safe way.
+     * Returns zero on success.
+     */
+    #define ssce_localtime(time, table) (localtime_r(&time, &table) == NULL)
+  #elif defined(_WIN32)
+    /**
+     * Converts time into a time table in a thread safe way.
+     * Returns zero on success.
+     */
+    #define ssce_localtime(time, table) localtime_s(&table, &time)
+  #else
+    #error Unsupported OS
   #endif
 #endif
 #ifndef cpu_init
@@ -172,7 +194,7 @@
     /**
      * NOP on release builds.
      */
-    #define EARLY_TRACE(msg) 
+    #define EARLY_TRACE(msg)
   #endif
 #endif
 #ifndef TARGET_EXT
