@@ -1,19 +1,19 @@
 #include "Clock.h"
 
+#include <core/ntdll.h>
 #include <math/MinMax.h>
 #include <string/Strings.h>
 
 #include <float.h>
 #include <stdint.h>
 #include <windows.h>
-#include <winternl.h>
 
 /**
- * This should give us approximately 300Hz.
+ * This should give us approximately 300Hz clock resolution.
  */
-static const uint32_t timer_preferred = 33333;
+static const ULONG timer_preferred = 33333;
 static int64_t clock_frequency;
-static uint32_t timer_reset;
+static ULONG timer_reset;
 
 void clock_delay(int64_t usecs) {
   if(COLD_BRANCH(usecs <= 0 || usecs >= 1000000)) {
@@ -64,10 +64,10 @@ void clock_reset(PerfClock* pc) {
 
 void internal_clock_init() {
   // Increase timer resolution.
-  uint32_t timer_min;
-  uint32_t timer_max;
+  ULONG timer_min;
+  ULONG timer_max;
   NtQueryTimerResolution(&timer_min, &timer_max, &timer_reset);
-  uint32_t timer_request = max(timer_min, timer_preferred);
+  ULONG timer_request = math_max(timer_min, timer_preferred);
   NtSetTimerResolution(timer_request, TRUE, NULL);
   // Get clock frequency.
   LARGE_INTEGER x;
