@@ -5,13 +5,15 @@ clang:
     CC: clang
     CXX: clang++
   before_script:
-    - rm -rf build-clang
+    - rm -rf build-clang jemalloc
   script:
     - mkdir build-clang
     - cd build-clang
-    - cmake ..
+    - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
     - make
     - ctest -VV
+    - make install
+    - make package
 
 gcc:
   tags:
@@ -20,10 +22,12 @@ gcc:
     CC: gcc
     CXX: g++
   before_script:
-    - rm -rf build-gcc
+    - rm -rf build-gcc jemalloc
   script:
     - mkdir build-gcc
     - cd build-gcc
-    - cmake ..
+    - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
     - make
     - ctest -VV
+    - make install
+    - make package

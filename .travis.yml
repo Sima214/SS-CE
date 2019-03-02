@@ -4,7 +4,7 @@ os:
   - osx
 
 compiler:
-  - gcc
+  # - gcc
   - clang
 
 addons:
@@ -20,8 +20,10 @@ before_script:
     fi
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
 
 script:
   - make
   - ctest -VV
+  - make install
+  - make package

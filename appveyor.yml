@@ -31,6 +31,8 @@ install:
   - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
   - cmd: set MINGW_PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
+  - cmd: mkdir C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\lib\bfd-plugins
+  - cmd: copy C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\lib\bfd-plugins\liblto_plugin-0.dll
 
   # Download prebuilt dependencies.
   - cmd: appveyor DownloadFile https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/jemalloc-x86_64.7z

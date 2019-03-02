@@ -100,7 +100,7 @@
 #endif
 #ifndef EXPORT_API
   #if defined(_WIN32)
-    #if defined(SSCE_IMPORT)
+    #ifndef SSCE_EXPORTS
       /**
        * Export symbol to linker.
        * Only affects shared builds.

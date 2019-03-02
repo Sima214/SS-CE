@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 3.9.4 )
 set( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+message( STATUS "Found strip executable: ${CMAKE_STRIP}" )
 if( NOT CMAKE_BUILD_TYPE )
 	message( STATUS "Setting build type to 'Release' as none was specified." )
 	set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE )
@@ -103,20 +104,20 @@ set( SSCE_DIR_DOCS "${PROJECT_SOURCE_DIR}/docs" )
 
 ## Platform detection.
 if( WIN32 )
-    message( "Compiling for windows." )
+    message( STATUS "Compiling for windows." )
     set( SSCE_PLT "win" )
     set( DYNLIB_EXT "dll" )
     add_definitions( "-DWIN32_LEAN_AND_MEAN" )
     add_definitions( "-DUNICODE" )
     add_definitions( "-DLINK_PE" )
 elseif( UNIX AND NOT APPLE )
-    message( "Compiling for linux." )
+    message( STATUS "Compiling for linux." )
     set( SSCE_PLT "linux" )
     set( DYNLIB_EXT "so" )
     add_definitions( "-D_GNU_SOURCE" )
     add_definitions( "-DLINK_ELF" )
 elseif( APPLE )
-    message( "Compiling for macos." )
+    message( STATUS "Compiling for macos." )
     set( SSCE_PLT "mac" )
     set( DYNLIB_EXT "dylib" )
     add_definitions( "-DLINK_MACHO" )
@@ -127,7 +128,7 @@ endif()
 # Architecture detection.
 include( cmake/TargetArch.cmake )
 target_architecture( SSCE_ARCH )
-message( "Compiling for ${SSCE_ARCH}." )
+message( STATUS "Compiling for ${SSCE_ARCH}." )
 
 # Prepare external libraries.
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
@@ -240,6 +241,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
 include_directories( "${SSCE_DIR_SRC}" )
 set( CMAKE_C_STANDARD 99 )
 set( CMAKE_CXX_STANDARD 11 )
+# Make <libname>_EXPORTS uppercase.
+set_target_properties( ${PROJECT_NAME} PROPERTIES DEFINE_SYMBOL "SSCE_EXPORTS" )
 include( CheckCCompilerFlag )
 ## Optimization flags.
 if( CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" )
@@ -275,6 +278,7 @@ install( TARGETS ${PROJECT_NAME}
 configure_file( "${PROJECT_NAME}.pc.in" "${PROJECT_NAME}.pc" @ONLY )
 install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig )
 if( NOT ${SYSTEM_JEMALLOC} OR WIN32 )
+    set( SSCE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}" )
     configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyJemalloc.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/CopyJemalloc.cmake" IMMEDIATE @ONLY )
     install( SCRIPT "${CMAKE_BINARY_DIR}/CopyJemalloc.cmake" )
     install( FILES "${CMAKE_BINARY_DIR}/jemalloc/include/jemalloc/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
@@ -284,6 +288,17 @@ endif()
 if( NOT TARGET uninstall )
     configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY )
     add_custom_target( uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
+endif()
+
+## Packaging
+if( NOT TARGET package )
+    add_custom_target(
+        package
+        python3 "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
+        COMMENT "This may not work as intended if make install was not run before."
+    )
 endif()
 
 ## Build documentation.

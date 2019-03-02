@@ -50,8 +50,9 @@ int main(int argc, MARK_UNUSED char* argv[]) {
     return stress(garbage0, garbage1, test0, test1, KBYTES(8));
   }
   // Standard testing.
+  printf("Testing standard blocks:\n");
   for(size_t cl = 1; cl <= KBYTES(8); cl++) {
-    printf("Testing %zu byte blocks\n", cl);
+    printf("\t%zu bytes\n", cl);
     memcpy(test0, garbage0, cl);
     memcpy(test1, garbage1, cl);
     // Call method being tested.
@@ -62,9 +63,10 @@ int main(int argc, MARK_UNUSED char* argv[]) {
     }
   }
   // Unaligned tests.
+  printf("Testing unaligned %d byte blocks:\n", UNALIGNED_SAMPLE_SIZE);
   for(int i = 0; i <= 512; i++) {
     for(int j = 0; j <= 512; j++) {
-      printf("Testing (%d, %d, %d) unaligned byte blocks\n", i, j, UNALIGNED_SAMPLE_SIZE);
+      printf("(%d,%d)\t", i, j);
       uint8_t* test0_u = test0 + i;
       uint8_t* test1_u = test1 + j;
       memcpy(test0_u, garbage0, UNALIGNED_SAMPLE_SIZE);
@@ -76,6 +78,7 @@ int main(int argc, MARK_UNUSED char* argv[]) {
         return EXIT_FAILURE;
       }
     }
+    printf("\n");
   }
   return EXIT_SUCCESS;
 }
