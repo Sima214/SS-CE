@@ -11,7 +11,7 @@ clang:
     - cd build-clang
     - cmake ..
     - make
-    - make test
+    - ctest -VV
 
 gcc:
   tags:

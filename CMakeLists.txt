@@ -141,9 +141,10 @@ if( ${SYSTEM_JEMALLOC} )
         # If you manage to make jemalloc on windows, then good for you.
         # I cannot, so just dump the jemalloc installation in <build>/jemalloc.
         add_library( jemalloc SHARED IMPORTED )
+        message( STATUS "${CMAKE_BINARY_DIR}/jemalloc/lib/jemalloc.${DYNLIB_EXT}" )
         set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/jemalloc/lib/jemalloc.${DYNLIB_EXT}" )
         include_directories( "${CMAKE_BINARY_DIR}/jemalloc/include/jemalloc" )
-        set( JEMALLOC_LIBRARIES jemalloc )
+        set( JEMALLOC_LIBRARIES "${CMAKE_BINARY_DIR}/jemalloc/lib/jemalloc.${DYNLIB_EXT}" )
     else( WIN32 )
         message( STATUS "Using system jemalloc." )
         pkg_check_modules( JEMALLOC REQUIRED jemalloc )
