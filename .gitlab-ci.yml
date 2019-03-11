@@ -11,9 +11,9 @@ clang:
     - cd build-clang
     - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
     - make
-    - ctest -VV
     - make install
     - make package
+    - ctest -VV
 
 gcc:
   tags:
@@ -28,6 +28,6 @@ gcc:
     - cd build-gcc
     - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
     - make
-    - ctest -VV
     - make install
     - make package
+    - ctest -VV

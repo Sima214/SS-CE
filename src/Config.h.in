@@ -16,6 +16,11 @@
 #define SSCE_VERSION_MINOR ${SSCE_VERSION_MINOR}
 
 /**
+ * Release version number.
+ */
+#define SSCE_VERSION_RELEASE ${SSCE_VERSION_RELEASE}
+
+/**
  * Version string.
  */
 #define SSCE_VERSION "${SSCE_VERSION}"

@@ -9,6 +9,17 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+  #include <inttypes.h>
+  #ifdef _WIN64
+    #define SIZET_FMT PRIu64
+  #else
+    #define SIZET_FMT PRIu32
+  #endif
+#else
+  #define SIZET_FMT "zu"
+#endif
+
 #define UNALIGNED_MAX_OFFSET 512
 #define UNALIGNED_SAMPLE_SIZE 2048
 
@@ -30,7 +41,7 @@ static int stress(uint8_t* garbage0, uint8_t* garbage1, uint8_t* test0, uint8_t*
       clock_stop(&pc);
     }
     // Report results.
-    printf("%5zu byte blocks: %6.4f | %6.4f | %6.4f\n", cl, pc.avg, pc.min, pc.max);
+    printf("%5"SIZET_FMT" byte blocks: %6.4f | %6.4f | %6.4f\n", cl, pc.avg, pc.min, pc.max);
     //printf("%6.4f, %6.4f, %6.4f\n", pc.avg, pc.min, pc.max);
     //printf("%f\n", pc.avg);
   }
@@ -52,7 +63,7 @@ int main(int argc, MARK_UNUSED char* argv[]) {
   // Standard testing.
   printf("Testing standard blocks:\n");
   for(size_t cl = 1; cl <= KBYTES(8); cl++) {
-    printf("\t%zu bytes\n", cl);
+    printf("\t%"SIZET_FMT" bytes\n", cl);
     memcpy(test0, garbage0, cl);
     memcpy(test1, garbage1, cl);
     // Call method being tested.

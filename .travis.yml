@@ -24,6 +24,6 @@ before_script:
 
 script:
   - make
-  - ctest -VV
   - make install
   - make package
+  - ctest -VV

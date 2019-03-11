@@ -1,5 +1,5 @@
-#ifndef SSCE_SWAP_H
-#define SSCE_SWAP_H
+#ifndef SSCE_MEMORY_H
+#define SSCE_MEMORY_H
 /**
  * @file
  * @brief A collection of functions about memory manipulation.
@@ -22,4 +22,4 @@
  */
 EXPORT_API void memswap(void* dst, void* src, size_t len);
 
-#endif /*SSCE_SWAP_H*/
+#endif /*SSCE_MEMORY_H*/

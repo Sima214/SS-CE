@@ -1,9 +1,10 @@
 #include "Memory.h"
 
 #include <Macros.h>
+#include <Runtime.h>
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <x86intrin.h>
 
 typedef void(memswap_t)(void*, void*, size_t);
@@ -37,12 +38,12 @@ GENERATE_DEFAULT_LOAD_STORE(uint64_t);
 
 #define bulk_swap(dst, src, len, type, load_func, store_func) \
   while(len >= sizeof(type)) {                                \
-    block_swap(dst, src, len, type, load_func, store_func);    \
+    block_swap(dst, src, len, type, load_func, store_func);   \
   }
 
 #define single_swap(dst, src, len, type, load_func, store_func) \
   if((len / sizeof(type)) == 1) {                               \
-    block_swap(dst, src, len, type, load_func, store_func);      \
+    block_swap(dst, src, len, type, load_func, store_func);     \
   }
 
 static void memswap_generic32(void* dst, void* src, size_t len) {
@@ -60,9 +61,9 @@ TARGET_EXT(sse2) static void memswap_sse2(void* dst, void* src, size_t len) {
 }
 
 static memswap_t* resolve_memswap() {
-  cpu_init();
-  else if(__builtin_cpu_supports("sse2")) {
-      EARLY_TRACE("Selecting memswap_sse2");
+  Runtime* features = ssce_get_runtime();
+  else if(features->cpu_x86_sse2) {
+    EARLY_TRACE("Selecting memswap_sse2");
     return memswap_sse2;
   }
   else {

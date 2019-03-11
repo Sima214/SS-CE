@@ -1,5 +1,5 @@
-#ifndef SSCE_SWAP_HPP
-#define SSCE_SWAP_HPP
+#ifndef SSCE_MEMORY_HPP
+#define SSCE_MEMORY_HPP
 /**
  * @file
  * @brief A collection of functions about memory manipulation.
@@ -12,4 +12,4 @@ C_DECLS_START
 C_DECLS_END
 } // namespace std
 
-#endif /*SSCE_SWAP_HPP*/
+#endif /*SSCE_MEMORY_HPP*/

@@ -1,9 +1,10 @@
 #include "Memory.h"
 
 #include <Macros.h>
+#include <Runtime.h>
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <x86intrin.h>
 
 typedef void(memswap_t)(void*, void*, size_t);
@@ -37,12 +38,12 @@ GENERATE_DEFAULT_LOAD_STORE(uint64_t);
 
 #define bulk_swap(dst, src, len, type, load_func, store_func) \
   while(len >= sizeof(type)) {                                \
-    block_swap(dst, src, len, type, load_func, store_func);    \
+    block_swap(dst, src, len, type, load_func, store_func);   \
   }
 
 #define single_swap(dst, src, len, type, load_func, store_func) \
   if((len / sizeof(type)) == 1) {                               \
-    block_swap(dst, src, len, type, load_func, store_func);      \
+    block_swap(dst, src, len, type, load_func, store_func);     \
   }
 
 TARGET_EXT(sse2) static void memswap_sse2(void* dst, void* src, size_t len) {
@@ -74,21 +75,46 @@ TARGET_EXT(avx512f) static void memswap_avx512(void* dst, void* src, size_t len)
   single_swap(dst, src, len, uint8_t, load_uint8_t, store_uint8_t);
 }
 
-COLD static memswap_t* resolve_memswap() {
-  cpu_init();
-  if(__builtin_cpu_supports("avx512f")) {
+MARK_COLD static memswap_t* resolve_memswap() {
+  Runtime* features = ssce_get_runtime();
+  if(features->cpu_x86_avx512f) {
     EARLY_TRACE("Selecting memswap_avx512");
     return memswap_avx512;
-  }
-  else if(__builtin_cpu_supports("avx")) {
+  } else if(features->cpu_x86_avx) {
     EARLY_TRACE("Selecting memswap_avx");
     return memswap_avx;
-  }
-  else {
+  } else {
     // x86_64 always supports SSE2
     EARLY_TRACE("Selecting memswap_sse");
     return memswap_sse2;
   }
 }
 
-EXPORT_API_RUNTIME(resolve_memswap) void memswap(void*, void*, size_t);
+#if defined(LINK_STATIC)
+  void memswap(void* dst, void* src, size_t len) {
+    static memswap_t* resolved = NULL;
+    if(resolved == NULL) {
+      resolved = resolve_memswap();
+    }
+    (*resolved)(dst, src, len);
+  }
+#elif defined(LINK_ELF)
+  EXPORT_API_RUNTIME(resolve_memswap) void memswap(void*, void*, size_t);
+#elif defined(LINK_MACHO)
+  void memswap(void* dst, void* src, size_t len) {
+    __builtin_trap();
+  }
+
+  static void* macho_resolve_memswap() {
+    EXPORT_API_RUNTIME(memswap);
+    return resolve_memswap();
+  }
+#elif defined(LINK_PE)
+  void memswap(void* dst, void* src, size_t len) {
+    memswap_t* resolved = resolve_memswap();
+    // TODO: update IAT
+    (*resolved)(dst, src, len);
+  }
+#else
+  #error Unsupported link format!
+#endif

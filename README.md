@@ -46,9 +46,3 @@ The list of available modules:
 ## Documentation
 
 If [doxygen](www.doxygen.org) is installed then run `make doc` to generate the documentation. The docs are generated in doc_doxygen inside the build directory.
-
----
-
-TODO: Under refactoring, jemalloc
-
----

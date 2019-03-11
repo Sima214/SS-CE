@@ -55,14 +55,6 @@ def run_build(verbose, test, install):
     args = ['cmake', '--build', build_dir]
     do_call(args)
 
-    # Test
-    if test:
-        print('-' * 80)
-        os.chdir(build_dir)
-        args = ['ctest', '-VV']
-        do_call(args)
-        os.chdir(cwd)
-
     # Install
     if install:
         print('-' * 80)
@@ -70,6 +62,14 @@ def run_build(verbose, test, install):
         args = ['cmake', '--build', build_dir, "--target", "install"]
         do_call(args)
         args = ['cmake', '--build', build_dir, "--target", "package"]
+        do_call(args)
+        os.chdir(cwd)
+
+    # Test
+    if test:
+        print('-' * 80)
+        os.chdir(build_dir)
+        args = ['ctest', '-VV']
         do_call(args)
         os.chdir(cwd)
 

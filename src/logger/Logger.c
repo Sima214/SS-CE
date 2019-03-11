@@ -115,7 +115,7 @@ static void output_buffers(LogLevel l, String time, String thread, String msg) {
 /*
  * Internal functions - module lifecycle.
  */
-void internal_logger_init() {
+MARK_COLD void internal_logger_init() {
   #ifdef LOGGER_FILE
     // Get time.
     time_t curtime;

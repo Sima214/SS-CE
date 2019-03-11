@@ -61,17 +61,17 @@
    */
   #define MARK_CONST __attribute__((const))
 #endif
-#ifndef HOT
+#ifndef MARK_HOT
   /**
    * Marks a function as 'hot'.
    */
-  #define HOT __attribute__((hot))
+  #define MARK_HOT __attribute__((hot))
 #endif
-#ifndef COLD
+#ifndef MARK_COLD
   /**
    * Marks a function as 'cold'.
    */
-  #define COLD __attribute__((cold))
+  #define MARK_COLD __attribute__((cold))
 #endif
 #ifndef MASK_CREATE
   /**
@@ -122,10 +122,27 @@
   #endif
 #endif
 #ifndef EXPORT_API_RUNTIME
-  /**
-   * Defines a function which gets resolved at runtime.
-   */
-  #define EXPORT_API_RUNTIME(resolver) __attribute__((ifunc(#resolver)))
+  #if defined(LINK_STATIC)
+    /**
+     * Defines a function which gets resolved at runtime.
+     */
+    #define EXPORT_API_RUNTIME
+  #elif defined(LINK_ELF)
+    /**
+     * Defines a function which gets resolved at runtime.
+     */
+    #define EXPORT_API_RUNTIME(resolver) __attribute__((ifunc(#resolver)))
+  #elif defined(LINK_MACHO)
+    /**
+     * Defines a function which gets resolved at runtime.
+     */
+    #define EXPORT_API_RUNTIME(target) __asm__(".symbol_resolver _" #target );
+  #elif defined(LINK_PE)
+    /**
+     * Defines a function which gets resolved at runtime.
+     */
+    #define EXPORT_API_RUNTIME
+  #endif
 #endif
 #ifndef strequal
   /**
