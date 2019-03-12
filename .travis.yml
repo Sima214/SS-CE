@@ -12,6 +12,7 @@ addons:
     packages:
     - libtool
     - gcc
+    - python3
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then
