@@ -1,6 +1,6 @@
 #include "Clock.h"
 
-#include <string/Strings.h>
+#include <string/SStrings.h>
 #include <Macros.h>
 
 #include <errno.h>

@@ -77,7 +77,6 @@ int main(int argc, MARK_UNUSED char* argv[]) {
   printf("Testing unaligned %d byte blocks:\n", UNALIGNED_SAMPLE_SIZE);
   for(int i = 0; i <= 512; i++) {
     for(int j = 0; j <= 512; j++) {
-      printf("(%d,%d)\t", i, j);
       uint8_t* test0_u = test0 + i;
       uint8_t* test1_u = test1 + j;
       memcpy(test0_u, garbage0, UNALIGNED_SAMPLE_SIZE);
@@ -86,10 +85,10 @@ int main(int argc, MARK_UNUSED char* argv[]) {
       memswap(test0_u, test1_u, UNALIGNED_SAMPLE_SIZE);
       // Confirm result.
       if(!test_swap(garbage0, garbage1, test0_u, test1_u, UNALIGNED_SAMPLE_SIZE)) {
+        printf("(%d,%d)\n", i, j);
         return EXIT_FAILURE;
       }
     }
-    printf("\n");
   }
   return EXIT_SUCCESS;
 }

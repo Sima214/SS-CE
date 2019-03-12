@@ -4,7 +4,6 @@
 
 #include <Heap.h>
 #include <Interface.h>
-#include <Strings.h>
 
 void heapsort(void* array, size_t size, const IDataType* interface) {
   heap_create(array, size, interface);

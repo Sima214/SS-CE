@@ -3,7 +3,7 @@
 #include <Config.h>
 #include <Macros.h>
 #include <math/MinMax.h>
-#include <string/Strings.h>
+#include <string/SStrings.h>
 
 #include <pthread.h>
 #include <stdarg.h>

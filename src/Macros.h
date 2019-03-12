@@ -200,7 +200,7 @@
   #define cpu_init __builtin_cpu_init
 #endif
 #ifndef EARLY_TRACE
-  #include <Strings.h>
+  #include <SStrings.h>
   #ifndef NDEBUG
     /**
      * Low level trace function.

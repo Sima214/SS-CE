@@ -7,7 +7,7 @@
 
 #include <Macros.h>
 C_DECLS_START
-#include <Strings.h>
+#include <SStrings.h>
 C_DECLS_END
 
 namespace ssce {

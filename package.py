@@ -25,4 +25,4 @@ with tarfile.open(output_file, mode='w:xz') as tar:
 # because I am too bored to actually setup deployments.
 with open(output_file, "rb") as f:
     arc64 = base64.b64encode(f.read())
-    print(arc64.decode())
+    print(arc64.decode(), flush=True)

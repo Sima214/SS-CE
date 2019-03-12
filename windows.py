@@ -18,12 +18,12 @@ def do_call(args):
     oneline = ''
     for i in args:
         oneline += ' "{}"'.format(i)
-    print('[{}]>{}'.format(os.getcwd(), oneline))
+    print('[{}]>{}'.format(os.getcwd(), oneline), flush=True)
     try:
         subprocess.check_call(args, env=os.environ)
     except subprocess.CalledProcessError as error:
-        print(error)
-        print(error.output)
+        print(error, flush=True)
+        print(error.output, flush=True)
         sys.exit(1)
 
 do_call(['cmake', '--version'])
@@ -37,7 +37,7 @@ if cmd_args.generator == 'MinGW Makefiles':
 def run_build(verbose, test, install):
     os.chdir(cwd)
     # Configure
-    print('-' * 72)
+    print('-' * 72, flush=True)
     build_dir = '.'
     args = [
       'cmake',
@@ -51,13 +51,13 @@ def run_build(verbose, test, install):
         args += ['-G{}'.format(cmd_args.generator)]
     do_call(args)
     # Build
-    print('-' * 72)
+    print('-' * 72, flush=True)
     args = ['cmake', '--build', build_dir]
     do_call(args)
 
     # Install
     if install:
-        print('-' * 80)
+        print('-' * 72, flush=True)
         os.chdir(build_dir)
         args = ['cmake', '--build', build_dir, "--target", "install"]
         do_call(args)
@@ -67,7 +67,7 @@ def run_build(verbose, test, install):
 
     # Test
     if test:
-        print('-' * 80)
+        print('-' * 72, flush=True)
         os.chdir(build_dir)
         args = ['ctest', '-VV']
         do_call(args)
@@ -75,4 +75,4 @@ def run_build(verbose, test, install):
 
 
 # Finally run build.
-run_build(verbose=True, test=True, install=True)
+run_build(verbose=False, test=True, install=True)

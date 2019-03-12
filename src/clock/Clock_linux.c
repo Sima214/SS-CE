@@ -1,7 +1,7 @@
 #include "Clock.h"
 
 #include <Macros.h>
-#include <string/Strings.h>
+#include <string/SStrings.h>
 
 #include <errno.h>
 #include <float.h>

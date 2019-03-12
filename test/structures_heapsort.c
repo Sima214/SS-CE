@@ -9,7 +9,6 @@
 #include <Interface.h>
 #include <Macros.h>
 #include <Sort.h>
-#include <Strings.h>
 
 /*
  * Test results:

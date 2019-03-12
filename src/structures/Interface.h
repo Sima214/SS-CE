@@ -10,7 +10,6 @@
 #include <string.h>
 
 #include <Macros.h>
-#include <Strings.h>
 
 struct IDataType;
 typedef struct IDataType IDataType;

@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include <Macros.h>
-#include <Strings.h>
+#include <SStrings.h>
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   const char TEST_STRING[] = "I am a test string!!!";

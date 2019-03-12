@@ -1,7 +1,7 @@
 #include "test_utils.h"
 
 #include <Macros.h>
-#include <Strings.h>
+#include <SStrings.h>
 
 #include <stdlib.h>
 

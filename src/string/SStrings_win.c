@@ -1,4 +1,4 @@
-#include "Strings.h"
+#include "SStrings.h"
 
 #include <Macros.h>
 

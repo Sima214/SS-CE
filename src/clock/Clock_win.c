@@ -2,7 +2,7 @@
 
 #include <core/ntdll.h>
 #include <math/MinMax.h>
-#include <string/Strings.h>
+#include <string/SStrings.h>
 
 #include <float.h>
 #include <stdint.h>

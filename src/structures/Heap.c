@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include <Interface.h>
-#include <Strings.h>
+#include <SStrings.h>
 
 #define heap_parent_index(i) ((i - 1) / 2)
 #define heap_left_index(i) (i * 2 + 1)
