@@ -122,6 +122,7 @@ elseif( APPLE )
     message( STATUS "Compiling for macos." )
     set( SSCE_PLT "mac" )
     set( DYNLIB_EXT "dylib" )
+    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wnonportable-include-path -Wnonportable-system-include-path" )
     add_definitions( "-DLINK_MACHO" )
 else()
     message( FATAL_ERROR "Unsupported os!!!" )
@@ -267,8 +268,8 @@ else()
     endif( ${ipo_supported} )
 endif()
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-expansion-to-defined -fvisibility=hidden" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fexec-charset=UTF-8" ) 
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel" ) 
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fexec-charset=UTF-8" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
 
 ## Define installation.
@@ -293,10 +294,11 @@ if( NOT TARGET uninstall )
 endif()
 
 ## Packaging
+find_package( Python3 REQUIRED COMPONENTS Interpreter)
 if( NOT TARGET package )
     add_custom_target(
         package
-        python3 "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
+        Python3::Interpreter "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
         COMMENT "This may not work as intended if make install was not run before."
