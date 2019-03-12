@@ -294,11 +294,11 @@ if( NOT TARGET uninstall )
 endif()
 
 ## Packaging
-find_package( Python3 REQUIRED COMPONENTS Interpreter)
+find_package( PythonInterp 3 REQUIRED )
 if( NOT TARGET package )
     add_custom_target(
         package
-        Python3::Interpreter "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
+        ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
         COMMENT "This may not work as intended if make install was not run before."
