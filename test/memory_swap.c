@@ -74,7 +74,7 @@ int main(int argc, MARK_UNUSED char* argv[]) {
     }
   }
   // Unaligned tests.
-  printf("Testing unaligned %d byte blocks:\n", UNALIGNED_SAMPLE_SIZE);
+  printf("Testing unaligned %d byte blocks...\n", UNALIGNED_SAMPLE_SIZE);
   for(int i = 0; i <= UNALIGNED_MAX_OFFSET; i++) {
     for(int j = 0; j <= UNALIGNED_MAX_OFFSET; j++) {
       uint8_t* test0_u = test0 + i;

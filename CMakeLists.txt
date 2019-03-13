@@ -93,7 +93,7 @@ else( ${SYSTEM_JEMALLOC} )
                          STAMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          TMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          URL "https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/src/jemalloc.tar.bz2"
-                         CONFIGURE_COMMAND sh ./configure --prefix=${CMAKE_BINARY_DIR}/jemalloc
+                         CONFIGURE_COMMAND sh ./configure --with-jemalloc-prefix=je_ --prefix=${CMAKE_BINARY_DIR}/jemalloc
                          BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} build_lib_shared
                          INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install_include install_lib_shared
                          TEST_EXCLUDE_FROM_MAIN 1
@@ -138,7 +138,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
     message( "Debug build detected, extra optimization flags are not enabled." )
 else()
     check_c_compiler_flag( "-fno-plt" noplt )
-    if( ${noplt} AND LINUX )
+    if( ${noplt} )
         target_compile_options( ${PROJECT_NAME} PRIVATE "-fno-plt" )
         message( STATUS "-fno-plt is supported and enabled for the library." )
     else()

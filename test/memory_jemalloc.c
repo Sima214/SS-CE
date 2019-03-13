@@ -14,8 +14,8 @@ void leak(size_t c) {
 }
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
-  malloc_stats_print(NULL, NULL, NULL);
+  je_malloc_stats_print(NULL, NULL, NULL);
   leak(1024);
-  malloc_stats_print(NULL, NULL, NULL);
+  je_malloc_stats_print(NULL, NULL, NULL);
   return EXIT_SUCCESS;
 }
