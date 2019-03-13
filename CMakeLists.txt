@@ -83,7 +83,7 @@ function(define_test modname)
             message( STATUS "\tAdding ${d} test." )
             set( subname "${name}_${d}" )
             add_executable( "test_${subname}" "${SSCE_DIR_TEST}/${subname}.c" )
-            target_link_libraries( "test_${subname}" ${JEMALLOC_CFLAGS} ${JEMALLOC_LIBRARIES} Threads::Threads ${PROJECT_NAME} )
+            target_link_libraries( "test_${subname}" ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIBRARIES} Threads::Threads )
             add_test( NAME ${subname} COMMAND "test_${subname}" )
         endforeach(d)
     endif(${${modname}})
@@ -228,12 +228,12 @@ set( BUILD_SHARED TRUE CACHE BOOL "Disable to build static libraries." )
 if( ${BUILD_SHARED} )
     message( STATUS "Building shared library." )
     add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
-    target_link_libraries( ${PROJECT_NAME} ${JEMALLOC_CFLAGS} ${JEMALLOC_LIBRARIES} Threads::Threads )
+    target_link_libraries( ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIBRARIES} Threads::Threads )
 else()
     message( STATUS "Building static library." )
     add_definitions( "-DLINK_STATIC" )
     add_library( ${PROJECT_NAME} STATIC ${SSCE_SRC} )
-    target_link_libraries( ${PROJECT_NAME} ${JEMALLOC_CFLAGS} ${JEMALLOC_LIBRARIES} Threads::Threads )
+    target_link_libraries( ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIBRARIES} Threads::Threads )
 endif()
 if( NOT ${SYSTEM_JEMALLOC} )
     add_dependencies( ${PROJECT_NAME} jemalloc-build )
@@ -275,6 +275,7 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fn
 ## Define installation.
 include( GNUInstallDirs )
 install( TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
         PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )

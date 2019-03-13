@@ -21,7 +21,7 @@ before_script:
     fi
   - mkdir build
   - cd build
-  - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
+  - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX:PATH=install ..
 
 script:
   - make

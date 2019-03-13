@@ -3,6 +3,7 @@
 #include <Macros.h>
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 
@@ -63,7 +64,7 @@ void native_puts(const char* str) {
   }
   else if(COLD_BRANCH(count != actual_count)) {
     #ifndef NDEBUG
-      puts("MultiByteToWideChar Fail")
+      puts("MultiByteToWideChar Fail");
     #endif
     abort();
   }
@@ -73,7 +74,7 @@ void native_puts(const char* str) {
   int success = WriteConsole(console, str_u16, actual_count - 1, &written, NULL);
   if(COLD_BRANCH(success == 0)) {
     #ifndef NDEBUG
-      puts("WriteConsole Fail")
+      puts("WriteConsole Fail");
     #endif
     abort();
   }

@@ -34,7 +34,7 @@ if cmd_args.generator == 'MinGW Makefiles':
     )
 
 
-def run_build(verbose, test, install):
+def run_build(verbose, test, trace, install):
     os.chdir(cwd)
     # Configure
     print('-' * 72, flush=True)
@@ -45,6 +45,8 @@ def run_build(verbose, test, install):
     ]
     if verbose:
         args += ['-DCMAKE_VERBOSE_MAKEFILE=ON']
+    if trace:
+        args += ['-DCMAKE_BUILD_TYPE=Debug']
     args += ["-DSYSTEM_JEMALLOC=ON"]
     args += ["-DCMAKE_INSTALL_PREFIX:PATH=install"]
     if cmd_args.generator:
@@ -75,4 +77,4 @@ def run_build(verbose, test, install):
 
 
 # Finally run build.
-run_build(verbose=False, test=True, install=True)
+run_build(verbose=True, trace=True, test=True, install=True)
