@@ -36,6 +36,7 @@ This library is split into several modules which can be turned ON and OFF depend
 
 The list of available modules:
 
+- TODO: CORE
 - MATH
 - CLOCK
 - TODO: MEMORY

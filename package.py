@@ -26,6 +26,9 @@ with tarfile.open(output_file, mode='w:xz') as tar:
         os.chdir(install_dir)
         tar.add(fn)
         os.chdir(build_dir)
+    for fn in os.listdir(build_dir):
+        if os.path.basename(fn).startswith("test_"):
+            tar.add(fn)
 
 # Finally output the archive in base64 to the console,
 # because I am too bored to actually setup deployments.
