@@ -49,4 +49,6 @@ function(target_architecture output_var)
         set(ARCH unknown)
     endif()
     set(${output_var} "${ARCH}" PARENT_SCOPE)
+
+    message(STATUS "Compiling for ${ARCH}.")
 endfunction()

@@ -1,0 +1,6 @@
+if( EXISTS "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/link.txt" )
+    file( READ "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/link.txt" LINK_TXT )
+    message( STATUS "Linker flags: ${LINK_TXT}" )
+else()
+    message( FATAL_ERROR "link.txt has not been generated yet!" )
+endif()

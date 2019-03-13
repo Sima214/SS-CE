@@ -1,6 +1,8 @@
 # SS-CE
 
-[![linux status](https://gitlab.com/Sima214/SS-CE/badges/master/pipeline.svg)](https://gitlab.com/Sima214/SS-CE/commits/master) [![osx status](https://travis-ci.com/Sima214/SS-CE.svg?branch=master)](https://travis-ci.com/Sima214/SS-CE) [![windows status](https://ci.appveyor.com/api/projects/status/github/Sima214/SS-CE?branch=master&svg=true)](https://ci.appveyor.com/project/Sima214/ss-ce)
+[![linux status](https://gitlab.com/Sima214/SS-CE/badges/master/pipeline.svg)](https://gitlab.com/Sima214/SS-CE/commits/master)
+[![osx status](https://travis-ci.com/Sima214/SS-CE.svg?branch=master)](https://travis-ci.com/Sima214/SS-CE)
+[![windows status](https://ci.appveyor.com/api/projects/status/github/Sima214/SS-CE?branch=master&svg=true)](https://ci.appveyor.com/project/Sima214/ss-ce)
 
 ## Description
 
@@ -14,11 +16,13 @@ During installation a pkg-config file is also created. This should be usable by 
 # Example code for linking against libssce using CMake.
 find_package( PkgConfig )
 pkg_check_modules( SSCE REQUIRED ssce )
-target_link_libraries( ${PROJECT_NAME} ${SSCE_CFLAGS} ${SSCE_LIBRARIES} )
+target_compile_options( ${PROJECT_NAME} ${SSCE_CFLAGS} )
+target_link_libraries( ${PROJECT_NAME} ${SSCE_LIBRARIES} )
 ```
 
 ## Building
 
+Cmake, python3 and a valid gcc or clang installation is required!
 This project uses cmake for generating makefiles for your system.
 On linux this can simply be done by running:
 

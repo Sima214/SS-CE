@@ -77,4 +77,4 @@ def run_build(verbose, test, trace, install):
 
 
 # Finally run build.
-run_build(verbose=True, trace=False, test=True, install=True)
+run_build(verbose=False, trace=False, test=True, install=True)
