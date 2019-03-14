@@ -37,6 +37,7 @@ install:
   # Download prebuilt dependencies.
   - cmd: appveyor DownloadFile https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/jemalloc-x86_64-lto.7z
   - cmd: 7z x jemalloc-x86_64-lto.7z
+  - cmd: set PATH=%CD%\jemalloc\lib;%PATH%
 
   # MSYS2 location
   - cmd: set MSYS_PATH=C:\msys64\usr\bin
