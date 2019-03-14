@@ -55,7 +55,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
     int* array = test_area + (i * 64);
     __builtin_prefetch(array);
     clock_start(&pc);
-    heapsort(array, 64, &DTI_CST);
+    sort_heap(array, 64, &DTI_CST);
     clock_stop(&pc);
   }
   printf("method:\t AVG | MIN | MAX\n");

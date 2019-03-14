@@ -18,6 +18,6 @@
  * @param interface A pointer to a IDataType structure
  * defining how interpret array elements.
  */
-EXPORT_API void heapsort(void* array, size_t size, const IDataType* interface);
+EXPORT_API void sort_heap(void* array, size_t size, const IDataType* interface);
 
 #endif /*SSCE_SORT_H*/
