@@ -3,6 +3,7 @@
 #include <Config.h>
 #include <Macros.h>
 #include <math/MinMax.h>
+#include <memory/GAlloc.h>
 #include <string/SStrings.h>
 
 #include <pthread.h>

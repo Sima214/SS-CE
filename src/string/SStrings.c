@@ -1,5 +1,7 @@
 #include "SStrings.h"
 
+#include <memory/GAlloc.h>
+
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>

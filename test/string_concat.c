@@ -1,8 +1,9 @@
-#include <stdlib.h>
-#include <string.h>
-
+#include <GAlloc.h>
 #include <Macros.h>
 #include <SStrings.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   const char TEST_STRING[] = "I am a test string!!!";

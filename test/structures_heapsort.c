@@ -1,14 +1,14 @@
 #include "test_utils.h"
 
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-
 #include <Clock.h>
 #include <Interface.h>
 #include <Macros.h>
 #include <Sort.h>
+
+#include <stddef.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 
 /*
  * Test results:
