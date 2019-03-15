@@ -2,6 +2,7 @@
 #include <Macros.h>
 #include <SStrings.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,7 +15,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   if(!strequal(TEST_STRING, result.array)) {
     return EXIT_FAILURE;
   }
-  native_puts(result.array);
+  puts(result.array);
   free(result.array);
   return EXIT_SUCCESS;
 }

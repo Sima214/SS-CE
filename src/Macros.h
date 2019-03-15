@@ -136,7 +136,12 @@
     /**
      * Defines a function which gets resolved at runtime.
      */
-    #define EXPORT_API_RUNTIME(target) __asm__(".symbol_resolver _" #target );
+    #define EXPORT_API_RUNTIME(name)                          \
+      void* name ## _macho_resolver(void) __asm__("_" #name); \
+      void* name ## _macho_resolver(void) {                   \
+        __asm__(".symbol_resolver _" #name);                  \
+        return resolve_ ## name();                            \
+      }
   #elif defined(LINK_PE)
     /**
      * Defines a function which gets resolved at runtime.
@@ -215,20 +220,27 @@
   #endif
 #endif
 #ifndef TARGET_EXT
-  #if defined(__clang__)
+  #if defined(NDEBUG) && defined(__clang__)
     /**
      * Mark this function as 'hand coded' for target instruction extension 'ext'.
      * Instructs the compiler to generate code for target extension while
      * also minimizing compiler optimizations.
      */
     #define TARGET_EXT(ext) __attribute__((__target__(#ext), minsize))
-  #elif defined(__GNUC__)
+  #elif defined(NDEBUG) && defined(__GNUC__)
     /**
      * Mark this function as 'hand coded' for target instruction extension 'ext'.
      * Instructs the compiler to generate code for target extension while
      * also minimizing compiler optimizations.
      */
     #define TARGET_EXT(ext) __attribute__((__target__(#ext), optimize("no-tree-vectorize")))
+  #elif !defined(NDEBUG)
+    /**
+     * Mark this function as 'hand coded' for target instruction extension 'ext'.
+     * Instructs the compiler to generate code for target extension while
+     * also minimizing compiler optimizations.
+     */
+    #define TARGET_EXT
   #else
     #warning Unknown compiler: generated code might not be optimal!
     /**

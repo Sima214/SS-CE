@@ -9,11 +9,8 @@
 #include <stdlib.h>
 
 // Now include jemalloc, which is compiled with je_ prefix.
+#define JEMALLOC_NO_RENAME
+#define JEMALLOC_MANGLE
 #include <jemalloc.h>
-
-#define malloc je_malloc
-#define calloc je_calloc
-#define realloc je_realloc
-#define free je_free
 
 #endif /*SSCE_GALLOC_H*/

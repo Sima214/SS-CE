@@ -1,4 +1,7 @@
-if( EXISTS "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/link.txt" )
+if( EXISTS "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/linklibs.rsp" )
+    file( READ "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/linklibs.rsp" LINK_TXT )
+    message( STATUS "Linker flags: ${LINK_TXT}" )
+elseif( EXISTS "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/link.txt" )
     file( READ "@CMAKE_BINARY_DIR@/CMakeFiles/@PROJECT_NAME@.dir/link.txt" LINK_TXT )
     message( STATUS "Linker flags: ${LINK_TXT}" )
 else()

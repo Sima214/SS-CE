@@ -10,7 +10,7 @@
 #define ALLOCATION_SIZE 1024
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
-  je_malloc_stats_print(NULL, NULL, NULL);
+  malloc_stats_print(NULL, NULL, NULL);
   // Allocation test.
   int* leakage = malloc(ALLOCATION_SIZE);
   if(leakage == NULL) {
@@ -18,7 +18,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
     return EXIT_FAILURE;
   }
   memset(leakage, 0, ALLOCATION_SIZE);
-  je_malloc_stats_print(NULL, NULL, NULL);
+  malloc_stats_print(NULL, NULL, NULL);
   free(leakage);
   return EXIT_SUCCESS;
 }

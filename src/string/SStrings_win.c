@@ -7,10 +7,13 @@
 #include <stdlib.h>
 #include <windows.h>
 
-/*
- * Convert string to UTF-16 and then write it to the console.
+static const wchar_t* NEW_LINE = L"\r\n";
+static const int NEW_LINE_LEN = (sizeof(NEW_LINE) / sizeof(wchar_t)) - 1;
+
+/**
+ * Write utf-8 encoded string \ref str to a windows console window.
  */
-void native_puts(const char* str) {
+static void native_puts_console(const char* str) {
   // First pass: find required buffer size.
   int count = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
   if(COLD_BRANCH(count == 0)) {
@@ -68,14 +71,38 @@ void native_puts(const char* str) {
     #endif
     abort();
   }
-  // Get console and TODO: verify
+  // Get console and write to it.
   HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
   DWORD written = 0;
-  int success = WriteConsole(console, str_u16, actual_count - 1, &written, NULL);
+  int success;
+  success = WriteConsole(console, str_u16, actual_count - 1, &written, NULL);
   if(COLD_BRANCH(success == 0)) {
     #ifndef NDEBUG
       puts("WriteConsole Fail");
     #endif
     abort();
+  }
+  success = WriteConsole(console, NEW_LINE, NEW_LINE_LEN, &written, NULL);
+  if(COLD_BRANCH(success == 0)) {
+    #ifndef NDEBUG
+      puts("WriteConsole New Line Fail");
+    #endif
+    abort();
+  }
+}
+
+/*
+ * Convert string to correct format based on what stdout is.
+ */
+void native_puts(const char* str) {
+  // Check if stdout points to a windows console(cmd.exe).
+  DWORD console_mode;
+  if(GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &console_mode) == 0) {
+    // Stdout is probably getting redirected!
+    puts(str);
+  }
+  else {
+    // Stdout points to a console!
+    native_puts_console(str);
   }
 }

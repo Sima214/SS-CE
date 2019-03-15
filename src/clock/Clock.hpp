@@ -16,6 +16,11 @@ namespace ssce {
  * High accuracy stopwatch.
  */
 class PerformanceClock {
+private:
+  /**
+   * Interface with the C portion.
+   */
+  PerfClock pc;
 public:
   /**
    * Constructor.
@@ -44,12 +49,6 @@ public:
   void reset() {
     clock_reset(&pc);
   }
-
-private:
-  /**
-   * Interface with the C portion.
-   */
-  PerfClock pc;
 };
 
 /**

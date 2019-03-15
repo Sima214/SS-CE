@@ -101,18 +101,18 @@ MARK_COLD static memswap_t* resolve_memswap() {
 #elif defined(LINK_ELF)
   EXPORT_API_RUNTIME(resolve_memswap) void memswap(void*, void*, size_t);
 #elif defined(LINK_MACHO)
+  // TODO: replace with macho symbol resolvers?
   void memswap(void* dst, void* src, size_t len) {
-    __builtin_trap();
-  }
-
-  static void* macho_resolve_memswap() {
-    EXPORT_API_RUNTIME(memswap);
-    return resolve_memswap();
+    static memswap_t* resolved = NULL;
+    if(resolved == NULL) {
+      resolved = resolve_memswap();
+    }
+    (*resolved)(dst, src, len);
   }
 #elif defined(LINK_PE)
   void memswap(void* dst, void* src, size_t len) {
     memswap_t* resolved = resolve_memswap();
-    // TODO: update IAT
+    // TODO: patch all the IATs.
     (*resolved)(dst, src, len);
   }
 #else
