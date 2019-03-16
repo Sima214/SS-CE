@@ -8,6 +8,7 @@
 #include <Modules.h>
 #include <clock/Clock.h>
 #include <logger/Logger.h>
+#include <memory/FAlloc.h>
 
 #include <windows.h>
 
@@ -67,6 +68,9 @@ static void link_ntdll() {
 static void ssce_init() {
   EARLY_TRACE("Loading shared library ssce[" SSCE_VERSION "]");
   link_ntdll();
+  #if defined(MODULE_MEMORY)
+    internal_falloc_init();
+  #endif
   #if defined(MODULE_CLOCK)
     internal_clock_init();
   #endif
@@ -84,6 +88,9 @@ static void ssce_exit() {
   #endif
   #if defined(MODULE_CLOCK)
     internal_clock_exit();
+  #endif
+  #if defined(MODULE_MEMORY)
+    internal_falloc_exit();
   #endif
   EARLY_TRACE("Unloaded shared library ssce[" SSCE_VERSION "]");
 }

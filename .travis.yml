@@ -10,8 +10,8 @@ compiler:
 addons:
   homebrew:
     packages:
-    - libtool
-    - gcc
+    # - libtool
+    # - gcc
     - python3
 
 before_script:
@@ -24,7 +24,7 @@ before_script:
   - cmake -DCMAKE_VERBOSE_MAKEFILE=OFF -DCMAKE_INSTALL_PREFIX:PATH=install ..
 
 script:
-  - make
+  - make -j 2
   - make install
   - make package
   - ctest -VV

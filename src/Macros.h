@@ -240,7 +240,7 @@
      * Instructs the compiler to generate code for target extension while
      * also minimizing compiler optimizations.
      */
-    #define TARGET_EXT
+    #define TARGET_EXT(ext) __attribute__((__target__(#ext)))
   #else
     #warning Unknown compiler: generated code might not be optimal!
     /**
@@ -264,4 +264,10 @@
    * Use only when compiler is beeing stupid.
    */
   #define HOT_BRANCH(cond) __builtin_expect(cond, 1)
+#endif
+#ifndef MARK_MALLOC
+  /**
+   * Marks that a function allocates memory and returns a pointer to said memory.
+   */
+  #define MARK_MALLOC(alignment, ...) __attribute__((malloc, alloc_align(alignment), alloc_size(__VA_ARGS__)))
 #endif
