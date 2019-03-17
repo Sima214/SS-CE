@@ -67,7 +67,7 @@ void internal_falloc_init() {
   #endif
 }
 
-ThreadLocalStack* get_local_thread_stack() {
+ThreadLocalStack* falloc_get_tls() {
   ThreadLocalStack* tls = pthread_getspecific(thread_local_stack_key);
   if(COLD_BRANCH(tls == NULL)) {
     tls = malloc(sizeof(ThreadLocalStack));
@@ -81,8 +81,8 @@ ThreadLocalStack* get_local_thread_stack() {
   return tls;
 }
 
-int ensure_allocated_space(ThreadLocalStack* tls, size_t l) {
-  #if IS_POSIX
+int falloc_ensure_space(ThreadLocalStack* tls, size_t l) {
+  #if defined(__unix__)
     size_t new_size = tls->usage + l;
     if(COLD_BRANCH(new_size > tls->allocated)) {
       // Try to expand.
@@ -101,6 +101,16 @@ int ensure_allocated_space(ThreadLocalStack* tls, size_t l) {
         EARLY_TRACE("Successfully expanded thread local stack!");
         return 0;
       }
+    }
+    else {
+      // We have enough space.
+      return 0;
+    }
+  #elif defined(__APPLE__) && defined(__MACH__)
+    size_t new_size = tls->usage + l;
+    if(COLD_BRANCH(new_size > tls->allocated)) {
+      // Macos doesn't have mremap.
+      return 1;
     }
     else {
       // We have enough space.

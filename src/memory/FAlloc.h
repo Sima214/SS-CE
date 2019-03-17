@@ -40,7 +40,7 @@ typedef struct {
  * Special pointer of type \ref type, with some special properties.
  * This must be used before the type of any pointer allocated with fast_malloc!
  */
-#define fast_ptr(type) __attribute__((cleanup(fast_free))) type* const
+#define fast_ptr(type) __attribute__((cleanup(falloc_free))) type* const
 
 /**
  * Allocates \ref l bytes and returns
@@ -48,7 +48,7 @@ typedef struct {
  * The returned pointer is aligned sizeof(int) bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-#define fast_malloc(l) fast_malloc_aligned(l, sizeof(int))
+#define fast_malloc(l) falloc_malloc_aligned(l, sizeof(int))
 
 /**
  * Allocates \ref l bytes and returns
@@ -56,7 +56,7 @@ typedef struct {
  * The returned pointer is aligned \ref align bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-MARK_MALLOC(2, 1) static inline void* fast_malloc_aligned(size_t l, size_t align) {
+MARK_MALLOC(2, 1) static inline void* falloc_malloc_aligned(size_t l, size_t align) {
   // Calculate optimal start address.
   return NULL;
 }
@@ -65,7 +65,7 @@ MARK_MALLOC(2, 1) static inline void* fast_malloc_aligned(size_t l, size_t align
  * Takes a pointer to the pointer allocated by \ref fast_malloc.
  * This is called automatically on function exit if the fast_t is used.
  */
-static inline void fast_free(void** pptr) {
+static inline void falloc_free(void** pptr) {
   void* ptr = *pptr;
 }
 
@@ -73,14 +73,14 @@ static inline void fast_free(void** pptr) {
  * Internal api usage only!
  * Returns info about allocated thread local stack.
  */
-EXPORT_API ThreadLocalStack* get_local_thread_stack();
+EXPORT_API ThreadLocalStack* falloc_get_tls();
 
 /**
  * Internal api usage only!
  * Ensures that there are at least \ref l free in \ref tls.
  * Returns non-zero value on error.
  */
-EXPORT_API int ensure_allocated_space(ThreadLocalStack* tls, size_t l);
+EXPORT_API int falloc_ensure_space(ThreadLocalStack* tls, size_t l);
 
 /**
  * Initializes thread local keys.
