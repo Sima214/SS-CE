@@ -35,4 +35,9 @@
  */
 #define LOGGER_FILE_PREFIX "${MODULE_LOGGER_FILE_PREFIX}"
 
+/**
+ * How much in bytes thread local stack to allocate for falloc initially.
+ */
+#define MEMORY_FALLOC_STACK_SIZE ${MODULE_MEMORY_FALLOC_STACK_SIZE}*1024
+
 #endif /*SSCE_CONFIG_H*/

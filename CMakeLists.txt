@@ -48,6 +48,7 @@ declare_module( "MODULE_LOGGER" "Enable the logger module" "MODULE_MEMORY" "MODU
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
 set( MODULE_LOGGER_FILE_PREFIX "logs/${PROJECT_NAME}_" CACHE STRING "If logger files are enabled, this sets the path prefix of the file." )
+set( MODULE_MEMORY_FALLOC_STACK_SIZE "8*1024" CACHE STRING "How much kibibytes to allocate initially for each thread local stack. Note that reallocations are not possible, so choose a large size here." )
 set( MODULE_TESTING TRUE CACHE BOOL "Whether to enable tests. Disabling may fix some build issues." )
 set( SYSTEM_JEMALLOC FALSE CACHE BOOL "Link against system jemalloc library." )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )

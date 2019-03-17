@@ -27,10 +27,13 @@ typedef struct {
    * How much ram have we allocated?
    */
   size_t allocated;
-  /**
-   * How much virtual address space have we allocated?
-   */
-  size_t reserved;
+  #if defined(_WIN32)
+    /**
+     * How much virtual address space have we allocated?
+     * This is only needed on Windows.
+     */
+    size_t reserved;
+  #endif
 } ThreadLocalStack;
 
 /**
@@ -54,6 +57,7 @@ typedef struct {
  * If not enough memory could be allocated, then NULL is returned.
  */
 MARK_MALLOC(2, 1) static inline void* fast_malloc_aligned(size_t l, size_t align) {
+  // Calculate optimal start address.
   return NULL;
 }
 
