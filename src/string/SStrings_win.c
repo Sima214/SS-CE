@@ -1,6 +1,7 @@
 #include "SStrings.h"
 
 #include <Macros.h>
+#include <memory/FAlloc.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -39,8 +40,8 @@ static void native_puts_console(const char* str) {
     #endif
     abort();
   }
-  // TODO: allocate buffer
-  wchar_t str_u16[count];
+  // Allocate temporary buffer.
+  wchar_t* str_u16 = falloc_malloc_aligned(count * sizeof(wchar_t), sizeof(wchar_t));
   int actual_count = MultiByteToWideChar(CP_UTF8, 0, str, -1, str_u16, count);
   if(COLD_BRANCH(count == 0)) {
     #ifndef NDEBUG

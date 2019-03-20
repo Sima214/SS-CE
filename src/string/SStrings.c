@@ -1,5 +1,6 @@
 #include "SStrings.h"
 
+#include <memory/FAlloc.h>
 #include <memory/GAlloc.h>
 
 #include <stdarg.h>
@@ -8,8 +9,8 @@
 #include <string.h>
 
 String string_concat(const size_t count, ...) {
-  // TODO: replace with more proper allocation.
-  String cache[count];
+  // Allocate temporary and return memory.
+  String* cache = falloc_malloc(count*sizeof(String));
   String final = {NULL, 0};
   // Prepare vargs.
   va_list vargs;

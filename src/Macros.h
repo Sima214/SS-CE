@@ -292,3 +292,12 @@
     #define FORCE_INLINE __attribute__((always_inline))
   #endif
 #endif
+#ifndef CREATE_CLEANUP_FUNC
+  /**
+   * Defines a function which can be used with the cleanup attribute.
+   */
+  #define CREATE_CLEANUP_FUNCP(type, func) \
+    static inline void func##_##type(type** p) { \
+      func(*p);                           \
+    }
+#endif

@@ -41,12 +41,6 @@ typedef struct {
 } ThreadLocalStack;
 
 /**
- * Special pointer of type \ref type, with some special properties.
- * This must be used before the type of any pointer allocated with fast_malloc!
- */
-#define falloc_ptr(type) __attribute__((cleanup(falloc_free_auto))) type* const
-
-/**
  * Internal api usage only!
  * Returns info about allocated thread local stack.
  */
@@ -99,7 +93,7 @@ MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1) static void* falloc_malloc_aligned(si
 /**
  * The equivalent of free for \ref falloc_malloc_aligned.
  */
-FORCE_INLINE static void falloc_free(void* ptr) {
+MARK_UNUSED FORCE_INLINE static void falloc_free(void* ptr) {
   // Null pointer check.
   if(ptr == NULL) {
     EARLY_TRACE("falloc_free got a null pointer!");
@@ -124,15 +118,6 @@ FORCE_INLINE static void falloc_free(void* ptr) {
       abort();
     }
   #endif
-}
-
-/**
- * Takes a pointer to the pointer allocated by \ref falloc_malloc_aligned and deallocates it.
- * This will be called automatically on function exit if the \ref falloc_ptr is used.
- */
-MARK_UNUSED FORCE_INLINE static void falloc_free_auto(void* pptr) {
-  void* ptr = *(void**)(pptr);
-  falloc_free(ptr);
 }
 
 /**
