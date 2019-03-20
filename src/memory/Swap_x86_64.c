@@ -111,8 +111,11 @@ MARK_COLD static memswap_t* resolve_memswap() {
   }
 #elif defined(LINK_PE)
   void memswap(void* dst, void* src, size_t len) {
-    memswap_t* resolved = resolve_memswap();
+    static memswap_t* resolved = NULL;
     // TODO: patch all the IATs.
+    if(resolved == NULL) {
+      resolved = resolve_memswap();
+    }
     (*resolved)(dst, src, len);
   }
 #else

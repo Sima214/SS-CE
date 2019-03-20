@@ -1,5 +1,7 @@
 #ifndef SSCE_FALLOC_H
 #define SSCE_FALLOC_H
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
 /**
  * @file
  * @brief This is header provides a per-thread stack based allocator.
@@ -11,6 +13,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /**
  * Stores information about the thread local extra stack.
@@ -70,7 +73,7 @@ EXPORT_API int falloc_ensure_space(ThreadLocalStack* tls, size_t l);
  * The returned pointer is aligned \ref align bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-FORCE_INLINE MARK_MALLOC(2, 1) static void* falloc_malloc_aligned(size_t l, size_t align) {
+MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1) static void* falloc_malloc_aligned(size_t l, size_t align) {
   // Get thread local stack.
   ThreadLocalStack* tls = falloc_get_tls();
   // Calculate alignment.
@@ -127,8 +130,8 @@ FORCE_INLINE static void falloc_free(void* ptr) {
  * Takes a pointer to the pointer allocated by \ref falloc_malloc_aligned and deallocates it.
  * This will be called automatically on function exit if the \ref falloc_ptr is used.
  */
-FORCE_INLINE static void falloc_free_auto(void** pptr) {
-  void* ptr = *pptr;
+MARK_UNUSED FORCE_INLINE static void falloc_free_auto(void* pptr) {
+  void* ptr = *(void**)(pptr);
   falloc_free(ptr);
 }
 
@@ -142,4 +145,5 @@ void internal_falloc_init();
  */
 void internal_falloc_exit();
 
+#pragma GCC diagnostic pop
 #endif /*SSCE_FALLOC_H*/
