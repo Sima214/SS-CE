@@ -76,6 +76,7 @@ ThreadLocalStack* falloc_get_tls() {
       abort();
     }
     init_tls(tls);
+    pthread_setspecific(thread_local_stack_key, tls);
     EARLY_TRACE("Successfully allocated thread local stack!");
   }
   return tls;

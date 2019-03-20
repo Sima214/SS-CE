@@ -1,4 +1,5 @@
-# Windows (https://github.com/travis-ci-tester/toolchain-table)
+# Windows ci build script.
+# Reference: https://github.com/travis-ci-tester/toolchain-table
 
 environment:
   matrix:
@@ -8,17 +9,6 @@ environment:
 install:
   # Python 3
   - cmd: set PATH=C:\Python34-x64;C:\Python34-x64\Scripts;%PATH%
-
-  # Install Python package 'requests'
-  - cmd: pip install requests
-
-  # Install latest Polly toolchains and scripts
-  - cmd: appveyor DownloadFile https://github.com/ruslo/polly/archive/master.zip
-  - cmd: 7z x master.zip
-  - cmd: set POLLY_ROOT=%cd%\polly-master
-
-  # Install dependencies (CMake, Ninja)
-  - cmd: python %POLLY_ROOT%\bin\install-ci-dependencies.py
 
   # Tune locations
   - cmd: set PATH=%cd%\_ci\cmake\bin;%PATH%
@@ -30,17 +20,15 @@ install:
   # * http://stackoverflow.com/a/3870338/2288008
   - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
-  - cmd: set MINGW_PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
-  - cmd: mkdir C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\lib\bfd-plugins
-  - cmd: copy C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\lib\bfd-plugins\liblto_plugin-0.dll
+  - cmd: set MINGW_ROOT=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
+  - cmd: set MINGW_PATH=%MINGW_ROOT%\bin
+  - cmd: mkdir %MINGW_ROOT%\lib\bfd-plugins
+  - cmd: copy %MINGW_ROOT%\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll %MINGW_ROOT%\lib\bfd-plugins\liblto_plugin-0.dll
 
   # Download prebuilt dependencies.
   - cmd: appveyor DownloadFile https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/jemalloc-x86_64-lto.7z
   - cmd: 7z x jemalloc-x86_64-lto.7z
   - cmd: set PATH=%CD%\jemalloc\lib;%PATH%
-
-  # MSYS2 location
-  - cmd: set MSYS_PATH=C:\msys64\usr\bin
 
 build_script:
   - cmd: python .\windows.py --generator "%GENERATOR%"

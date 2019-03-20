@@ -61,6 +61,14 @@
    */
   #define MARK_CONST __attribute__((const))
 #endif
+#ifndef MARK_PURE
+  /**
+   * Marks the functions as 'pure' which helps the compiler.
+   * 'pure' functions' result depend only on the value of their parameters,
+   * but are more relaxed about global state and pointers.
+   */
+  #define MARK_PURE __attribute__((pure))
+#endif
 #ifndef MARK_HOT
   /**
    * Marks a function as 'hot'.
@@ -270,4 +278,17 @@
    * Marks that a function allocates memory and returns a pointer to said memory.
    */
   #define MARK_MALLOC(alignment, ...) __attribute__((malloc, alloc_align(alignment), alloc_size(__VA_ARGS__)))
+#endif
+#ifndef FORCE_INLINE
+  #ifndef NDEBUG
+    /**
+     * Forces a function to be always be inlined in optimized builds.
+     */
+    #define FORCE_INLINE
+  #else
+    /**
+     * Forces a function to be always be inlined in optimized builds.
+     */
+    #define FORCE_INLINE __attribute__((always_inline))
+  #endif
 #endif

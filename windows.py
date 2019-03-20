@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from multiprocessing import cpu_count
 import subprocess
 import argparse
 import sys
@@ -14,6 +15,10 @@ cmd_args = parser.parse_args()
 cwd = os.getcwd()
 
 
+def add_parallel(args):
+    args += ['--parallel', str(cpu_count())]
+
+
 def do_call(args):
     oneline = ''
     for i in args:
@@ -26,11 +31,12 @@ def do_call(args):
         print(error.output, flush=True)
         sys.exit(1)
 
+
 do_call(['cmake', '--version'])
 
 if cmd_args.generator == 'MinGW Makefiles':
     os.environ['PATH'] = '{};{}'.format(
-      os.environ['MINGW_PATH'], os.environ['PATH']
+        os.environ['MINGW_PATH'], os.environ['PATH']
     )
 
 
@@ -40,8 +46,7 @@ def run_build(verbose, test, trace, install):
     print('-' * 72, flush=True)
     build_dir = '.'
     args = [
-      'cmake',
-      '-B{}'.format(build_dir)
+        'cmake', '-B{}'.format(build_dir)
     ]
     if verbose:
         args += ['-DCMAKE_VERBOSE_MAKEFILE=ON']
@@ -55,6 +60,7 @@ def run_build(verbose, test, trace, install):
     # Build
     print('-' * 72, flush=True)
     args = ['cmake', '--build', build_dir]
+    add_parallel(args)
     do_call(args)
 
     # Install
@@ -77,4 +83,4 @@ def run_build(verbose, test, trace, install):
 
 
 # Finally run build.
-run_build(verbose=False, trace=False, test=True, install=True)
+run_build(verbose=False, trace=True, test=True, install=True)
