@@ -2,12 +2,12 @@
 #define SSCE_HEAP_H
 /**
  * @file
- * @brief Interface for data structures elements.
+ * @brief Binary heap implementation.
  */
 
-#include <stddef.h>
-
 #include <Interface.h>
+
+#include <stddef.h>
 
 /**
  * Used for implementing heapsort.
@@ -18,7 +18,7 @@
  * @param interface A pointer to a IDataType structure
  * defining how interpret array elements.
  */
-void heap_sift_down(void* array, void* start, void* end, const IDataType* interface);
+EXPORT_API void heap_sift_down(void* array, void* start, void* end, const IDataType* interface);
 
 /**
  * Given an array, move the elements around so the array is also a heap.
@@ -29,6 +29,6 @@ void heap_sift_down(void* array, void* start, void* end, const IDataType* interf
  * @param interface A pointer to a IDataType structure
  * defining how interpret array elements.
  */
-void heap_create(void* array, size_t size, const IDataType* interface);
+EXPORT_API void heap_create(void* array, size_t size, const IDataType* interface);
 
 #endif /*SSCE_HEAP_H*/

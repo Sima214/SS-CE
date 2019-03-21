@@ -9,6 +9,7 @@
 #define heap_parent_index(i) ((i - 1) / 2)
 #define heap_left_index(i) (i * 2 + 1)
 #define heap_right_index(i) (i * 2 + 2)
+
 /*
  * The address of the left child of element e is going to be:
  * = array + child_index*size

@@ -5,11 +5,11 @@
  * @brief Interface for data structures elements.
  */
 
+#include <Macros.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <Macros.h>
 
 struct IDataType;
 typedef struct IDataType IDataType;
@@ -19,6 +19,7 @@ typedef struct IDataType IDataType;
  * @return A boolean style value.
  */
 typedef int (*Compare)(const IDataType*, void*, void*);
+
 /**
  * Receives pointers with no offset preapplied.
  */
@@ -28,8 +29,12 @@ typedef void (*Operate)(const IDataType*, void*, void*);
  * An interface for abstract data types.
  * Every element is of \ref size bytes.
  * Only \ref key_size bytes after
- * \ref offset bytes are used to compare
- * elements based on the set bits of \ref key_type.
+ * \ref offset bytes are used
+ * as the the 'key' of your element.
+ * IMPORTANT: \ref Compare functions
+ * receive directly pointer to the keys,
+ * unlike \ref Operate functions which receive
+ * pointer to the start of the element.
  */
 struct IDataType {
   /** Size of each element in bytes. */

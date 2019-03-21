@@ -69,7 +69,7 @@ define_module( "MODULE_MATH" "" "MinMax.h;MinMax.hpp" )
 define_module( "MODULE_CLOCK" "Clock_${SSCE_PLT}.c" "Clock.h;Clock.hpp" )
 define_module( "MODULE_MEMORY" "Swap_${SSCE_ARCH}.c;GAlloc.c;FAlloc.c" "Memory.h;Memory.hpp;FAlloc.h;GAlloc.h;GAlloc.hpp" )
 define_module( "MODULE_STRING" "SStrings_${SSCE_PLT}.c;SStrings.c" "SStrings.h;SStrings.hpp" )
-define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c" "Interface.h;Sort.h;Sort.hpp;Heap.h;Heap.hpp" )
+define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c" "Interface.h;Interface.hpp;Sort.h;Sort.hpp;Heap.h;Heap.hpp" )
 define_module( "MODULE_LOGGER" "Logger.c" "Logger.h;Logger.hpp" )
 
 # Prepare external libraries.

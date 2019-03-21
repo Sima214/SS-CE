@@ -43,7 +43,7 @@ The list of available modules:
 - CORE
 - MATH
 - CLOCK
-- TODO: MEMORY
+- MEMORY
 - STRINGS
 - TODO: STRUCTURES
 - LOGGER

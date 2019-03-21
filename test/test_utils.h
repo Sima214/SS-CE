@@ -1,6 +1,9 @@
 #ifndef TEST_UTILS_H
 #define TEST_UTILS_H
 
+#include <Interface.h>
+#include <Macros.h>
+
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -41,4 +44,25 @@ static inline int is_sorted_i(int* a, size_t n) {
   }
   return 1;
 }
+
+int cst_cmp_e(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  return *a == *b;
+}
+
+int cst_cmp_l(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  return *a < *b;
+}
+
+int cst_cmp_le(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  return *a <= *b;
+}
+
+void cst_swap(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
+}
+
+const IDataType IDT_INT = {4, 0, 4, (Compare)cst_cmp_e, (Compare)cst_cmp_l, (Compare)cst_cmp_le, (Operate)cst_swap};
+
 #endif /*TEST_UTILS_H*/

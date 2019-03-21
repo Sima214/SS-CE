@@ -16,12 +16,13 @@ namespace ssce {
  * High accuracy stopwatch.
  */
 class PerformanceClock {
-private:
+ private:
   /**
    * Interface with the C portion.
    */
   PerfClock pc;
-public:
+
+ public:
   /**
    * Constructor.
    */
@@ -72,5 +73,5 @@ inline void msleep(int64_t t) {
   clock_msleep(t);
 }
 
-} // namespace ssce
+}  // namespace ssce
 #endif /*SSCE_CLOCK_HPP*/
