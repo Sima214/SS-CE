@@ -11,6 +11,12 @@
 #include <stdint.h>
 #include <string.h>
 
+/**
+ * An invalid size_t type.
+ * Used to denote error.
+ */
+#define INVALID_SIZE_T ((size_t)-1)
+
 struct IDataType;
 typedef struct IDataType IDataType;
 

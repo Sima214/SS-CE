@@ -301,3 +301,11 @@
       func(*p);                           \
     }
 #endif
+#ifndef MARK_NONNULL_ARGS
+  /**
+   * Marks arguments of a function as non-null.
+   * This generates compile time warnings.
+   * Indexing starts at 1.
+   */
+  #define MARK_NONNULL_ARGS(...) __attribute__((nonnull(__VA_ARGS__)))
+#endif

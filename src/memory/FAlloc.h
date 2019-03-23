@@ -48,26 +48,34 @@ EXPORT_API ThreadLocalStack* falloc_get_tls();
 
 /**
  * Internal api usage only!
- * Ensures that there are at least \ref l free in \ref tls.
+ * Ensures that there are at least \p l free in \p tls.
  * Returns non-zero value on error.
  */
 EXPORT_API int falloc_ensure_space(ThreadLocalStack* tls, size_t l);
 
 /**
- * Allocates \ref l bytes and returns
+ * Allocates \p l bytes and returns
  * a pointer to the start of the allocated memory.
  * The returned pointer is aligned sizeof(int) bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
 #define falloc_malloc(l) falloc_malloc_aligned(l, sizeof(int))
 
+#ifndef DOXYGEN
+  #define FALLOC_MALLOC_ATTR MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1)
+  #define FALLOC_FREE_ATTR MARK_UNUSED FORCE_INLINE
+#else
+  #define FALLOC_MALLOC_ATTR
+  #define FALLOC_FREE_ATTR
+#endif
+
 /**
- * Allocates \ref l bytes and returns
+ * Allocates \p l bytes and returns
  * a pointer to the start of the allocated memory.
- * The returned pointer is aligned \ref align bytes.
+ * The returned pointer is aligned \p align bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1) static void* falloc_malloc_aligned(size_t l, size_t align) {
+FALLOC_MALLOC_ATTR static void* falloc_malloc_aligned(size_t l, size_t align) {
   // Get thread local stack.
   ThreadLocalStack* tls = falloc_get_tls();
   // Calculate alignment.
@@ -93,7 +101,7 @@ MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1) static void* falloc_malloc_aligned(si
 /**
  * The equivalent of free for \ref falloc_malloc_aligned.
  */
-MARK_UNUSED FORCE_INLINE static void falloc_free(void* ptr) {
+FALLOC_FREE_ATTR static void falloc_free(void* ptr) {
   // Null pointer check.
   if(ptr == NULL) {
     EARLY_TRACE("falloc_free got a null pointer!");

@@ -1,8 +1,8 @@
 # SS-CE
 
-[![linux status](https://gitlab.com/Sima214/SS-CE/badges/master/pipeline.svg)](https://gitlab.com/Sima214/SS-CE/commits/master)
-[![osx status](https://travis-ci.com/Sima214/SS-CE.svg?branch=master)](https://travis-ci.com/Sima214/SS-CE)
-[![windows status](https://ci.appveyor.com/api/projects/status/github/Sima214/SS-CE?branch=master&svg=true)](https://ci.appveyor.com/project/Sima214/ss-ce)
+[![linux status](https://img.shields.io/gitlab/pipeline/Sima214/SS-CE.svg?label=Linux)](https://gitlab.com/Sima214/SS-CE/commits/master)
+[![osx status](https://img.shields.io/travis/com/Sima214/SS-CE.svg?label=MacOS)](https://travis-ci.com/Sima214/SS-CE)
+[![windows status](https://img.shields.io/appveyor/ci/Sima214/SS-CE.svg?label=Windows)](https://ci.appveyor.com/project/Sima214/ss-ce)
 
 ## Description
 
