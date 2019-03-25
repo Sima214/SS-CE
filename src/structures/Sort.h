@@ -20,4 +20,9 @@
  */
 EXPORT_API void sort_heap(void* array, size_t size, const IDataType* interface);
 
+/**
+ * TODO: write a proper sort.
+ */
+#define sort sort_heap
+
 #endif /*SSCE_SORT_H*/

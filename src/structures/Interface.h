@@ -24,7 +24,7 @@ typedef struct IDataType IDataType;
  * Receives pointers with the offset preapplied.
  * @return A boolean style value.
  */
-typedef int (*Compare)(const IDataType*, void*, void*);
+typedef int (*Compare)(const IDataType*, const void*, const void*);
 
 /**
  * Receives pointers with no offset preapplied.

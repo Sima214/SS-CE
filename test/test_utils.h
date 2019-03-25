@@ -45,15 +45,15 @@ static inline int is_sorted_i(int* a, size_t n) {
   return 1;
 }
 
-int cst_cmp_e(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+int cst_cmp_e(MARK_UNUSED const IDataType* ignored, const int* a, const int* b) {
   return *a == *b;
 }
 
-int cst_cmp_l(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+int cst_cmp_l(MARK_UNUSED const IDataType* ignored, const int* a, const int* b) {
   return *a < *b;
 }
 
-int cst_cmp_le(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
+int cst_cmp_le(MARK_UNUSED const IDataType* ignored, const int* a, const int* b) {
   return *a <= *b;
 }
 

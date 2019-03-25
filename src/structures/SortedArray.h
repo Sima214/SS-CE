@@ -50,7 +50,7 @@ EXPORT_API void* sorted_array_pointer(SortedArray* sa) MARK_NONNULL_ARGS(1);
  * @returns a index on the current array where \p value is stored,
  * or \ref INVALID_SIZE_T if the value could not be found.
  */
-EXPORT_API size_t sorted_array_find(SortedArray* sa, void* value) MARK_NONNULL_ARGS(1, 2);
+EXPORT_API size_t sorted_array_find(SortedArray* sa, const void* value) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Retrieves the stored value at the specified index.
@@ -71,7 +71,7 @@ EXPORT_API int sorted_array_get(SortedArray* sa, void* result, size_t index) MAR
  * @returns the index where the new element got added,
  * or \ref INVALID_SIZE_T if an error occurred.
  */
-EXPORT_API size_t sorted_array_insert(SortedArray* sa, void* value) MARK_NONNULL_ARGS(1, 2);
+EXPORT_API size_t sorted_array_insert(SortedArray* sa, const void* value) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Inserts a new element, such as the sorted property is maintained.
@@ -83,7 +83,7 @@ EXPORT_API size_t sorted_array_insert(SortedArray* sa, void* value) MARK_NONNULL
  * @returns the index where the new element got added,
  * or \ref INVALID_SIZE_T if an error occurred.
  */
-EXPORT_API size_t sorted_array_insert_stable(SortedArray* sa, void* value) MARK_NONNULL_ARGS(1, 2);
+EXPORT_API size_t sorted_array_insert_stable(SortedArray* sa, const void* value) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Merges the contents of \p array into \p sa.
@@ -93,7 +93,7 @@ EXPORT_API size_t sorted_array_insert_stable(SortedArray* sa, void* value) MARK_
  * @param count how many elements from \p array to add.
  * @returns non-zero on error. The contents of \p sa may be corrupted in that case.
  */
-EXPORT_API int sorted_array_merge(SortedArray* sa, void* array, size_t count) MARK_NONNULL_ARGS(1, 2);
+EXPORT_API int sorted_array_merge(SortedArray* sa, const void* array, size_t count) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Merges two \ref SortedArray.
@@ -122,7 +122,7 @@ EXPORT_API int sorted_array_erase(SortedArray* sa, size_t index) MARK_NONNULL_AR
  * @returns the index of the element which got removed,
  * or \ref INVALID_SIZE_T if an error occurred.
  */
-EXPORT_API size_t sorted_array_delete(SortedArray* sa, void* value) MARK_NONNULL_ARGS(1, 2);
+EXPORT_API size_t sorted_array_delete(SortedArray* sa, const void* value) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Removes the first element of \p value.
@@ -132,7 +132,7 @@ EXPORT_API size_t sorted_array_delete(SortedArray* sa, void* value) MARK_NONNULL
  * @returns the index of the element which got removed,
  * or \ref INVALID_SIZE_T if an error occurred.
  */
-EXPORT_API size_t sorted_array_delete_stable(SortedArray* sa, void* value) MARK_NONNULL_ARGS(1, 2);
+EXPORT_API size_t sorted_array_delete_stable(SortedArray* sa, const void* value) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Resets data structure in the most efficient way.
