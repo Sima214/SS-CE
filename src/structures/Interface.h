@@ -64,5 +64,6 @@ struct IDataType {
 #define dti_element(dti, p, index) get_address(p, index, dti->size)
 #define dti_item(dti, p, index) add_offset(dti_element(dti, p, index), dti->offset)
 #define dti_previous(dti, item) add_offset(item, (-dti->size))
+#define dti_next(dti, item) add_offset(item, (dti->size))
 
 #endif /*SSCE_INTERFACE_H*/

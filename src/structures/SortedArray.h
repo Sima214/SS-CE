@@ -46,7 +46,7 @@ EXPORT_API void* sorted_array_pointer(SortedArray* sa) MARK_NONNULL_ARGS(1);
  * Searches for an index where the specified value is stored.
  * 
  * @param sa object returned from \ref sorted_array_create.
- * @param value a pointer to the value to search for.
+ * @param value a pointer to the value to search for(with no offset preapplied).
  * @returns a index on the current array where \p value is stored,
  * or \ref INVALID_SIZE_T if the value could not be found.
  */
@@ -89,11 +89,20 @@ EXPORT_API size_t sorted_array_insert_stable(SortedArray* sa, void* value) MARK_
  * Merges the contents of \p array into \p sa.
  * 
  * @param sa object returned from \ref sorted_array_create.
- * @param array pointer to the start of the array of the elements to add.
+ * @param array pointer to the start of the array of the elements to add. It's not considered sorted.
  * @param count how many elements from \p array to add.
  * @returns non-zero on error. The contents of \p sa may be corrupted in that case.
  */
 EXPORT_API int sorted_array_merge(SortedArray* sa, void* array, size_t count) MARK_NONNULL_ARGS(1, 2);
+
+/**
+ * Merges two \ref SortedArray.
+ * 
+ * @param the destination array.
+ * @param the array which is going to get copied from.
+ * @returns non-zero on error. The contents of \p sa may be corrupted in that case.
+ */
+EXPORT_API int sorted_array_merge_sorted(SortedArray* a, SortedArray* b) MARK_NONNULL_ARGS(1, 2);
 
 /**
  * Deletes the element at \p index.

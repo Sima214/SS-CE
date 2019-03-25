@@ -85,7 +85,7 @@
   /**
    * Generates a mask with the bit-th bit turned on.
    */
-  #define MASK_CREATE(bit) (0x1 << (bit))
+  #define MASK_CREATE(bit) (0x1ll << (bit))
 #endif
 #ifndef MASK_TEST
   /**
