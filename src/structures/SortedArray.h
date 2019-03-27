@@ -20,7 +20,7 @@ typedef struct SortedArray SortedArray;
 /**
  * Allocate a new \ref SortedArray object.
  * 
- * @param interface A pointer to a \ref IDataType structure
+ * @param interface A pointer to a \ref IDataType structure.
  * @returns an opaque pointer to the allocated object or null if we are out of memory.
  */
 EXPORT_API SortedArray* sorted_array_create(const IDataType* interface) MARK_NONNULL_ARGS(1);
