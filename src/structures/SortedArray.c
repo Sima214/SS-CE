@@ -53,13 +53,13 @@ static inline void* internal_sorted_array_pointer(SortedArray* sa) {
 
 static inline SizeBool internal_sorted_array_find(const IDataType* dti, void* base_address, size_t n, const void* key_address) {
   if(n == 0) {
-    //Avoid unsigned underflow.
+    // Avoid unsigned underflow.
     return (SizeBool){0, 0};
   }
   size_t start = 0;
-  size_t end = n - 1;
-  while(start <= end) {
-    size_t middle = start + (end - start) / 2;
+  size_t end_inc = n;
+  while(start < end_inc) {
+    size_t middle = start + (end_inc - start) / 2;
     void* middle_address = dti_item(dti, base_address, middle);
     if(dti->cmp_eq(dti, middle_address, key_address)) {
       // Hit
@@ -71,7 +71,7 @@ static inline SizeBool internal_sorted_array_find(const IDataType* dti, void* ba
     }
     else {
       // Left
-      end = middle - 1;
+      end_inc = middle;
     }
   }
   return (SizeBool){start, 0};
@@ -184,12 +184,12 @@ static inline void internal_sorted_array_merge(void* dest, size_t dest_len, cons
     void* dest_key = add_offset(src_elem, dti->offset);
     void* src_key = add_offset(dest_elem, dti->offset);
     if(dti->cmp_l(dti, src_key, dest_key)) {
-      memcpy(final_elem, dest_elem, dti->size);
-      dest_elem = dti_previous(dti, dest_elem);
-    }
-    else {
       memcpy(final_elem, src_elem, dti->size);
       src_elem = dti_previous(dti, src_elem);
+    }
+    else {
+      memcpy(final_elem, dest_elem, dti->size);
+      dest_elem = dti_previous(dti, dest_elem);
     }
     final_elem = dti_previous(dti, final_elem);
   }
