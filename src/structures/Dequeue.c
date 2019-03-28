@@ -19,6 +19,12 @@ struct Node {
   void* data[];
 };
 
+/*
+ * Implementation node:
+ * If you start from head and follow the previous Node, you will eventually reach the tail.
+ * If you start from tail and follow the next Node, you will eventually reach the head.
+ * If the dequeue has a single element, then both the head and tail are guaranteed to point the same node.
+ */
 struct Dequeue {
   // Start of linked list.
   Node* head;
@@ -126,7 +132,27 @@ int dequeue_push_front(Dequeue* dq, const void* data) {
 
 int dequeue_pop_back(Dequeue* dq, void* data) {
   if(HOT_BRANCH(dq->length != 0)) {
-    internal_copy_node_data(dq->interface, dq->tail, data);
+    // The length this data structure will have.
+    size_t len = dq->length - 1;
+    // First return data from node to be removed.
+    if(HOT_BRANCH(data != NULL)) {
+      internal_copy_node_data(dq->interface, dq->tail, data);
+    }
+    if(COLD_BRANCH(len == 0)) {
+      // Dequeue after this will be empty.
+      internal_free_node(dq->tail);
+      dq->head = NULL;
+      dq->tail = NULL;
+    }
+    else {
+      // Remove node at tail and update links.
+      Node* old_node = dq->tail;
+      dq->tail = old_node->next;
+      dq->tail->previous = NULL;
+      internal_free_node(old_node);
+    }
+    // Save new length.
+    dq->length = len;
     return 0;
   }
   else {
@@ -136,7 +162,27 @@ int dequeue_pop_back(Dequeue* dq, void* data) {
 
 int dequeue_pop_front(Dequeue* dq, void* data) {
   if(HOT_BRANCH(dq->length != 0)) {
-    internal_copy_node_data(dq->interface, dq->head, data);
+    // The length this data structure will have.
+    size_t len = dq->length - 1;
+    // First return data from node to be removed.
+    if(HOT_BRANCH(data != NULL)) {
+      internal_copy_node_data(dq->interface, dq->head, data);
+    }
+    if(COLD_BRANCH(len == 0)) {
+      // Dequeue after this will be empty.
+      internal_free_node(dq->head);
+      dq->head = NULL;
+      dq->tail = NULL;
+    }
+    else {
+      // Remove node at tail and update links.
+      Node* old_node = dq->head;
+      dq->head = old_node->previous;
+      dq->head->next = NULL;
+      internal_free_node(old_node);
+    }
+    // Save new length.
+    dq->length = len;
     return 0;
   }
   else {
