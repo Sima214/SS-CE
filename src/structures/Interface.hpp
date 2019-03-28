@@ -25,7 +25,7 @@ class IDataTypeCpp {
    * Maps directly to \ref IDataType.cmp_eq
    * Override to change default behaviour.
    */
-  virtual int compare_equal(const IDataType* idt, void* ap, void* bp) {
+  virtual int compare_equal(const IDataType* idt, const void* ap, const void* bp) {
     // Convert pointers to references.
     T& a = *((T*)ap);
     T& b = *((T*)bp);
@@ -35,7 +35,7 @@ class IDataTypeCpp {
    * Maps directly to \ref IDataType.cmp_l
    * Override to change default behaviour.
    */
-  virtual int compare_less(const IDataType* idt, void* ap, void* bp) {
+  virtual int compare_less(const IDataType* idt, const void* ap, const void* bp) {
     // Convert pointers to references.
     T& a = *((T*)ap);
     T& b = *((T*)bp);
@@ -45,7 +45,7 @@ class IDataTypeCpp {
    * Maps directly to \ref IDataType.cmp_le
    * Override to change default behaviour.
    */
-  virtual int compare_less_equal(const IDataType* idt, void* ap, void* bp) {
+  virtual int compare_less_equal(const IDataType* idt, const void* ap, const void* bp) {
     // Convert pointers to references.
     T& a = *((T*)ap);
     T& b = *((T*)bp);
@@ -55,7 +55,7 @@ class IDataTypeCpp {
    * Maps directly to \ref IDataType.swap
    * Override to change default behaviour.
    */
-  virtual void operation_less(const IDataType* idt, void* ap, void* bp) {
+  virtual void operation_swap(const IDataType* idt, void* ap, void* bp) {
     // Convert pointers to references.
     T& ar = *((T*)ap);
     T& br = *((T*)bp);
@@ -64,7 +64,15 @@ class IDataTypeCpp {
     ar = b;
     br = a;
   }
-
+  /**
+   * Maps directly to \ref IDataType.hash
+   * Override to change default behaviour.
+   */
+  virtual std::size_t operation_hash(const IDataType* idt, const void* kp) {
+    // Convert pointers to references.
+    T& k = *((T*)kp);
+    return std::hash<T>()(k);
+  }
  public:
   /**
    * Constructs an \ref IDataType from the current template.

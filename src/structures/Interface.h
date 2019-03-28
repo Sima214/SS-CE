@@ -32,6 +32,11 @@ typedef int (*Compare)(const IDataType*, const void*, const void*);
 typedef void (*Operate)(const IDataType*, void*, void*);
 
 /**
+ * Receives pointer to a single key(offsets preapplied).
+ */
+typedef size_t (*Calculate)(const IDataType*, const void*);
+
+/**
  * An interface for abstract data types.
  * Every element is of \ref size bytes.
  * Only \ref key_size bytes after
@@ -57,6 +62,8 @@ struct IDataType {
   Compare cmp_le;
   /** A pointer to a function which swaps data[i] with data[j]. */
   Operate swap;
+  /** A pointer to a function which calculates the hash of a key */
+  Calculate hash;
 };
 
 #define add_offset(p, offset) (void*)(((char*)p) + offset)

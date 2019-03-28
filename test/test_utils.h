@@ -63,6 +63,10 @@ void cst_swap(MARK_UNUSED const IDataType* ignored, int* a, int* b) {
   *b = tmp;
 }
 
-const IDataType IDT_INT = {4, 0, 4, (Compare)cst_cmp_e, (Compare)cst_cmp_l, (Compare)cst_cmp_le, (Operate)cst_swap};
+size_t cst_hash(MARK_UNUSED const IDataType* ignored, const int* k) {
+  return *k;
+}
+
+const IDataType IDT_INT = {4, 0, 4, (Compare)cst_cmp_e, (Compare)cst_cmp_l, (Compare)cst_cmp_le, (Operate)cst_swap, (Calculate)cst_hash};
 
 #endif /*TEST_UTILS_H*/
