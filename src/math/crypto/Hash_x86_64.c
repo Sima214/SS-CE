@@ -25,11 +25,11 @@
 
 #define ALLOW_UNALIGNED_READS 1
 // number of uint64's in internal state
-static const size_t sc_numVars = 12;
+#define NUM_VARS 12
 // size of the internal state
-static const size_t sc_blockSize = sc_numVars * 8;
+#define BLOCK_SIZE (NUM_VARS * 8)
 // size of buffer of unhashed data, in bytes
-static const size_t sc_bufSize = 2 * sc_blockSize;
+#define BUF_SIZE (2 * BLOCK_SIZE)
 /*
  * sc_const: a constant which:
  * - is not zero
@@ -291,7 +291,7 @@ static const uint64_t sc_const = 0xdeadbeefdeadbeefLL;
   internal_spooky_hash_end_partial(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11);
 
 static void internal_spooky_hash_short(const void* message, size_t length, uint64_t* hash1, uint64_t* hash2) {
-  uint64_t buf[2 * sc_numVars];
+  uint64_t buf[2 * NUM_VARS];
   union {
     const uint8_t* p8;
     uint32_t* p32;
@@ -393,13 +393,13 @@ static void internal_spooky_hash_short(const void* message, size_t length, uint6
 }
 
 static inline void internal_spooky_hash(const void* message, size_t length, uint64_t* hash1, uint64_t* hash2) {
-  if(length < sc_bufSize) {
+  if(length < BUF_SIZE) {
     internal_spooky_hash_short(message, length, hash1, hash2);
     return;
   }
 
   uint64_t h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11;
-  uint64_t buf[sc_numVars];
+  uint64_t buf[NUM_VARS];
   uint64_t* end;
   union {
     const uint8_t* p8;
@@ -413,28 +413,28 @@ static inline void internal_spooky_hash(const void* message, size_t length, uint
   h2 = h5 = h8 = h11 = sc_const;
 
   u.p8 = (const uint8_t*)message;
-  end = u.p64 + (length / sc_blockSize) * sc_numVars;
+  end = u.p64 + (length / BLOCK_SIZE) * NUM_VARS;
 
   // handle all whole sc_blockSize blocks of bytes
   if(ALLOW_UNALIGNED_READS || ((u.i & 0x7) == 0)) {
     while(u.p64 < end) {
       internal_spooky_hash_mix(u.p64, h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11);
-      u.p64 += sc_numVars;
+      u.p64 += NUM_VARS;
     }
   }
   else {
     while(u.p64 < end) {
-      memcpy(buf, u.p64, sc_blockSize);
+      memcpy(buf, u.p64, BLOCK_SIZE);
       internal_spooky_hash_mix(buf, h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11);
-      u.p64 += sc_numVars;
+      u.p64 += NUM_VARS;
     }
   }
 
   // handle the last partial block of sc_blockSize bytes
   remainder = (length - ((const uint8_t*)end - (const uint8_t*)message));
   memcpy(buf, end, remainder);
-  memset(((uint8_t*)buf) + remainder, 0, sc_blockSize - remainder);
-  ((uint8_t*)buf)[sc_blockSize - 1] = remainder;
+  memset(((uint8_t*)buf) + remainder, 0, BLOCK_SIZE - remainder);
+  ((uint8_t*)buf)[BLOCK_SIZE - 1] = remainder;
 
   // do some final mixing
   internal_spooky_hash_end(buf, h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11);
