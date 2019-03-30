@@ -38,6 +38,22 @@
 /**
  * How much in bytes thread local stack to allocate for falloc initially.
  */
-#define MEMORY_FALLOC_STACK_SIZE ${MODULE_MEMORY_FALLOC_STACK_SIZE}*1024
+#define MEMORY_FALLOC_STACK_SIZE ${MODULE_MEMORY_FALLOC_STACK_SIZE} * 1024
+
+/**
+ * How many buckets HashSet should allocate by default at initialization.
+ * This will also be the minimal amount of allocated buckets.
+ */
+#define MEMORY_STRUCTURES_HASHSET_INITIAL_SIZE ${MODULE_MEMORY_STRUCTURES_HASHSET_INITIAL_SIZE}
+
+/**
+ * Default value for shrink ratio at \ref hashset_create.
+ */
+#define MEMORY_STRUCTURES_HASHSET_SHRINK_RATIO ${MODULE_MEMORY_STRUCTURES_HASHSET_SHRINK_RATIO}
+
+/**
+ * Default value for expand ratio at \ref hashset_create.
+ */
+#define MEMORY_STRUCTURES_HASHSET_EXPAND_RATIO ${MODULE_MEMORY_STRUCTURES_HASHSET_EXPAND_RATIO}
 
 #endif /*SSCE_CONFIG_H*/

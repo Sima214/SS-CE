@@ -249,10 +249,12 @@ static inline void internal_sorted_array_remove(SortedArray* sa, size_t index) {
 
 SortedArray* sorted_array_create(const IDataType* interface) {
   SortedArray* ret = malloc(sizeof(SortedArray));
-  ret->allocated = NULL;
-  ret->length = 0;
-  ret->start_offset = 0;
-  ret->interface = interface;
+  if(ret != NULL) {
+    ret->allocated = NULL;
+    ret->length = 0;
+    ret->start_offset = 0;
+    ret->interface = interface;
+  }
   return ret;
 }
 

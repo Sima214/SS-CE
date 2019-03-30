@@ -71,10 +71,12 @@ static inline Node* internal_prepare_node(const IDataType* dti, const void* data
 
 Dequeue* dequeue_create(const IDataType* dti) {
   Dequeue* obj = malloc(sizeof(Dequeue));
-  obj->head = NULL;
-  obj->tail = NULL;
-  obj->length = 0;
-  obj->interface = dti;
+  if(obj != NULL) {
+    obj->head = NULL;
+    obj->tail = NULL;
+    obj->length = 0;
+    obj->interface = dti;
+  }
   return obj;
 }
 

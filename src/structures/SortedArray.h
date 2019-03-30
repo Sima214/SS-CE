@@ -23,7 +23,7 @@ typedef struct SortedArray SortedArray;
  * @param interface A pointer to a \ref IDataType structure.
  * @returns an opaque pointer to the allocated object or null if we are out of memory.
  */
-EXPORT_API SortedArray* sorted_array_create(const IDataType* interface) MARK_NONNULL_ARGS(1);
+EXPORT_API SortedArray* sorted_array_create(const IDataType* interface) MARK_OBJ_ALLOC MARK_NONNULL_ARGS(1);
 
 /**
  * Returns the number of elements currently stored in \p sa

@@ -12,8 +12,6 @@ C_DECLS_END
 
 #include <Interface.hpp>
 
-#include <functional>
-
 namespace ssce {
 
 /**

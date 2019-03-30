@@ -22,7 +22,7 @@ typedef struct Dequeue Dequeue;
  * @param dti A pointer to a \ref IDataType structure.
  * @returns allocated object.
  */
-EXPORT_API Dequeue* dequeue_create(const IDataType* dti) MARK_NONNULL_ARGS(1);
+EXPORT_API Dequeue* dequeue_create(const IDataType* dti) MARK_OBJ_ALLOC MARK_NONNULL_ARGS(1);
 
 /**
  * Returns the number of currently stored nodes.

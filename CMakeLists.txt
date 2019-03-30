@@ -53,7 +53,10 @@ declare_module( "MODULE_LOGGER" "Enable the logger module" "MODULE_MEMORY" "MODU
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
 set( MODULE_LOGGER_FILE_PREFIX "logs/${PROJECT_NAME}_" CACHE STRING "If logger files are enabled, this sets the path prefix of the file." )
-set( MODULE_MEMORY_FALLOC_STACK_SIZE "8*1024" CACHE STRING "How much kibibytes to allocate initially for each thread local stack. Note that reallocations are not possible, so choose a large size here." )
+set( MODULE_MEMORY_FALLOC_STACK_SIZE "8*1024" CACHE STRING "How much kibibytes to allocate initially for each thread local stack. Note that reallocations may not be possible, so choose a large size here." )
+set( MODULE_MEMORY_STRUCTURES_HASHSET_INITIAL_SIZE "4096" CACHE STRING "How many buckets HashSet should allocate by default at initialization. This will also be the minimal amount of allocated buckets." )
+set( MODULE_MEMORY_STRUCTURES_HASHSET_SHRINK_RATIO "0.5f" CACHE STRING "Default value for shrink ratio." )
+set( MODULE_MEMORY_STRUCTURES_HASHSET_EXPAND_RATIO "1.0f" CACHE STRING "Default value for expand ratio." )
 set( MODULE_TESTING TRUE CACHE BOOL "Whether to enable tests. Disabling may fix some build issues." )
 set( SYSTEM_JEMALLOC FALSE CACHE BOOL "Link against system jemalloc library." )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )
@@ -71,7 +74,7 @@ define_module( "MODULE_MATH_CRYPTO" "Hash_${SSCE_ARCH}.c" "Hash.h;Hash.hpp" )
 define_module( "MODULE_CLOCK" "Clock_${SSCE_PLT}.c" "Clock.h;Clock.hpp" )
 define_module( "MODULE_MEMORY" "Swap_${SSCE_ARCH}.c;GAlloc.c;FAlloc.c" "Memory.h;Memory.hpp;FAlloc.h;GAlloc.h;GAlloc.hpp" )
 define_module( "MODULE_STRING" "SStrings_${SSCE_PLT}.c;SStrings.c" "SStrings.h;SStrings.hpp" )
-define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c;SortedArray.c;Dequeue.c" "Interface.h;Interface.hpp;Sort.h;Sort.hpp;Heap.h;Heap.hpp;SortedArray.h;SortedArray.hpp;Dequeue.h;Dequeue.hpp" )
+define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c;SortedArray.c;Dequeue.c;HashSet.c" "Interface.h;Interface.hpp;Sort.h;Sort.hpp;Heap.h;Heap.hpp;SortedArray.h;SortedArray.hpp;Dequeue.h;Dequeue.hpp;HashSet.h;HashSet.hpp" )
 define_module( "MODULE_LOGGER" "Logger.c" "Logger.h;Logger.hpp" )
 
 # Prepare external libraries.
@@ -101,8 +104,8 @@ else( ${SYSTEM_JEMALLOC} )
                          TMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
                          URL "https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/src/jemalloc.tar.bz2"
                          CONFIGURE_COMMAND sh ./configure --with-jemalloc-prefix=je_ --prefix=${CMAKE_BINARY_DIR}/jemalloc
-                         BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} build_lib_shared
-                         INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} install_include install_lib_shared
+                         BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} -j 3 build_lib_shared
+                         INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} -j 3 install_include install_lib_shared
                          TEST_EXCLUDE_FROM_MAIN 1
                          BUILD_ALWAYS 1
                         )

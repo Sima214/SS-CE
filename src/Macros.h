@@ -213,18 +213,34 @@
   #define cpu_init __builtin_cpu_init
 #endif
 #ifndef EARLY_TRACE
-  #include <SStrings.h>
   #ifndef NDEBUG
+    #include <stdio.h>
     /**
      * Low level trace function.
-     * Simple prints out msg onto the console.
+     * Simply prints out msg onto the console.
+     * Must contain only basic ascii symbols.
      */
-    #define EARLY_TRACE(msg) native_puts(msg)
+    #define EARLY_TRACE(msg) puts(msg)
   #else
     /**
      * NOP on release builds.
      */
     #define EARLY_TRACE(msg)
+  #endif
+#endif
+#ifndef EARLY_TRACEF
+  #ifndef NDEBUG
+    #include <stdio.h>
+    /**
+     * Low level trace function with formatting support.
+     * Must contain only basic ascii symbols.
+     */
+    #define EARLY_TRACEF(...) printf(__VA_ARGS__);puts("")
+  #else
+    /**
+     * NOP on release builds.
+     */
+    #define EARLY_TRACEF(...)
   #endif
 #endif
 #ifndef TARGET_EXT
@@ -278,6 +294,12 @@
    * Marks that a function allocates memory and returns a pointer to said memory.
    */
   #define MARK_MALLOC(alignment, ...) __attribute__((malloc, alloc_align(alignment), alloc_size(__VA_ARGS__)))
+#endif
+#ifndef MARK_OBJ_ALLOC
+  /**
+   * Marks that a function that allocates memory for an opaque data type and returns a pointer to the new object.
+   */
+  #define MARK_OBJ_ALLOC __attribute__((malloc, warn_unused_result))
 #endif
 #ifndef FORCE_INLINE
   #ifndef NDEBUG

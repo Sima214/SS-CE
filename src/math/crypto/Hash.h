@@ -17,6 +17,6 @@
  * @param length how many bytes is the message?
  * @returns the calculated hash.
  */
-EXPORT_API size_t ncrypto_hash(const void* data, size_t length);
+EXPORT_API size_t ncrypto_hash(const void* data, size_t length) MARK_NONNULL_ARGS(1);
 
 #endif /*SSCE_NC_HASH_H*/
