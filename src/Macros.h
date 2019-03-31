@@ -35,10 +35,17 @@
   #define IS_POSIX (defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)))
 #endif
 #ifndef MARK_PRINTF
-  /**
-   * Marks a function which takes a format string like printf.
-   */
-  #define MARK_PRINTF(fmt_index, start_index) __attribute__((format(printf, fmt_index, start_index)))
+  #ifdef _WIN32
+    /**
+     * Marks a function which takes a format string like printf.
+     */
+    #define MARK_PRINTF(fmt_index, start_index) __attribute__((format(__MINGW_PRINTF_FORMAT, fmt_index, start_index)))
+  #else
+    /**
+     * Marks a function which takes a format string like printf.
+     */
+    #define MARK_PRINTF(fmt_index, start_index) __attribute__((format(printf, fmt_index, start_index)))
+  #endif
 #endif
 #ifndef MARK_UNUSED
   /**
