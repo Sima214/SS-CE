@@ -31,9 +31,9 @@ typedef struct HashSet HashSet;
  *   divided by the current allocated buckets grows above \p expand_ratio
  *   the number of allocated buckets is increased.
  *   Pass 0.0 to disable expanding, or a negative value to use the defaults.
- * @returns the allocated HashSet.
+ * @returns the allocated HashSet or NULL if there was not enough memory available.
  */
-EXPORT_API HashSet* hashset_create(const IDataType* interface, size_t initial_size, float shrink_ratio, float expand_ratio) MARK_NONNULL_ARGS(1);
+EXPORT_API HashSet* hashset_create(const IDataType* interface, size_t initial_size, float shrink_ratio, float expand_ratio) MARK_OBJ_ALLOC MARK_NONNULL_ARGS(1);
 
 /**
  * Gets the number of currently stored elements.
@@ -56,7 +56,7 @@ EXPORT_API int hashset_contains(HashSet* hs, const void* value) MARK_NONNULL_ARG
  * Retrieves the stored element which matches \p value
  * 
  * @param hs \ref hashset_create.
- * @param value pointer to value to retrieve.
+ * @param value pointer to value to retrieve (inout).
  * @returns non zero on error (not found).
  */
 EXPORT_API int hashset_get(HashSet* hs, void* value) MARK_NONNULL_ARGS(1, 2);
@@ -84,8 +84,9 @@ EXPORT_API int hashset_remove(HashSet* hs, const void* value) MARK_NONNULL_ARGS(
  * Removes all stored elements in this \ref HashSet.
  * 
  * @param hs \ref hashset_create.
+ * @returns non zero on error.
  */
-EXPORT_API void hashset_clear(HashSet* hs) MARK_NONNULL_ARGS(1);
+EXPORT_API int hashset_clear(HashSet* hs) MARK_NONNULL_ARGS(1);
 
 /**
  * Deallocates a previously allocated \ref HashSet data structure.

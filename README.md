@@ -45,7 +45,7 @@ The list of available modules:
 - CLOCK
 - MEMORY
 - STRINGS
-- TODO: STRUCTURES
+- STRUCTURES
 - LOGGER
 
 ## Documentation

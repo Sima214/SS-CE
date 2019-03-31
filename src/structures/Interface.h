@@ -32,6 +32,7 @@ typedef int (*Compare)(const IDataType*, const void*, const void*);
 typedef void (*Operate)(const IDataType*, void*, void*);
 
 /**
+ * Perform a calculation on key value.
  * Receives pointer to a single key(offsets preapplied).
  */
 typedef size_t (*Calculate)(const IDataType*, const void*);

@@ -7,7 +7,7 @@
 
 #include <Macros.h>
 C_DECLS_START
-#include <SortedArray.hpp>
+#include <SortedArray.h>
 C_DECLS_END
 
 namespace ssce {

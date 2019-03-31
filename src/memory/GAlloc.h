@@ -9,8 +9,10 @@
 #include <stdlib.h>
 
 // Now include jemalloc, which is compiled with je_ prefix.
-#define JEMALLOC_NO_RENAME
-#define JEMALLOC_MANGLE
-#include <jemalloc.h>
+#ifndef VALGRIND
+    #define JEMALLOC_NO_RENAME
+    #define JEMALLOC_MANGLE
+    #include <jemalloc.h>
+#endif
 
 #endif /*SSCE_GALLOC_H*/
