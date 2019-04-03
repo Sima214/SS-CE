@@ -32,7 +32,7 @@ typedef TempArray (*ExpandState)(const ISearchProblem* isp, const void* state);
  * @returns a signed integer value, with values closer to zero being closer to the goal.
  *   If \p state is a goal, then this must return 0.
  */
-typedef int64_t (*Heuristic)(const ISearchProblem* isp, const void* state);
+typedef int (*Heuristic)(const ISearchProblem* isp, const void* state);
 
 /**
  * A structure which defines a graph/tree search problem.

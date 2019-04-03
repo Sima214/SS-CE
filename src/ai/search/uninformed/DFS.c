@@ -27,7 +27,7 @@ DFSState* dfs_create(const ISearchProblem* problem, const void* initial_state) {
   if(obj != NULL) {
     // Allocate frontier/agenda.
     Dequeue* dq = dequeue_create(problem->state_interface);
-    if(dq == NULL) {
+    if(dq != NULL) {
       if(dequeue_push_front(dq, initial_state)) {
         // Insert failed.
         free(obj);
@@ -93,6 +93,9 @@ int dfs_step(DFSState* dfs, void* goal_state) {
   for(size_t i = 0; i < children.length; i++) {
     // TODO: add more batch operations.
     void* c = dti_element(dfs->interface, children.data, i);
+    if(hashset_contains(dfs->closed_set, c)) {
+      continue;
+    }
     if(COLD_BRANCH(dequeue_push_front(dfs->frontier, c))) {
       // Insertion failed.
       free(children.data);

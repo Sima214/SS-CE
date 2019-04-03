@@ -116,7 +116,14 @@ int bestfs_step(BestFSState* bfs, void* goal_state) {
   }
   // Expand current state.
   TempArray children = bfs->problem->state_expand(bfs->problem, current_state);
-  sorted_array_merge(bfs->frontier, children.data, children.length);
+  if(children.length != 0) {
+    if(COLD_BRANCH(sorted_array_merge(bfs->frontier, children.data, children.length))) {
+      // Merge failed.
+      free(children.data);
+      falloc_free(current_state);
+      return 2;
+    }
+  }
   free(children.data);
   // Add current state to closed set.
   if(COLD_BRANCH(hashset_add(bfs->closed_set, current_state))) {
