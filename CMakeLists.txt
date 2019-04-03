@@ -49,6 +49,10 @@ declare_module( "MODULE_MEMORY" "Enable memory manipulation utilities" )
 declare_module( "MODULE_STRING" "Enable strings util functions" "MODULE_MEMORY" )
 declare_module( "MODULE_STRUCTURES" "Enable the data structures module" "MODULE_STRING" )
 declare_module( "MODULE_LOGGER" "Enable the logger module" "MODULE_MEMORY" "MODULE_STRINGS" "MODULE_STRUCTURES" )
+declare_module( "MODULE_AI" "Enable the AI module" "MODULE_MEMORY" "MODULE_STRUCTURES" )
+declare_module( "MODULE_AI_SEARCH" "Enable the AI search module" "MODULE_AI" )
+declare_module( "MODULE_AI_SEARCH_UNINFORMED" "Enable support for AI blind search algorithms." "MODULE_AI_SEARCH" )
+declare_module( "MODULE_AI_SEARCH_INFORMED" "Enable support for AI heuristic search algorithms." "MODULE_AI_SEARCH" )
 
 ## Extra configuration.
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
@@ -83,6 +87,10 @@ define_module( "MODULE_MEMORY" "Swap_${SSCE_ARCH}.c;GAlloc.c;FAlloc.c" "Memory.h
 define_module( "MODULE_STRING" "SStrings_${SSCE_PLT}.c;SStrings.c" "SStrings.h;SStrings.hpp" )
 define_module( "MODULE_STRUCTURES" "Heap.c;Sort.c;SortedArray.c;Dequeue.c;HashSet.c" "Interface.h;Interface.hpp;Sort.h;Sort.hpp;Heap.h;Heap.hpp;SortedArray.h;SortedArray.hpp;Dequeue.h;Dequeue.hpp;HashSet.h;HashSet.hpp" )
 define_module( "MODULE_LOGGER" "Logger.c" "Logger.h;Logger.hpp" )
+define_module( "MODULE_AI" "" "" )
+define_module( "MODULE_AI_SEARCH" "" "SearchProblem.h;SearchProblem.hpp" )
+define_module( "MODULE_AI_SEARCH_UNINFORMED" "BFS.c;DFS.c" "BFS.h;BFS.hpp;DFS.h;DFS.hpp" )
+define_module( "MODULE_AI_SEARCH_INFORMED" "BestFirst.c" "BestFirst.h;BestFirst.hpp" )
 
 # Prepare external libraries.
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
