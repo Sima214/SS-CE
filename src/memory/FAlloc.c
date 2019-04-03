@@ -157,6 +157,37 @@ int falloc_ensure_space(ThreadLocalStack* tls, size_t l) {
   #endif
 }
 
+void* falloc_malloc(size_t l) {
+  return falloc_malloc_aligned(l, sizeof(int));
+}
+
+void falloc_free(void* ptr) {
+  // Null pointer check.
+  if(ptr == NULL) {
+    EARLY_TRACE("falloc_free got a null pointer!");
+    return;
+  }
+  ThreadLocalStack* tls = falloc_get_tls();
+  // In debug build check bounds.
+  uintptr_t start = (uintptr_t)tls->start;
+  uintptr_t end = start + tls->usage;
+  uintptr_t ptri = (uintptr_t)ptr;
+  if(COLD_BRANCH(ptri < start || ptri >= end)) {
+    EARLY_TRACE("falloc_free got a pointer which is out of bounds!");
+    return;
+  }
+  // Make new end be the pointer which gets deallocated.
+  size_t ptr_len = end - ptri;
+  tls->usage -= ptr_len;
+  #ifndef NDEBUG
+    uintptr_t new_end = start + tls->usage;
+    if(new_end != ptri) {
+      EARLY_TRACE("New end is not pointer getting deallocated!");
+      abort();
+    }
+  #endif
+}
+
 void internal_falloc_exit() {
   // No point in cleaning up here,
   // as long as the destructor above

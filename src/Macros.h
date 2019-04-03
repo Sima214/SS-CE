@@ -300,13 +300,19 @@
   /**
    * Marks that a function allocates memory and returns a pointer to said memory.
    */
-  #define MARK_MALLOC(alignment, ...) __attribute__((malloc, alloc_align(alignment), alloc_size(__VA_ARGS__)))
+  #define MARK_MALLOC(alignment, ...) __attribute__((__malloc__, alloc_align(alignment), alloc_size(__VA_ARGS__)))
+#endif
+#ifndef MARK_MALLOC_SIMPLE
+  /**
+   * Marks that a function allocates memory and returns a pointer to said memory.
+   */
+  #define MARK_MALLOC_SIMPLE(...) __attribute__((__malloc__, alloc_size(__VA_ARGS__)))
 #endif
 #ifndef MARK_OBJ_ALLOC
   /**
    * Marks that a function that allocates memory for an opaque data type and returns a pointer to the new object.
    */
-  #define MARK_OBJ_ALLOC __attribute__((malloc, warn_unused_result))
+  #define MARK_OBJ_ALLOC __attribute__((__malloc__, warn_unused_result))
 #endif
 #ifndef FORCE_INLINE
   #ifndef NDEBUG

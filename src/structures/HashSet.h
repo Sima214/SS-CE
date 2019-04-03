@@ -33,7 +33,7 @@ typedef struct HashSet HashSet;
  *   Pass 0.0 to disable expanding, or a negative value to use the defaults.
  * @returns the allocated HashSet or NULL if there was not enough memory available.
  */
-EXPORT_API HashSet* hashset_create(const IDataType* interface, size_t initial_size, float shrink_ratio, float expand_ratio) MARK_OBJ_ALLOC MARK_NONNULL_ARGS(1);
+EXPORT_API MARK_OBJ_ALLOC HashSet* hashset_create(const IDataType* interface, size_t initial_size, float shrink_ratio, float expand_ratio) MARK_NONNULL_ARGS(1);
 
 /**
  * Gets the number of currently stored elements.

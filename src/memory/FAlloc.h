@@ -59,14 +59,12 @@ EXPORT_API int falloc_ensure_space(ThreadLocalStack* tls, size_t l);
  * The returned pointer is aligned sizeof(int) bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-#define falloc_malloc(l) falloc_malloc_aligned(l, sizeof(int))
+EXPORT_API void* falloc_malloc(size_t l) MARK_MALLOC_SIMPLE(1);
 
 #ifndef DOXYGEN
   #define FALLOC_MALLOC_ATTR MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1)
-  #define FALLOC_FREE_ATTR MARK_UNUSED FORCE_INLINE
 #else
   #define FALLOC_MALLOC_ATTR
-  #define FALLOC_FREE_ATTR
 #endif
 
 /**
@@ -75,7 +73,7 @@ EXPORT_API int falloc_ensure_space(ThreadLocalStack* tls, size_t l);
  * The returned pointer is aligned \p align bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-FALLOC_MALLOC_ATTR static void* falloc_malloc_aligned(size_t l, size_t align) {
+FALLOC_MALLOC_ATTR static inline void* falloc_malloc_aligned(size_t l, size_t align) {
   // Get thread local stack.
   ThreadLocalStack* tls = falloc_get_tls();
   // Calculate alignment.
@@ -101,32 +99,7 @@ FALLOC_MALLOC_ATTR static void* falloc_malloc_aligned(size_t l, size_t align) {
 /**
  * The equivalent of free for \ref falloc_malloc_aligned.
  */
-FALLOC_FREE_ATTR static void falloc_free(void* ptr) {
-  // Null pointer check.
-  if(ptr == NULL) {
-    EARLY_TRACE("falloc_free got a null pointer!");
-    return;
-  }
-  ThreadLocalStack* tls = falloc_get_tls();
-  // In debug build check bounds.
-  uintptr_t start = (uintptr_t)tls->start;
-  uintptr_t end = start + tls->usage;
-  uintptr_t ptri = (uintptr_t)ptr;
-  if(COLD_BRANCH(ptri < start || ptri >= end)) {
-    EARLY_TRACE("falloc_free got a pointer which is out of bounds!");
-    return;
-  }
-  // Make new end be the pointer which gets deallocated.
-  size_t ptr_len = end - ptri;
-  tls->usage -= ptr_len;
-  #ifndef NDEBUG
-    uintptr_t new_end = start + tls->usage;
-    if(new_end != ptri) {
-      EARLY_TRACE("New end is not pointer getting deallocated!");
-      abort();
-    }
-  #endif
-}
+EXPORT_API void falloc_free(void* ptr);
 
 /**
  * Initializes thread local keys.

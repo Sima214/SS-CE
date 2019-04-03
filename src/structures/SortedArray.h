@@ -156,4 +156,30 @@ EXPORT_API void sorted_array_compact(SortedArray* sa) MARK_NONNULL_ARGS(1);
  */
 EXPORT_API void sorted_array_destroy(SortedArray* sa) MARK_NONNULL_ARGS(1);
 
+// Extra compound functions.
+
+/**
+ * Retreives and removes the last element of the array.
+ * 
+ * @param sa \ref sorted_array_create.
+ * @param result pointer to where (e.i. stack) the result will be stored.
+ * @returns non zero on error.
+ */
+static inline int sorted_array_pop(SortedArray* sa, void* dest) {
+  size_t length = sorted_array_size(sa);
+  size_t last_index = length - 1;
+  if(length == 0) {
+    // Array is empty.
+    return 1;
+  }
+  if(sorted_array_get(sa, dest, last_index)) {
+    return 1;
+  }
+  if(sorted_array_erase(sa, last_index)) {
+    return 1;
+  }
+  // Success!
+  return 0;
+}
+
 #endif /*SSCE_SORTED_ARRAY_H*/

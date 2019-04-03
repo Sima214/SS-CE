@@ -2104,7 +2104,7 @@ PREDEFINED             = "__attribute__(x)=" \
                          "EXPORT_API" \
                          "MARK_PRINTF" \
                          "MARK_OBJ_ALLOC" \
-                         "MARK_NONNULL_ARGS()="
+                         "MARK_NONNULL_ARGS(x)="
                          "MARK_UNUSED" \
                          "MARK_PACKED" \
                          "MARK_CONST" \
