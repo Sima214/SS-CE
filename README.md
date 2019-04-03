@@ -47,6 +47,7 @@ The list of available modules:
 - STRINGS
 - STRUCTURES
 - LOGGER
+- TODO: AI
 
 ## Documentation
 
