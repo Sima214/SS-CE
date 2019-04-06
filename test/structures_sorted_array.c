@@ -9,7 +9,7 @@
 #include <time.h>
 
 #define STRESS_SECTIONS_LENGTH 4096 / sizeof(int)
-#define STRESS_SECTIONS_COUNT 128
+#define STRESS_SECTIONS_COUNT 128u
 
 static inline void dump_sorted_array(SortedArray* sa) {
   size_t len = sorted_array_size(sa);
@@ -33,7 +33,7 @@ static inline void dump_sorted_array(SortedArray* sa) {
 static int stress() {
   static int RNG[STRESS_SECTIONS_LENGTH * STRESS_SECTIONS_COUNT];
   time_t seed = time(NULL);
-  printf("Rng seed: %lu\n", seed);
+  printf("Rng seed: %llu\n", seed);
   srand(seed);
   fill_garbage(RNG, sizeof(RNG));
   SortedArray* sai = sorted_array_create(&IDT_INT);
@@ -42,7 +42,7 @@ static int stress() {
   }
   for(size_t i = 0; i < STRESS_SECTIONS_COUNT; i++) {
     int* base = RNG + STRESS_SECTIONS_LENGTH * i;
-    printf("Calculating [%u/%u]\n", (uint32_t)i, (uint32_t)STRESS_SECTIONS_COUNT);
+    printf("Calculating [%zu/%u]\n", i, STRESS_SECTIONS_COUNT);
     // Insert or rarely merge
     if((rand() % 128) == 0) {
       puts("Merging current section!");
@@ -71,7 +71,7 @@ static int stress() {
     for(int l = 0; l < (int)(STRESS_SECTIONS_LENGTH / 128); l++) {
       size_t previous_size = sorted_array_size(sai);
       size_t index_to_erase = rand() % previous_size;
-      printf("Deleting index: %u\n", (uint32_t)index_to_erase);
+      printf("Deleting index: %zu\n", index_to_erase);
       if(sorted_array_erase(sai, index_to_erase)) {
         return EXIT_FAILURE;
       }

@@ -273,8 +273,11 @@ static inline void gen_initial_state(void* dest, size_t n, ...) {
   memset(dest, 0, size);
   uint8_t* pieces = add_offset(dest, sizeof(size_t));
   // Prepare vargs.
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wvarargs"
   va_list vargs;
   va_start(vargs, count);
+  #pragma GCC diagnostic pop
   // Get parameters.
   for(size_t i = 0; i < count; i++) {
     int piece = va_arg(vargs, int);
@@ -301,7 +304,7 @@ static inline void print_solution(const NPuzzleSearchProblem* o, const IDataType
     }
   }
   printf("}\n");
-  printf("Depth: %u\n", (uint32_t)history_size);
+  printf("Depth: %zu\n", history_size);
   for(size_t i = 0; i < history_size; i++) {
     size_t cell_index = i / 4;
     size_t cell_subindex = i % 4;

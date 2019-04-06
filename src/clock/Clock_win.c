@@ -5,6 +5,7 @@
 #include <string/SStrings.h>
 
 #include <float.h>
+#include <ntstatus.h>
 #include <stdint.h>
 #include <windows.h>
 
@@ -17,7 +18,7 @@ static ULONG timer_reset;
 
 void clock_delay(int64_t usecs) {
   if(COLD_BRANCH(usecs <= 0 || usecs >= 1000000)) {
-    native_puts("clock_delay input out of bounds!");
+    EARLY_TRACE("clock_delay input out of bounds!");
     return;
   }
   // Valid input - continue.
@@ -64,11 +65,23 @@ void clock_reset(PerfClock* pc) {
 
 void internal_clock_init() {
   // Increase timer resolution.
+  // Longest interval.
   ULONG timer_min;
+  // Shortest interval.
   ULONG timer_max;
-  NtQueryTimerResolution(&timer_min, &timer_max, &timer_reset);
-  ULONG timer_request = math_max(timer_min, timer_preferred);
-  NtSetTimerResolution(timer_request, TRUE, NULL);
+  NTSTATUS r = NtQueryTimerResolution(&timer_min, &timer_max, &timer_reset);
+  if(r == STATUS_SUCCESS) {
+    ULONG timer_request = math_max(timer_max, timer_preferred);
+    // NtSetTimerResolution returns STATUS_ACCESS_VIOLATION if 3rd parameter is NULL.
+    ULONG unused;
+    NTSTATUS r = NtSetTimerResolution(timer_request, TRUE, &unused);
+    if(r != STATUS_SUCCESS) {
+      EARLY_TRACEF("NtSetTimerResolution errored with code: 0x%lx!", r);
+    }
+  }
+  else {
+    EARLY_TRACEF("NtQueryTimerResolution errored with code: 0x%lx!", r);
+  }
   // Get clock frequency.
   LARGE_INTEGER x;
   QueryPerformanceFrequency(&x);

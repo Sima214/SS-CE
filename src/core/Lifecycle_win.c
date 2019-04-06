@@ -42,6 +42,8 @@ static void link_ntdll() {
     EARLY_TRACE("Could not find ntdll module!");
     abort();
   }
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wcast-function-type"
   // Find NtDelayExecution.
   pNtDelayExecution = (NT_DELAY_EXECUTION) GetProcAddress(ntdll, "NtDelayExecution");
   if(COLD_BRANCH(pNtDelayExecution == NULL)) {
@@ -60,6 +62,7 @@ static void link_ntdll() {
     EARLY_TRACE("Could not find NtSetTimerResolution in ntdll!");
     abort();
   }
+  #pragma GCC diagnostic pop
 }
 
 /*

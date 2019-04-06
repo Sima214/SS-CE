@@ -39,7 +39,7 @@
     /**
      * Marks a function which takes a format string like printf.
      */
-    #define MARK_PRINTF(fmt_index, start_index) __attribute__((format(__MINGW_PRINTF_FORMAT, fmt_index, start_index)))
+    #define MARK_PRINTF(fmt_index, start_index) __attribute__((format(gnu_printf, fmt_index, start_index)))
   #else
     /**
      * Marks a function which takes a format string like printf.
@@ -212,12 +212,6 @@
   #else
     #error Unsupported OS
   #endif
-#endif
-#ifndef cpu_init
-  /**
-   * Caches cpu info.
-   */
-  #define cpu_init __builtin_cpu_init
 #endif
 #ifndef EARLY_TRACE
   #ifndef NDEBUG

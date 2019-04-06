@@ -10,7 +10,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   const int TEST_NUMS[] = {1, 2, 3, 4};
   Dequeue* dq = dequeue_create(&IDT_INT);
   for(size_t l = 1; l <= (sizeof(TEST_NUMS) / sizeof(int)); l++) {
-    printf("Performing %u length test...\n", (uint32_t)l);
+    printf("Performing %zu length test...\n", l);
     // Test push front, pop front.
     puts("(f, f)");
     for(size_t i = 0; i < l; i++) {

@@ -167,6 +167,10 @@ void falloc_free(void* ptr) {
     EARLY_TRACE("falloc_free got a null pointer!");
     return;
   }
+  else {
+    EARLY_TRACEF("Deallocating fast ram at %p!", ptr);
+  }
+  
   ThreadLocalStack* tls = falloc_get_tls();
   // In debug build check bounds.
   uintptr_t start = (uintptr_t)tls->start;

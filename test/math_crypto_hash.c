@@ -92,7 +92,7 @@ int spooky_hash_test_results() {
     buf[i] = (uint8_t)(i + 128);
     saw[i] = (uint32_t)ncrypto_hash(buf, i);
     if(saw[i] != expected[i]) {
-      printf("\t%3d: saw 0x%.8x, expected 0x%.8x\n", i, saw[i], expected[i]);
+      printf("\t%3d: saw 0x%.8x, expected 0x%.8x\n", i, saw[i], (uint32_t)expected[i]);
       return EXIT_FAILURE;
     }
   }

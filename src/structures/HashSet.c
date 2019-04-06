@@ -90,7 +90,7 @@ static inline int internal_bucket_insert(const IDataType* dti, Bucket* b, const 
   // We have to move the end of the array to make space.
   else {
     if(b->length > 2) {
-      EARLY_TRACEF("hashset bad distribution (%u)!", (uint32_t) (b->length + 1));
+      EARLY_TRACEF("hashset bad distribution (%zu)!", b->length + 1);
     }
     // Make space by reallocating memory block.
     void* new_bucket = realloc(b->bucket, dti->size * (b->length + 1));
@@ -101,7 +101,6 @@ static inline int internal_bucket_insert(const IDataType* dti, Bucket* b, const 
     }
     else if(new_bucket != b->bucket) {
       // Realloc moved allocation.
-      EARLY_TRACE("internal_bucket_insert relocated memory block!");
       b->bucket = new_bucket;
     }
     // Make space by moving index to end.
@@ -132,7 +131,6 @@ static inline void internal_bucket_remove(const IDataType* dti, Bucket* b, size_
       EARLY_TRACE("internal_bucket_remove could not reallocate memory block!");
     }
     else if(new_allocated != b->bucket) {
-      EARLY_TRACE("internal_bucket_remove relocated memory block!");
       b->bucket = new_allocated;
     }
   }
@@ -212,7 +210,7 @@ static inline int internal_hash_shrink(HashSet* hs) {
       return 0;
     }
     else {
-      EARLY_TRACEF("internal_hash_shrink (%u -> %u)!", (uint32_t)bucket_count, (uint32_t)new_bucket_count);
+      EARLY_TRACEF("internal_hash_shrink (%zu -> %zu)!", bucket_count, new_bucket_count);
     }
     // Move old elements to new buckets.
     if(internal_hash_resize_reloc(hs->interface, hs->array, hs->size, new_array, new_bucket_count)) {
@@ -248,7 +246,7 @@ static inline int internal_hash_expand(HashSet* hs) {
       return 0;
     }
     else {
-      EARLY_TRACEF("internal_hash_expand (%u -> %u)!", (uint32_t)bucket_count, (uint32_t)new_bucket_count);
+      EARLY_TRACEF("internal_hash_expand (%zu -> %zu)!", bucket_count, new_bucket_count);
     }
     // Move old elements to new buckets.
     if(internal_hash_resize_reloc(hs->interface, hs->array, hs->size, new_array, new_bucket_count)) {

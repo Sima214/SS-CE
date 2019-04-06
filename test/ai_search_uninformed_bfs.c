@@ -14,8 +14,8 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   IDataType dti;
   // new_npuzzle(&npsp, &dti, 3);
   new_npuzzle(&npsp, &dti, 2);
-  logger_logi("State is %u bytes long.", (uint32_t)dti.size);
-  logger_logi("Max depth is %u.", (uint32_t)npsp.max_depth);
+  logger_logi("State is %zu bytes long.", dti.size);
+  logger_logi("Max depth is %zu.", npsp.max_depth);
   void* initial_state = falloc_malloc(dti.size);
   if(initial_state == NULL) {
     puts("Could not allocate fast ram!");

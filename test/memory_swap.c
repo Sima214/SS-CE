@@ -9,17 +9,6 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef _WIN32
-  #include <inttypes.h>
-  #ifdef _WIN64
-    #define SIZET_FMT PRIu64
-  #else
-    #define SIZET_FMT PRIu32
-  #endif
-#else
-  #define SIZET_FMT "zu"
-#endif
-
 #define UNALIGNED_MAX_OFFSET 512
 #define UNALIGNED_SAMPLE_SIZE 1024
 
@@ -41,7 +30,7 @@ static int stress(uint8_t* garbage0, uint8_t* garbage1, uint8_t* test0, uint8_t*
       clock_stop(&pc);
     }
     // Report results.
-    printf("%" SIZET_FMT " byte blocks: %6.4f | %6.4f | %6.4f\n", cl, pc.avg, pc.min, pc.max);
+    printf("%zu byte blocks: %6.4f | %6.4f | %6.4f\n", cl, pc.avg, pc.min, pc.max);
     //printf("%6.4f, %6.4f, %6.4f\n", pc.avg, pc.min, pc.max);
     //printf("%f\n", pc.avg);
   }
@@ -69,7 +58,7 @@ int main(int argc, MARK_UNUSED char* argv[]) {
     memswap(test0, test1, cl);
     // Confirm result.
     if(!test_swap(garbage0, garbage1, test0, test1, cl)) {
-      printf("Errored %" SIZET_FMT " bytes!\n", cl);
+      printf("Errored %zu bytes!\n", cl);
       return EXIT_FAILURE;
     }
   }

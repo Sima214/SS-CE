@@ -1,7 +1,5 @@
 #ifndef SSCE_FALLOC_H
 #define SSCE_FALLOC_H
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
 /**
  * @file
  * @brief This is header provides a per-thread stack based allocator.
@@ -88,11 +86,11 @@ FALLOC_MALLOC_ATTR static inline void* falloc_malloc_aligned(size_t l, size_t al
     EARLY_TRACE("Could not allocate fast ram!");
     return NULL;
   }
-  EARLY_TRACE("Allocating fast ram!");
   // Calculate final address.
   void* final = (void*) (end + align_offset);
   // Update usage.
   tls->usage += actual_len;
+  EARLY_TRACEF("Allocated fast ram at %p of size %zu!", final, actual_len);
   return final;
 }
 
@@ -111,5 +109,4 @@ void internal_falloc_init();
  */
 void internal_falloc_exit();
 
-#pragma GCC diagnostic pop
 #endif /*SSCE_FALLOC_H*/
