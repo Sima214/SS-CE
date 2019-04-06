@@ -33,7 +33,7 @@ static inline void dump_sorted_array(SortedArray* sa) {
 static int stress() {
   static int RNG[STRESS_SECTIONS_LENGTH * STRESS_SECTIONS_COUNT];
   time_t seed = time(NULL);
-  printf("Rng seed: %llu\n", seed);
+  printf("Rng seed: %ju\n", (uintmax_t)seed);
   srand(seed);
   fill_garbage(RNG, sizeof(RNG));
   SortedArray* sai = sorted_array_create(&IDT_INT);
