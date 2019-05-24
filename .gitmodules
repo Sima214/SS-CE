@@ -1,6 +1,3 @@
-[submodule "ssce-jemalloc"]
-	path = jemalloc
-	url = git@github.com:Sima214/ssce-jemalloc.git
 [submodule "jemalloc"]
 	path = jemalloc
-	url = git@github.com:Sima214/ssce-jemalloc.git
+	url = https://github.com/Sima214/ssce-jemalloc.git
