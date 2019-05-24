@@ -175,13 +175,6 @@ install( TARGETS ${PROJECT_NAME}
         PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
 configure_file( "${PROJECT_NAME}.pc.in" "${PROJECT_NAME}.pc" @ONLY )
 install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig )
-if( NOT ${SYSTEM_JEMALLOC} OR WIN32 )
-    # Copy jemalloc files.
-    set( SSCE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}" )
-    configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyJemalloc.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/CopyJemalloc.cmake" IMMEDIATE @ONLY )
-    install( SCRIPT "${CMAKE_BINARY_DIR}/CopyJemalloc.cmake" )
-    install( FILES "${CMAKE_BINARY_DIR}/jemalloc/include/jemalloc/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
-endif()
 
 ## Uninstall script.
 if( NOT TARGET uninstall )
