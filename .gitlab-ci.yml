@@ -5,7 +5,8 @@ clang:
     CC: clang
     CXX: clang++
   before_script:
-    - rm -rf build-clang jemalloc
+    - git submodule update --init --recursive
+    - rm -rf build-*
   script:
     - mkdir build-clang
     - cd build-clang
@@ -22,7 +23,8 @@ gcc:
     CC: gcc
     CXX: g++
   before_script:
-    - rm -rf build-gcc jemalloc
+    - git submodule update --init --recursive
+    - rm -rf build-*
   script:
     - mkdir build-gcc
     - cd build-gcc

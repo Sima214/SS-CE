@@ -15,6 +15,7 @@ addons:
     - python3
 
 before_script:
+  - git submodule update --init --recursive
   - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then
       export CC=$(ls /usr/local/Cellar/gcc/*/bin/gcc-?);
       export CXX=$(ls /usr/local/Cellar/gcc/*/bin/g++-?);

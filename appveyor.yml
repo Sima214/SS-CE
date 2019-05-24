@@ -7,6 +7,9 @@ environment:
       GENERATOR: "MinGW Makefiles"
 
 install:
+  # Required by jemalloc(?)
+  - pacman --noconfirm -Suy mingw-w64-x86_64-make
+
   # Python 3
   - cmd: set PATH=C:\Python34-x64;C:\Python34-x64\Scripts;%PATH%
 
@@ -24,11 +27,6 @@ install:
   - cmd: set MINGW_PATH=%MINGW_ROOT%\bin
   - cmd: mkdir %MINGW_ROOT%\lib\bfd-plugins
   - cmd: copy %MINGW_ROOT%\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll %MINGW_ROOT%\lib\bfd-plugins\liblto_plugin-0.dll
-
-  # Download prebuilt dependencies.
-  - cmd: appveyor DownloadFile https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/jemalloc-x86_64-lto.7z
-  - cmd: 7z x jemalloc-x86_64-lto.7z
-  - cmd: set PATH=%CD%\jemalloc\lib;%PATH%
 
 build_script:
   - cmd: python .\windows.py --generator "%GENERATOR%"

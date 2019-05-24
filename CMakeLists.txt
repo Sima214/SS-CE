@@ -69,7 +69,6 @@ if( UNIX AND NOT APPLE )
     endif()
 endif()
 set( MODULE_TESTING TRUE CACHE BOOL "Whether to enable tests. Disabling may fix some build issues." )
-set( SYSTEM_JEMALLOC FALSE CACHE BOOL "Link against system jemalloc library." )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )
 configure_file( "${PROJECT_SOURCE_DIR}/src/Modules.h.in" "${PROJECT_SOURCE_DIR}/src/Modules.h" )
 
@@ -96,39 +95,22 @@ define_module( "MODULE_AI_SEARCH_INFORMED" "BestFirst.c" "BestFirst.h;BestFirst.
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
 set( THREADS_PREFER_PTHREAD_FLAG TRUE )
 find_package( Threads REQUIRED )
-if( ${SYSTEM_JEMALLOC} )
-    if( WIN32 )
-        # Currently I do not build jemalloc on Windows, because of script weirdness.
-        add_library( jemalloc SHARED IMPORTED )
-        message( STATUS "${CMAKE_BINARY_DIR}/jemalloc/lib/jemalloc.${DYNLIB_EXT}" )
-        set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/jemalloc/lib/jemalloc.${DYNLIB_EXT}" )
-        include_directories( "${CMAKE_BINARY_DIR}/jemalloc/include/jemalloc" )
-        set( JEMALLOC_LIBRARIES "${CMAKE_BINARY_DIR}/jemalloc/lib/jemalloc.${DYNLIB_EXT}" )
-    else( WIN32 )
-        message( STATUS "Using system jemalloc." )
-        pkg_check_modules( JEMALLOC REQUIRED jemalloc )
-        include_directories( "${JEMALLOC_INCLUDE_DIRS}/jemalloc" )
-    endif( WIN32 )
-else( ${SYSTEM_JEMALLOC} )
-    message( STATUS "Using built-in jemalloc." )
     ExternalProject_Add( jemalloc-build
                          PREFIX "${PROJECT_SOURCE_DIR}/jemalloc"
                          SOURCE_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
                          BINARY_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
-                         STAMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
-                         TMP_DIR "${CMAKE_BINARY_DIR}/jemalloc/.tmp"
-                         URL "https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/src/jemalloc.tar.bz2"
-                         CONFIGURE_COMMAND sh ./configure --with-jemalloc-prefix=je_ --prefix=${CMAKE_BINARY_DIR}/jemalloc
-                         BUILD_COMMAND ${CMAKE_MAKE_PROGRAM} -j 3 build_lib_shared
-                         INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} -j 3 install_include install_lib_shared
+                         STAMP_DIR "${PROJECT_SOURCE_DIR}/jemalloc/.tmp"
+                         TMP_DIR "${PROJECT_SOURCE_DIR}/jemalloc/.tmp"
+                         CONFIGURE_COMMAND ""
+                         BUILD_COMMAND ${PYTHON_EXECUTABLE} build.py
+                         BUILD_BYPRODUCTS "${PROJECT_SOURCE_DIR}/jemalloc/install/libjemalloc_pic.a"
+                         INSTALL_COMMAND ""
                          TEST_EXCLUDE_FROM_MAIN 1
-                         BUILD_ALWAYS 1
                         )
-    add_library( jemalloc SHARED IMPORTED )
-    set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/jemalloc/lib/libjemalloc.${DYNLIB_EXT}" )
-    include_directories( "${CMAKE_BINARY_DIR}/jemalloc/include/jemalloc" )
-    set( JEMALLOC_LIBRARIES jemalloc )
-endif( ${SYSTEM_JEMALLOC} )
+add_library( jemalloc STATIC IMPORTED )
+set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/jemalloc/install/libjemalloc_pic.a" )
+include_directories( "${PROJECT_SOURCE_DIR}/jemalloc/install/jemalloc" )
+set( JEMALLOC_LIBRARIES jemalloc )
 
 ## Define the library.
 set( BUILD_SHARED TRUE CACHE BOOL "Disable to build static libraries." )
