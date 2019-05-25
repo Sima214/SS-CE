@@ -99,12 +99,12 @@ find_package( Threads REQUIRED )
                          PREFIX "${PROJECT_SOURCE_DIR}/jemalloc"
                          SOURCE_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
                          BINARY_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
-                         STAMP_DIR "${PROJECT_SOURCE_DIR}/jemalloc/.tmp"
-                         TMP_DIR "${PROJECT_SOURCE_DIR}/jemalloc/.tmp"
-                         CONFIGURE_COMMAND ""
-                         BUILD_COMMAND ${PYTHON_EXECUTABLE} build.py
-                         BUILD_BYPRODUCTS "${PROJECT_SOURCE_DIR}/jemalloc/install/libjemalloc_pic.a"
+                         STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/jemalloc/.tmp"
+                         TMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/jemalloc/.tmp"
+                         CONFIGURE_COMMAND ${PYTHON_EXECUTABLE} "${PROJECT_SOURCE_DIR}/jemalloc/build.py"
+                         BUILD_COMMAND ""
                          INSTALL_COMMAND ""
+                         BUILD_ALWAYS 1
                          TEST_EXCLUDE_FROM_MAIN 1
                         )
 add_library( jemalloc STATIC IMPORTED )
@@ -124,9 +124,7 @@ else()
     add_library( ${PROJECT_NAME} STATIC ${SSCE_SRC} )
     target_link_libraries( ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIBRARIES} m )
 endif()
-if( NOT ${SYSTEM_JEMALLOC} )
-    add_dependencies( ${PROJECT_NAME} jemalloc-build )
-endif()
+add_dependencies( ${PROJECT_NAME} jemalloc-build )
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
 if( NOT TARGET verblink )
     configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/VerbLink.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/VerbLink.cmake" IMMEDIATE @ONLY )
