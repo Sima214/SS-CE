@@ -95,21 +95,22 @@ define_module( "MODULE_AI_SEARCH_INFORMED" "BestFirst.c" "BestFirst.h;BestFirst.
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
 set( THREADS_PREFER_PTHREAD_FLAG TRUE )
 find_package( Threads REQUIRED )
-    ExternalProject_Add( jemalloc-build
-                         PREFIX "${PROJECT_SOURCE_DIR}/jemalloc"
-                         SOURCE_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
-                         BINARY_DIR "${PROJECT_SOURCE_DIR}/jemalloc"
-                         STAMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/jemalloc/.tmp"
-                         TMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/jemalloc/.tmp"
-                         CONFIGURE_COMMAND ${PYTHON_EXECUTABLE} "${PROJECT_SOURCE_DIR}/jemalloc/build.py"
-                         BUILD_COMMAND ""
-                         INSTALL_COMMAND ""
-                         BUILD_ALWAYS 1
-                         TEST_EXCLUDE_FROM_MAIN 1
-                        )
-add_library( jemalloc STATIC IMPORTED )
-set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/jemalloc/install/libjemalloc_pic.a" )
-include_directories( "${PROJECT_SOURCE_DIR}/jemalloc/install/jemalloc" )
+set( JEMALLOC_DIR "${PROJECT_SOURCE_DIR}/jemalloc" )
+ExternalProject_Add( jemalloc-build
+                     PREFIX "${JEMALLOC_DIR}"
+                     SOURCE_DIR "${JEMALLOC_DIR}"
+                     BINARY_DIR "${JEMALLOC_DIR}"
+                     STAMP_DIR "${JEMALLOC_DIR}/.tmp"
+                     TMP_DIR "${JEMALLOC_DIR}/.tmp"
+                     CONFIGURE_COMMAND ""
+                     BUILD_COMMAND ${PYTHON_EXECUTABLE} "${JEMALLOC_DIR}/build.py"
+                     INSTALL_COMMAND ""
+                     BUILD_BYPRODUCTS "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" "${JEMALLOC_DIR}/install/jemalloc/jemalloc.h"
+                     TEST_EXCLUDE_FROM_MAIN 1
+                    )
+add_library( jemalloc SHARED IMPORTED )
+set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" )
+include_directories( "${JEMALLOC_DIR}/install/jemalloc" )
 set( JEMALLOC_LIBRARIES jemalloc )
 
 ## Define the library.
@@ -173,6 +174,11 @@ install( TARGETS ${PROJECT_NAME}
         PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
 configure_file( "${PROJECT_NAME}.pc.in" "${PROJECT_NAME}.pc" @ONLY )
 install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig )
+# Copy jemalloc files.
+set( SSCE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}" )
+configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyJemalloc.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/CopyJemalloc.cmake" IMMEDIATE @ONLY )
+install( SCRIPT "${CMAKE_BINARY_DIR}/CopyJemalloc.cmake" )
+install( FILES "${JEMALLOC_DIR}/install/jemalloc/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
 
 ## Uninstall script.
 if( NOT TARGET uninstall )

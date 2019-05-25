@@ -1,0 +1,10 @@
+# Find all the libraries.
+file( GLOB JEMALLOC_LINKED_LIBS "@JEMALLOC_DIR@/install/*.@DYNLIB_EXT@*" )
+# Strip libraries.
+if( NOT "@CMAKE_STRIP@" STREQUAL "" )
+    foreach(lib ${JEMALLOC_LINKED_LIBS})
+        execute_process( COMMAND @CMAKE_STRIP@ ${lib} )
+    endforeach()
+endif()
+# Install libraries.
+file( INSTALL ${JEMALLOC_LINKED_LIBS} DESTINATION "@SSCE_INSTALL_DIR@" )
