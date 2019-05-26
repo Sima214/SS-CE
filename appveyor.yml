@@ -7,27 +7,25 @@ environment:
       GENERATOR: "MinGW Makefiles"
 
 install:
-  # Python 3
-  - cmd: set PATH=C:\Python34-x64;C:\Python34-x64\Scripts;%PATH%
-
-  # Tune locations
-  - cmd: set PATH=%cd%\_ci\cmake\bin;%PATH%
-
   - cmd: git submodule update --init --recursive
-
-  # Remove entry with sh.exe from PATH to fix error with MinGW toolchain
-  # (For MinGW make to work correctly sh.exe must NOT be in your path)
-  # * http://stackoverflow.com/a/3870338/2288008
+  # Remove shell provided by git, to avoid conflicts.
   - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-
+  # Python 3.
+  - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
+  # Tune locations.
+  - cmd: set PATH=%cd%\_ci\cmake\bin;%PATH%
+  - cmd: set MSYS_PATH=C:\msys64\usr\bin
   - cmd: set MINGW_ROOT=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
   - cmd: set MINGW_PATH=%MINGW_ROOT%\bin
+  # Required to build jemalloc.
+  - cmd: "%MSYS_PATH%\\pacman --noconfirm -Suy mingw-w64-x86_64-make"
+  # Enable lto plugin for mingw.
   - cmd: mkdir %MINGW_ROOT%\lib\bfd-plugins
   - cmd: copy %MINGW_ROOT%\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll %MINGW_ROOT%\lib\bfd-plugins\liblto_plugin-0.dll
 
 build_script:
-  - cmd: python .\windows.py --generator "%GENERATOR%"
+  - python .\windows.py --generator "%GENERATOR%"
 
 # Uncomment to be enable rdp.
-# on_finish:
-#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

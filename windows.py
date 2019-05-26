@@ -52,7 +52,6 @@ def run_build(verbose, test, trace, install):
         args += ['-DCMAKE_VERBOSE_MAKEFILE=ON']
     if trace:
         args += ['-DCMAKE_BUILD_TYPE=Debug']
-    args += ["-DSYSTEM_JEMALLOC=ON"]
     args += ["-DCMAKE_INSTALL_PREFIX:PATH=install"]
     if cmd_args.generator:
         args += ['-G{}'.format(cmd_args.generator)]
