@@ -18,14 +18,17 @@ install:
   - cmd: set MINGW_ROOT=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
   - cmd: set MINGW_PATH=%MINGW_ROOT%\bin
   # Required to build jemalloc.
-  - cmd: "%MSYS_PATH%\\pacman --noconfirm -Suy mingw-w64-x86_64-make"
+  # - cmd: "%MSYS_PATH%\\pacman --noconfirm -Suy mingw-w64-x86_64-make"
+  # - cmd: mkdir jemalloc\install
+  # - cmd: type nul > jemalloc\install\libjemalloc.dll
   # Enable lto plugin for mingw.
   - cmd: mkdir %MINGW_ROOT%\lib\bfd-plugins
   - cmd: copy %MINGW_ROOT%\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll %MINGW_ROOT%\lib\bfd-plugins\liblto_plugin-0.dll
 
 build_script:
+  - python .\jemalloc\build.py --prebuilt
   - python .\windows.py --generator "%GENERATOR%"
 
 # Uncomment to be enable rdp.
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

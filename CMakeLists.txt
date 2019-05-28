@@ -96,6 +96,10 @@ set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
 set( THREADS_PREFER_PTHREAD_FLAG TRUE )
 find_package( Threads REQUIRED )
 set( JEMALLOC_DIR "${PROJECT_SOURCE_DIR}/jemalloc" )
+set( JEMALLOC_EXTRA_FLAGS "" )
+if( WIN32 )
+    set( JEMALLOC_EXTRA_FLAGS ${JEMALLOC_EXTRA_FLAGS} "--prebuilt" )
+endif( WIN32 )
 ExternalProject_Add( jemalloc-build
                      PREFIX "${JEMALLOC_DIR}"
                      SOURCE_DIR "${JEMALLOC_DIR}"
@@ -103,27 +107,30 @@ ExternalProject_Add( jemalloc-build
                      STAMP_DIR "${JEMALLOC_DIR}/.tmp"
                      TMP_DIR "${JEMALLOC_DIR}/.tmp"
                      CONFIGURE_COMMAND ""
-                     BUILD_COMMAND ${PYTHON_EXECUTABLE} "${JEMALLOC_DIR}/build.py"
+                     BUILD_COMMAND ${PYTHON_EXECUTABLE} "${JEMALLOC_DIR}/build.py" ${JEMALLOC_EXTRA_FLAGS}
                      INSTALL_COMMAND ""
-                     BUILD_BYPRODUCTS "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" "${JEMALLOC_DIR}/install/jemalloc/jemalloc.h"
+                     BUILD_BYPRODUCTS "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" "${JEMALLOC_DIR}/install/jemalloc.h"
                      TEST_EXCLUDE_FROM_MAIN 1
                     )
-add_library( jemalloc SHARED IMPORTED )
-set_target_properties( jemalloc PROPERTIES IMPORTED_LOCATION "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" )
-include_directories( "${JEMALLOC_DIR}/install/jemalloc" )
-set( JEMALLOC_LIBRARIES jemalloc )
+include_directories( "${JEMALLOC_DIR}/install" )
+if( NOT WIN32 )
+    add_library( jemalloc SHARED IMPORTED )
+    set_property( TARGET jemalloc PROPERTY IMPORTED_LOCATION "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" )
+else()
+    set( jemalloc "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" )
+endif()
 
 ## Define the library.
 set( BUILD_SHARED TRUE CACHE BOOL "Disable to build static libraries." )
 if( ${BUILD_SHARED} )
     message( STATUS "Building shared library." )
     add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
-    target_link_libraries( ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIBRARIES} m )
+    target_link_libraries( ${PROJECT_NAME} Threads::Threads jemalloc m )
 else()
     message( STATUS "Building static library." )
     add_definitions( "-DLINK_STATIC" )
     add_library( ${PROJECT_NAME} STATIC ${SSCE_SRC} )
-    target_link_libraries( ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIBRARIES} m )
+    target_link_libraries( ${PROJECT_NAME} Threads::Threads jemalloc m )
 endif()
 add_dependencies( ${PROJECT_NAME} jemalloc-build )
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
@@ -178,7 +185,7 @@ install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INST
 set( SSCE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}" )
 configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyJemalloc.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/CopyJemalloc.cmake" IMMEDIATE @ONLY )
 install( SCRIPT "${CMAKE_BINARY_DIR}/CopyJemalloc.cmake" )
-install( FILES "${JEMALLOC_DIR}/install/jemalloc/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
+install( FILES "${JEMALLOC_DIR}/install/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
 
 ## Uninstall script.
 if( NOT TARGET uninstall )

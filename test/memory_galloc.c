@@ -21,7 +21,7 @@ int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
       return EXIT_FAILURE;
     }
     void* min = malloc(1);
-    printf("Minimum allocation is: %zu\n", malloc_usable_size(min));
+    printf("Minimum allocation is: %zu\n", sallocx(min, 0));
     memset(leakage, 0, ALLOCATION_SIZE);
     malloc_stats_print(NULL, NULL, MALLOC_STATS_PRINT_OPTS);
     free(leakage);
