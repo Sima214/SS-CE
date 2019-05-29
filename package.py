@@ -54,16 +54,16 @@ if upload:
         sys.exit(1)
     server = "ftp.drivehq.com"
     build_number = os.environ["ARTIFACT_ID"]
-    with open(output_file, "rb") as f:
-        done = False
-        while not done:
-            try:
+    done = False
+    while not done:
+        try:
+            with open(output_file, "rb") as f:
                 ftp = ftplib.FTP(server, username, password)
                 ftp.storbinary("STOR ssce/%s/%s.tar.xz" % (os_name, build_number), f)
                 ftp.quit()
-                done = True
-            except Exception as e:
-                print(e, flush=True)
-                t = random.randint(1, 8)
-                print("Trying again in %d seconds..." % (t), flush=True)
-                time.sleep(t)
+            done = True
+        except Exception as e:
+            print(e, flush=True)
+            t = random.randint(1, 8)
+            print("Trying again in %d seconds..." % (t), flush=True)
+            time.sleep(t)
