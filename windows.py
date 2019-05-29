@@ -38,6 +38,9 @@ if cmd_args.generator == 'MinGW Makefiles':
     os.environ['PATH'] = '{};{}'.format(
         os.environ['MINGW_PATH'], os.environ['PATH']
     )
+os.environ["PATH"] = "%s;%s" % (
+    os.path.abspath(cwd), os.environ['PATH']
+)
 
 
 def run_build(verbose, test, trace, install):

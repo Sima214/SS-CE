@@ -29,14 +29,3 @@ with tarfile.open(output_file, mode='w:xz') as tar:
     for fn in os.listdir(build_dir):
         if os.path.basename(fn).startswith("test_"):
             tar.add(fn)
-
-# Finally output the archive in base64 to the console,
-# because I am too bored to actually setup deployments.
-with open(output_file, "rb") as f:
-    binary = f.read()
-    print('-' * 72, flush=True)
-    print("Deploying package of %d bytes:" %
-          (os.path.getsize(output_file)), flush=True)
-    arc64 = base64.b64encode(binary).decode()
-    hard_wrap(arc64, 72)
-    print('-' * 72, flush=True)
