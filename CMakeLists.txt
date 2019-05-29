@@ -95,24 +95,29 @@ define_module( "MODULE_AI_SEARCH_INFORMED" "BestFirst.c" "BestFirst.h;BestFirst.
 set( CMAKE_THREAD_PREFER_PTHREAD TRUE )
 set( THREADS_PREFER_PTHREAD_FLAG TRUE )
 find_package( Threads REQUIRED )
-set( JEMALLOC_DIR "${PROJECT_SOURCE_DIR}/jemalloc" )
-set( JEMALLOC_LIB_PATH "${JEMALLOC_DIR}/install/libjemalloc.${DYNLIB_EXT}" )
-set( JEMALLOC_INC_PATH "${JEMALLOC_DIR}/install")
-set( JEMALLOC_EXTRA_FLAGS "" )
+
+# Jemalloc module.
+set( JEMALLOC_PATH "${PROJECT_SOURCE_DIR}/jemalloc" )
+set( JEMALLOC_INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}" )
+set( JEMALLOC_LIB_PATH "${JEMALLOC_INSTALL_PATH}/libjemalloc.${DYNLIB_EXT}" )
+set( JEMALLOC_INC_PATH "${JEMALLOC_INSTALL_PATH}")
+set( JEMALLOC_EXTRA_FLAGS "--install-path" ${JEMALLOC_INSTALL_PATH} )
 if( WIN32 )
+    # I could not figure out how to built this on windows.
     set( JEMALLOC_EXTRA_FLAGS ${JEMALLOC_EXTRA_FLAGS} "--prebuilt" )
 endif( WIN32 )
 ExternalProject_Add( jemalloc-build
-                     PREFIX "${JEMALLOC_DIR}"
-                     SOURCE_DIR "${JEMALLOC_DIR}"
-                     BINARY_DIR "${JEMALLOC_DIR}"
-                     STAMP_DIR "${JEMALLOC_DIR}/.tmp"
-                     TMP_DIR "${JEMALLOC_DIR}/.tmp"
+                     PREFIX "${JEMALLOC_PATH}"
+                     SOURCE_DIR "${JEMALLOC_PATH}"
+                     BINARY_DIR "${JEMALLOC_PATH}"
+                     STAMP_DIR "${JEMALLOC_INSTALL_PATH}/jemalloc"
+                     TMP_DIR "${JEMALLOC_INSTALL_PATH}/jemalloc"
                      CONFIGURE_COMMAND ""
-                     BUILD_COMMAND ${PYTHON_EXECUTABLE} "${JEMALLOC_DIR}/build.py" ${JEMALLOC_EXTRA_FLAGS}
+                     BUILD_COMMAND ${PYTHON_EXECUTABLE} "${JEMALLOC_PATH}/build.py" ${JEMALLOC_EXTRA_FLAGS}
                      INSTALL_COMMAND ""
                      BUILD_BYPRODUCTS ${JEMALLOC_LIB_PATH} "${JEMALLOC_INC_PATH}/jemalloc.h"
                      TEST_EXCLUDE_FROM_MAIN 1
+                     BUILD_ALWAYS 1
                     )
 include_directories( ${JEMALLOC_INC_PATH} )
 add_library( jemalloc SHARED IMPORTED )
@@ -189,7 +194,7 @@ install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INST
 set( SSCE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}" )
 configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyJemalloc.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/CopyJemalloc.cmake" IMMEDIATE @ONLY )
 install( SCRIPT "${CMAKE_BINARY_DIR}/CopyJemalloc.cmake" )
-install( FILES "${JEMALLOC_DIR}/install/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
+install( FILES "${JEMALLOC_INC_PATH}/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
 
 ## Uninstall script.
 if( NOT TARGET uninstall )

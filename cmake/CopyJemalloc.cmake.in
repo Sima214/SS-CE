@@ -1,5 +1,5 @@
 # Find all the libraries.
-file( GLOB JEMALLOC_LINKED_LIBS "@JEMALLOC_DIR@/install/*.@DYNLIB_EXT@*" )
+file( GLOB JEMALLOC_LINKED_LIBS "@JEMALLOC_LIB_PATH@*" )
 # Strip libraries.
 if( NOT "@CMAKE_STRIP@" STREQUAL "" )
     foreach(lib ${JEMALLOC_LINKED_LIBS})

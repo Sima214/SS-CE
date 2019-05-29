@@ -11,6 +11,7 @@ clang:
     - mkdir build-clang
     - cd build-clang
     - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
+    - make clean
     - make
     - make install
     - make package
@@ -29,6 +30,7 @@ gcc:
     - mkdir build-gcc
     - cd build-gcc
     - cmake -DCMAKE_INSTALL_PREFIX:PATH=install ..
+    - make clean
     - make
     - make install
     - make package
