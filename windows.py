@@ -43,7 +43,7 @@ os.environ["PATH"] = "%s;%s" % (
 )
 
 
-def run_build(verbose, test, trace, install):
+def run_build(verbose, test, trace, install, deploy):
     os.chdir(cwd)
     # Configure
     print('-' * 72, flush=True)
@@ -71,8 +71,12 @@ def run_build(verbose, test, trace, install):
         os.chdir(build_dir)
         args = ['cmake', '--build', build_dir, "--target", "install"]
         do_call(args)
-        args = ['cmake', '--build', build_dir, "--target", "package"]
-        do_call(args)
+        if deploy:
+            args = ['cmake', '--build', build_dir, "--target", "deploy"]
+            do_call(args)
+        else:
+            args = ['cmake', '--build', build_dir, "--target", "package"]
+            do_call(args)
         os.chdir(cwd)
 
     # Test
@@ -85,4 +89,4 @@ def run_build(verbose, test, trace, install):
 
 
 # Finally run build.
-run_build(verbose=False, trace=False, test=True, install=True)
+run_build(verbose=False, trace=False, test=True, install=True, deploy=("APPVEYOR" in os.environ))

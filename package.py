@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import platform
 import tarfile
+import ftplib
 import base64
 import sys
 import os
@@ -19,6 +21,8 @@ build_dir = os.getcwd()
 install_dir = sys.argv[1]
 # Second is output destination file
 output_file = sys.argv[2] + ".tar.xz"
+# If third argument, then upload artifact.
+upload = len(sys.argv) == 4
 
 # Create tar archive
 with tarfile.open(output_file, mode='w:xz') as tar:
@@ -29,3 +33,26 @@ with tarfile.open(output_file, mode='w:xz') as tar:
     for fn in os.listdir(build_dir):
         if os.path.basename(fn).startswith("test_"):
             tar.add(fn)
+
+# Deploy from ci.
+if upload:
+    print("Deploying package!!!")
+    username = "Sima214"
+    password = os.environ["ARTIFACT_PASW"]
+    os_name = "unknown"
+    platform_name = platform.system()
+    if platform_name == "Linux":
+        os_name = "linux"
+    elif platform_name == "Darwin":
+        os_name = "macos"
+    elif platform_name == "Windows":
+        os_name = "windows"
+    else:
+        print("Unknown platform: %s" % (platform_name), flush=True)
+        sys.exit(1)
+    server = "ftp.drivehq.com"
+    build_number = os.environ["ARTIFACT_ID"]
+    with open(output_file, "rb") as f:
+        ftp = ftplib.FTP(server, username, password)
+        ftp.storbinary("STOR ssce/%s/%s.tar.xz" % (os_name, build_number), f)
+        ftp.quit()

@@ -117,7 +117,6 @@ ExternalProject_Add( jemalloc-build
                      INSTALL_COMMAND ""
                      BUILD_BYPRODUCTS ${JEMALLOC_LIB_PATH} "${JEMALLOC_INC_PATH}/jemalloc.h"
                      TEST_EXCLUDE_FROM_MAIN 1
-                     BUILD_ALWAYS 1
                     )
 include_directories( ${JEMALLOC_INC_PATH} )
 add_library( jemalloc SHARED IMPORTED )
@@ -207,6 +206,15 @@ if( NOT TARGET package )
     add_custom_target(
         package
         ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
+        COMMENT "This may not work as intended if make install was not run before."
+    )
+endif()
+if( NOT TARGET deploy )
+    add_custom_target(
+        deploy
+        ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package" upload
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
         COMMENT "This may not work as intended if make install was not run before."

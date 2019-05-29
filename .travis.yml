@@ -1,5 +1,9 @@
 language: cpp
 
+env:
+  global:
+    secure: l//pHADBmblZSDFcpK39vGhTTpftK/afaY3o2H5dh1XL5WE/CuEtQM1EJSo6nslSjCgLZhlLxpPboFxu+t3dvfoSvx94Jq7fUgOO5bybduI2mzdpDBdqFaFd5nOzGgsiYfocbik5KZfQGC/oYrVGWNXlXzp2Q2ao4VfiCjDWTnJzDgawCA2Sl+p9pQpVWWLp2e5a7GOp+WPFuZOLqvEFGiiPlry+2MS0H5QEJ1YxYabwXZDkA9tWLO9DDtVYy0ga6d6Ek/utRYgaFaLvSb2MgFfsi2u0PVBkKg9AoLroHUIzsZUSdSX4QyjIKAGSUSR77xuz1sYQIR+9uHuI0Nk7XzKWU8faMts5vCTxztEwBKlCTMucwMuViGZC+Nv/U8pzDOaCJGM4MocMpBfHGVxzWY6cKlgxJ5DFcHvxw6Zz8Wsf1nTL0XzncM0O5jnozVL/2U8oQHQCGpwOyeFKI+MwQgEjgMEsu90zKIo6Ah7Vv6l3QO1ZmMwTOckFDmLmX+WeEzhZvRk4Mdoi0d64g5d+n8NRUdyFXsEtrI7PT/pUYVbholHFURnQaNq/TKBntZXgGXWAHMlqoNC6w4UyZLzmNasz46uJfZN9eYNPlxBJuFfx4Kzz7AFk/4ZkCwU6yoSmjJcfDTuEW5X3CvVDvmQ8TPus/FIOR2uxj9CLXllBmFQ=
+
 os:
   - osx
 
@@ -14,12 +18,18 @@ addons:
     # - gcc
     - python3
 
+branches:
+  except:
+    - windows
+    - linux
+
 before_script:
   - git submodule update --init --recursive
   - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then
       export CC=$(ls /usr/local/Cellar/gcc/*/bin/gcc-?);
       export CXX=$(ls /usr/local/Cellar/gcc/*/bin/g++-?);
     fi
+  - export ARTIFACT_ID=$TRAVIS_JOB_NUMBER
   - mkdir build
   - cd build
   - cmake -DCMAKE_VERBOSE_MAKEFILE=OFF -DCMAKE_INSTALL_PREFIX:PATH=install ..

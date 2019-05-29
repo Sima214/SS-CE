@@ -6,6 +6,11 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       GENERATOR: "MinGW Makefiles"
 
+branches:
+  except:
+    - linux
+    - macos
+
 install:
   - cmd: git submodule update --init --recursive
   # Remove shell provided by git, to avoid conflicts.
@@ -24,6 +29,8 @@ install:
   # Enable lto plugin for mingw.
   - cmd: mkdir %MINGW_ROOT%\lib\bfd-plugins
   - cmd: copy %MINGW_ROOT%\libexec\gcc\x86_64-w64-mingw32\8.1.0\liblto_plugin-0.dll %MINGW_ROOT%\lib\bfd-plugins\liblto_plugin-0.dll
+  # Prepare deployment.
+  - cmd: set ARTIFACT_ID=%APPVEYOR_BUILD_NUMBER%
 
 build_script:
   - python .\jemalloc\build.py --prebuilt
