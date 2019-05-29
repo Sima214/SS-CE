@@ -208,7 +208,7 @@ if( NOT TARGET package )
         ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
-        COMMENT "This may not work as intended if make install was not run before."
+        COMMENT "This may not work as intended if 'make install' was not run before."
     )
 endif()
 if( NOT TARGET deploy )

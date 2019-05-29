@@ -33,7 +33,6 @@ install:
   - cmd: set ARTIFACT_ID=%APPVEYOR_BUILD_NUMBER%
 
 build_script:
-  - python .\jemalloc\build.py --prebuilt
   - python .\windows.py --generator "%GENERATOR%"
 
 # Uncomment to be enable rdp.

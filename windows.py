@@ -3,6 +3,7 @@
 from multiprocessing import cpu_count
 import subprocess
 import argparse
+import shutil
 import sys
 import os
 
@@ -64,6 +65,8 @@ def run_build(verbose, test, trace, install, deploy):
     args = ['cmake', '--build', build_dir]
     add_parallel(args)
     do_call(args)
+    # Workaround!?
+    shutil.copyfile("libjemalloc.dll", "jemalloc.dll")
 
     # Install
     if install:
