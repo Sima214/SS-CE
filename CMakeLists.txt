@@ -76,6 +76,7 @@ configure_file( "${PROJECT_SOURCE_DIR}/src/Modules.h.in" "${PROJECT_SOURCE_DIR}/
 include_directories( "${SSCE_DIR_SRC}/core" )
 set( SSCE_SRC "${SSCE_DIR_SRC}/core/Lifecycle_${SSCE_PLT}.c;${SSCE_DIR_SRC}/core/Runtime_${SSCE_ARCH}.c;${SSCE_DIR_SRC}/core/Runtime.c" )
 set( SSCE_INC "${SSCE_DIR_SRC}/Macros.h;${SSCE_DIR_SRC}/Modules.h;${SSCE_DIR_SRC}/Config.h;${SSCE_DIR_SRC}/core/Runtime.h;${SSCE_DIR_SRC}/core/Runtime.hpp" )
+set( SSCE_INC_DIRS ${CMAKE_CURRENT_BINARY_DIR} ${SSCE_DIR_SRC} )
 message( STATUS "######################################################" )
 message( STATUS "Configuring modules..." )
 message( STATUS "######################################################" )
@@ -145,7 +146,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
 if( NOT TARGET verblink )
     configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/VerbLink.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/VerbLink.cmake" IMMEDIATE @ONLY )
     add_custom_target( verblink COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/VerbLink.cmake )
-    add_dependencies( ${PROJECT_NAME} verblink )
 endif()
 
 ## Configure compiler.
@@ -233,7 +233,7 @@ if( MODULE_TESTING )
     define_test( "MODULE_AI_SEARCH_UNINFORMED" "bfs" "dfs" )
     define_test( "MODULE_AI_SEARCH_INFORMED" "bestfirst" )
 else()
-    message( WARNING "Testing is not enabled!" )
+    message( STATUS "Testing is not enabled!" )
 endif()
 
 ## Build documentation.
@@ -265,3 +265,6 @@ else()
     ## Enable formatting.
     add_custom_target(style "lua" "${PROJECT_SOURCE_DIR}/style-macros.lua" ${SSCE_INC} ${SSCE_SRC} DEPENDS ${SSCE_INC} ${SSCE_SRC} )
 endif()
+
+## Export for use by parent project.
+set( SSCE_EXPORT_INCLUDE ${SSCE_INC_DIRS} PARENT_SCOPE )

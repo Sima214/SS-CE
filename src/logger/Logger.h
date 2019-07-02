@@ -113,7 +113,7 @@ EXPORT_API void logger_log(const LogLevel level, const int options, const char* 
  * Logs a fatal message and aborts execution.
  * Takes the same parameters as printf.
  */
-#define logger_logf(...) logger_log(LOGGER_FATAL, LOGGER_ABORT, __VA_ARGS__);
+#define logger_logf(...) logger_log(LOGGER_FATAL, LOGGER_ABORT, __VA_ARGS__);__builtin_unreachable();
 
 /**
  * Checks if a pointer is null.

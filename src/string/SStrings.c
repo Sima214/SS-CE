@@ -10,7 +10,7 @@
 
 String string_concat(const size_t count, ...) {
   // Allocate temporary and return memory.
-  String* cache = falloc_malloc(count*sizeof(String));
+  String* cache = falloc_malloc(count * sizeof(String));
   String final = {NULL, 0};
   // Prepare vargs.
   va_list vargs;
@@ -34,5 +34,6 @@ String string_concat(const size_t count, ...) {
     sp += cur.len;
   }
   *(sp) = '\0';
+  falloc_free(cache);
   return final;
 }

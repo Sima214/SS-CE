@@ -12,6 +12,8 @@ C_DECLS_END
 
 namespace ssce {
 
+typedef String String;
+
 /**
  * Print a string to stdout,
  * using the encoding of the OS.
@@ -28,7 +30,7 @@ inline void nativePuts(const char* str) {
  */
 template<typename... S>
 String multiConcat(const S... args) {
-  multi_concat(sizeof...(S), args...);
+  return multi_concat(sizeof...(S), args...);
 }
 
 } // namespace ssce

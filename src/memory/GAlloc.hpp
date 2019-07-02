@@ -6,7 +6,6 @@
  */
 
 #include <Macros.h>
-namespace std {
 C_DECLS_START
 #include <GAlloc.h>
 C_DECLS_END
@@ -14,11 +13,15 @@ C_DECLS_END
 #include <cstdlib>
 #include <new>
 
-void* operator new(std::size_t count) {
+inline void* operator new(std::size_t count) {
   return je_malloc(count);
 }
 
-void operator delete(void* ptr) {
+inline void operator delete(void* ptr) {
+  je_free(ptr);
+}
+
+inline void operator delete(void* ptr, MARK_UNUSED std::size_t count) {
   je_free(ptr);
 }
 
