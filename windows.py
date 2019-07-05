@@ -48,7 +48,7 @@ def run_build(verbose, test, trace, install, deploy):
     os.chdir(cwd)
     # Configure
     print('-' * 72, flush=True)
-    build_dir = '.'
+    build_dir = 'build'
     args = [
         'cmake', '-B{}'.format(build_dir)
     ]
