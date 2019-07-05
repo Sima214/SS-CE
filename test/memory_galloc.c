@@ -9,24 +9,18 @@
 
 #define ALLOCATION_SIZE 1024
 
-#define MALLOC_STATS_PRINT_OPTS "gamble"
-
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
-  #ifndef VALGRIND
-    malloc_stats_print(NULL, NULL, MALLOC_STATS_PRINT_OPTS);
-    // Allocation test.
-    int* leakage = malloc(ALLOCATION_SIZE);
-    if(leakage == NULL) {
-      puts("Could not allocate memory!");
-      return EXIT_FAILURE;
-    }
-    void* min = malloc(1);
-    printf("Minimum allocation is: %zu\n", sallocx(min, 0));
-    memset(leakage, 0, ALLOCATION_SIZE);
-    malloc_stats_print(NULL, NULL, MALLOC_STATS_PRINT_OPTS);
-    free(leakage);
-    return EXIT_SUCCESS;
-  #else
+  galloc_dump_stats();
+  // Allocation test.
+  int* leakage = malloc(ALLOCATION_SIZE);
+  if(leakage == NULL) {
+    puts("Could not allocate memory!");
     return EXIT_FAILURE;
-  #endif
+  }
+  void* min = malloc(1);
+  printf("Minimum allocation is: %zu\n", galloc_size(min));
+  memset(leakage, 0, ALLOCATION_SIZE);
+  galloc_dump_stats();
+  free(leakage);
+  return EXIT_SUCCESS;
 }

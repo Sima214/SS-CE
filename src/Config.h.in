@@ -41,6 +41,19 @@
 #define MEMORY_FALLOC_STACK_SIZE ${MODULE_MEMORY_FALLOC_STACK_SIZE} * 1024
 
 /**
+ * Whether or not to override global malloc/calloc/realloc/free symbols.
+ * 
+ * NOTE: this option is only available on platforms which support it.
+ */
+#define MEMORY_GALLOC_OVERRIDE ${MODULE_MEMORY_GALLOC_OVERRIDE}
+
+/**
+ * Options string used by galloc_dump_stats.
+ * For more information see malloc_stats_print.
+ */
+#define MEMORY_GALLOC_DUMP_OPTIONS "${MODULE_MEMORY_GALLOC_DUMP_OPTIONS}"
+
+/**
  * How many buckets HashSet should allocate by default at initialization.
  * This will also be the minimal amount of allocated buckets.
  */

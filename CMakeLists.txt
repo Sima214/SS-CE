@@ -1,6 +1,9 @@
 # Initialize cmake.
 cmake_minimum_required( VERSION 3.9.4 )
+set( CMAKE_DISABLE_SOURCE_CHANGES ON )
+set( CMAKE_DISABLE_IN_SOURCE_BUILD ON )
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 if( NOT CMAKE_BUILD_TYPE )
 	message( STATUS "Setting build type to 'Release' as none was specified." )
 	set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE )
@@ -17,13 +20,11 @@ include( cmake/TargetPlatform.cmake )
 include( cmake/SSCEModules.cmake )
 include( cmake/TargetArch.cmake )
 include( CheckCCompilerFlag )
-include( ExternalProject )
-find_package( PkgConfig )
 
 ## Configure project and settings.
 set( PROJECT_VERSION_MAJOR 0 )
 set( PROJECT_VERSION_MINOR 1 )
-set( PROJECT_VERSION_RELEASE 1 )
+set( PROJECT_VERSION_RELEASE 2 )
 set( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_RELEASE}" )
 set( SSCE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR} )
 set( SSCE_VERSION_MINOR ${PROJECT_VERSION_MINOR} )
@@ -58,24 +59,21 @@ declare_module( "MODULE_AI_SEARCH_INFORMED" "Enable support for AI heuristic sea
 set( MODULE_LOGGER_FILE TRUE CACHE BOOL "Enable storing log files to disk." )
 set( MODULE_LOGGER_FILE_PREFIX "logs/${PROJECT_NAME}_" CACHE STRING "If logger files are enabled, this sets the path prefix of the file." )
 set( MODULE_MEMORY_FALLOC_STACK_SIZE "8*1024" CACHE STRING "How much kibibytes to allocate initially for each thread local stack. Note that reallocations may not be possible, so choose a large size here." )
+set( MODULE_MEMORY_GALLOC_OVERRIDE ${UNIX} CACHE BOOL "Whether or not to override global malloc/calloc/realloc/free symbols. You are on your own if enable this on Windows." )
+set( MODULE_MEMORY_GALLOC_DUMP_OPTIONS "gamble" CACHE STRING "Options string used by galloc_dump_stats. For more information see malloc_stats_print." )
 set( MODULE_STRUCTURES_HASHSET_INITIAL_SIZE "4096/(2*sizeof(void*))" CACHE STRING "How many buckets HashSet should allocate by default at initialization. This will also be the minimal amount of allocated buckets." )
 set( MODULE_STRUCTURES_HASHSET_SHRINK_RATIO "0.5f" CACHE STRING "Default value for shrink ratio." )
 set( MODULE_STRUCTURES_HASHSET_EXPAND_RATIO "1.0f" CACHE STRING "Default value for expand ratio." )
 set( MODULE_STRUCTURES_HASHSET_RESIZE_FACTOR "2" CACHE STRING "How much to increase or decrease bucket count when shrinking or expanding." )
-if( UNIX AND NOT APPLE )
-    set( MODULE_MEMORY_VALGRIND "OFF" CACHE BOOL "Only used in library development." )
-    if( MODULE_MEMORY_VALGRIND )
-        add_definitions( "-DVALGRIND" )
-    endif()
-endif()
 set( MODULE_TESTING TRUE CACHE BOOL "Whether to enable tests. Disabling may fix some build issues." )
-configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_SOURCE_DIR}/src/Config.h" )
-configure_file( "${PROJECT_SOURCE_DIR}/src/Modules.h.in" "${PROJECT_SOURCE_DIR}/src/Modules.h" )
+configure_file( "${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/generated/Config.h" )
+configure_file( "${PROJECT_SOURCE_DIR}/src/Modules.h.in" "${PROJECT_BINARY_DIR}/generated/Modules.h" )
+include_directories( "${PROJECT_BINARY_DIR}/generated" )
 
 ## Module definitions.
 include_directories( "${SSCE_DIR_SRC}/core" )
 set( SSCE_SRC "${SSCE_DIR_SRC}/core/Lifecycle_${SSCE_PLT}.c;${SSCE_DIR_SRC}/core/Runtime_${SSCE_ARCH}.c;${SSCE_DIR_SRC}/core/Runtime.c" )
-set( SSCE_INC "${SSCE_DIR_SRC}/Macros.h;${SSCE_DIR_SRC}/Modules.h;${SSCE_DIR_SRC}/Config.h;${SSCE_DIR_SRC}/core/Runtime.h;${SSCE_DIR_SRC}/core/Runtime.hpp" )
+set( SSCE_INC "${PROJECT_BINARY_DIR}/generated/Modules.h;${PROJECT_BINARY_DIR}/generated/Config.h;${SSCE_DIR_SRC}/core/Runtime.h;${SSCE_DIR_SRC}/core/Runtime.hpp" )
 set( SSCE_INC_DIRS ${CMAKE_CURRENT_BINARY_DIR} ${SSCE_DIR_SRC} )
 message( STATUS "######################################################" )
 message( STATUS "Configuring modules..." )
@@ -98,51 +96,24 @@ set( THREADS_PREFER_PTHREAD_FLAG TRUE )
 find_package( Threads REQUIRED )
 
 # Jemalloc module.
-set( JEMALLOC_PATH "${PROJECT_SOURCE_DIR}/jemalloc" )
-set( JEMALLOC_INSTALL_PATH "${CMAKE_CURRENT_BINARY_DIR}" )
-set( JEMALLOC_LIB_PATH "${JEMALLOC_INSTALL_PATH}/libjemalloc.${DYNLIB_EXT}" )
-set( JEMALLOC_INC_PATH "${JEMALLOC_INSTALL_PATH}")
-set( JEMALLOC_EXTRA_FLAGS "--install-path" ${JEMALLOC_INSTALL_PATH} )
-if( WIN32 )
-    # I could not figure out how to built this on windows.
-    set( JEMALLOC_EXTRA_FLAGS ${JEMALLOC_EXTRA_FLAGS} "--prebuilt" )
-endif( WIN32 )
-ExternalProject_Add( jemalloc-build
-                     PREFIX "${JEMALLOC_PATH}"
-                     SOURCE_DIR "${JEMALLOC_PATH}"
-                     BINARY_DIR "${JEMALLOC_PATH}"
-                     STAMP_DIR "${JEMALLOC_INSTALL_PATH}/jemalloc"
-                     TMP_DIR "${JEMALLOC_INSTALL_PATH}/jemalloc"
-                     CONFIGURE_COMMAND ""
-                     BUILD_COMMAND ${PYTHON_EXECUTABLE} "${JEMALLOC_PATH}/build.py" ${JEMALLOC_EXTRA_FLAGS}
-                     INSTALL_COMMAND ""
-                     BUILD_BYPRODUCTS ${JEMALLOC_LIB_PATH} "${JEMALLOC_INC_PATH}/jemalloc.h"
-                     TEST_EXCLUDE_FROM_MAIN 1
-                    )
-include_directories( ${JEMALLOC_INC_PATH} )
-add_library( jemalloc SHARED IMPORTED )
-set_property( TARGET jemalloc PROPERTY IMPORTED_LOCATION ${JEMALLOC_LIB_PATH} )
+option( JEMALLOC_BUILD_STATIC "Build static libraries" OFF )
+option( JEMALLOC_BUILD_SHARED "Build shared libraries" OFF )
+option( JEMALLOC_CXX_DISABLE "Disable C++ integration" ON )
+option( JEMALLOC_SMALLOCX_ENABLE "Enable experimental smallocx API" OFF )
+set(JEMALLOC_PREFIX "je_" CACHE STRING "Prefix to prepend to all public APIs")
+add_subdirectory( jemalloc )
+include_directories( "${CMAKE_BINARY_DIR}/jemalloc/include/jemalloc" )
 
 ## Define the library.
-if( WIN32 )
-    message( STATUS "Building dll." )
-    add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
-    target_link_libraries( ${PROJECT_NAME} Threads::Threads ${JEMALLOC_LIB_PATH} m )
-else()
-    set( BUILD_SHARED TRUE CACHE BOOL "Disable to build static libraries." )
-    if( ${BUILD_SHARED} )
-        message( STATUS "Building shared library." )
-        add_library( ${PROJECT_NAME} SHARED ${SSCE_SRC} )
-        target_link_libraries( ${PROJECT_NAME} Threads::Threads jemalloc m )
-    else()
-        message( STATUS "Building static library." )
-        add_definitions( "-DLINK_STATIC" )
-        add_library( ${PROJECT_NAME} STATIC ${SSCE_SRC} )
-        target_link_libraries( ${PROJECT_NAME} Threads::Threads jemalloc m )
-    endif()
+message( STATUS "Building shared library." )
+add_library( ${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${JEMALLOC_MODULE_TARGET}> ${SSCE_SRC} )
+if(UNIX AND NOT APPLE)
+    target_link_libraries( ${PROJECT_NAME} rt )
 endif()
-add_dependencies( ${PROJECT_NAME} jemalloc-build )
+target_link_libraries( ${PROJECT_NAME} Threads::Threads m ${CMAKE_DL_LIBS} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${SSCE_INC}" )
+
+## Debug linking flags generated by cmake.
 if( NOT TARGET verblink )
     configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/VerbLink.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/VerbLink.cmake" IMMEDIATE @ONLY )
     add_custom_target( verblink COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/VerbLink.cmake )
@@ -158,13 +129,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES DEFINE_SYMBOL "SSCE_EXPORTS" )
 if( CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" )
     message( "Debug build detected, extra optimization flags are not enabled." )
 else()
-    check_c_compiler_flag( "-fno-plt" noplt )
-    if( ${noplt} )
-        target_compile_options( ${PROJECT_NAME} PRIVATE "-fno-plt" )
-        message( STATUS "-fno-plt is supported and enabled for the library." )
-    else()
-        message( STATUS "-fno-plt is not supported." )
-    endif()
     include( CheckIPOSupported )
     check_ipo_supported( RESULT ipo_supported OUTPUT ipo_error )
     if( ${ipo_supported} )
@@ -187,13 +151,6 @@ install( TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
         PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
-configure_file( "${PROJECT_NAME}.pc.in" "${PROJECT_NAME}.pc" @ONLY )
-install( FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc" DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig )
-# Copy jemalloc files.
-set( SSCE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}" )
-configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CopyJemalloc.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/CopyJemalloc.cmake" IMMEDIATE @ONLY )
-install( SCRIPT "${CMAKE_BINARY_DIR}/CopyJemalloc.cmake" )
-install( FILES "${JEMALLOC_INC_PATH}/jemalloc.h" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
 
 ## Uninstall script.
 if( NOT TARGET uninstall )
@@ -249,22 +206,9 @@ else()
     message( WARNING "Doxygen need to be installed to generate the doxygen documentation" )
 endif()
 
-## Codestyle.
-find_program( BUILD_LUA NAMES lua DOC "The path to the lua executable. Used for fixing preprocessor formatting." )
-find_program( BUILD_FORMAT NAMES clang-format DOC "The path to clang-format." )
-if( "NOT EXISTS ${BUILD_LUA}" AND "NOT EXISTS ${BUILD_FORMAT}" )
-    ## Neither executables could be found.
-    message( WARNING "Both lua and clang-format are required for code formatting support." )
-elseif( NOT EXISTS ${BUILD_LUA} )
-    ## Only lua could not be found.
-    message( WARNING "lua is required for code formatting support." )
-elseif( NOT EXISTS ${BUILD_FORMAT} )
-    ## Only clang-format could not be found.
-    message( WARNING "clang-format is required for code formatting support." )
-else()
-    ## Enable formatting.
-    add_custom_target(style "lua" "${PROJECT_SOURCE_DIR}/style-macros.lua" ${SSCE_INC} ${SSCE_SRC} DEPENDS ${SSCE_INC} ${SSCE_SRC} )
+## Export for use as submodule.
+get_directory_property( submodule PARENT_DIRECTORY )
+if( submodule )
+    set( SSCE_MODULE_LIB ${PROJECT_NAME} PARENT_SCOPE )
+    set( SSCE_MODULE_INCLUDE ${SSCE_INC_DIRS} PARENT_SCOPE )
 endif()
-
-## Export for use by parent project.
-set( SSCE_EXPORT_INCLUDE ${SSCE_INC_DIRS} PARENT_SCOPE )

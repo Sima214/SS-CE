@@ -338,3 +338,9 @@
    */
   #define MARK_NONNULL_ARGS(...) __attribute__((nonnull(__VA_ARGS__)))
 #endif
+#ifndef MARK_ALIAS
+  /**
+   * Links a symbol to `target`.
+   */
+  #define MARK_ALIAS(target) __attribute__((alias(#target)))
+#endif
