@@ -12,6 +12,7 @@ branches:
     - macos
 
 install:
+  - cmd: choco install gawk -y
   - cmd: git submodule update --init --recursive
   # Remove shell provided by git, to avoid conflicts.
   - cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
@@ -31,6 +32,6 @@ install:
 build_script:
   - python .\windows.py --generator "%GENERATOR%"
 
-# Uncomment to be enable rdp.
+# Uncomment to enable rdp.
 on_finish:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
