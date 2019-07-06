@@ -56,7 +56,7 @@ def run_build(verbose, test, trace, install, deploy):
         args += ['-DCMAKE_VERBOSE_MAKEFILE=ON']
     if trace:
         args += ['-DCMAKE_BUILD_TYPE=Debug']
-    args += ["-DCMAKE_INSTALL_PREFIX:PATH=install"]
+    args += ["-DCMAKE_INSTALL_PREFIX:PATH=%s" % (build_dir + "\install")]
     if cmd_args.generator:
         args += ['-G{}'.format(cmd_args.generator)]
     do_call(args)
@@ -69,7 +69,6 @@ def run_build(verbose, test, trace, install, deploy):
     # Install
     if install:
         print('-' * 72, flush=True)
-        os.chdir(build_dir)
         args = ['cmake', '--build', build_dir, "--target", "install"]
         do_call(args)
         if deploy:
@@ -78,7 +77,6 @@ def run_build(verbose, test, trace, install, deploy):
         else:
             args = ['cmake', '--build', build_dir, "--target", "package"]
             do_call(args)
-        os.chdir(cwd)
 
     # Test
     if test:
