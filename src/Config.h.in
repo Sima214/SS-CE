@@ -18,7 +18,7 @@
 /**
  * Release version number.
  */
-#define SSCE_VERSION_RELEASE ${SSCE_VERSION_RELEASE}
+#define SSCE_VERSION_PATCH ${SSCE_VERSION_PATCH}
 
 /**
  * Version string.

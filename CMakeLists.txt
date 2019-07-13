@@ -24,11 +24,11 @@ include( CheckCCompilerFlag )
 ## Configure project and settings.
 set( PROJECT_VERSION_MAJOR 0 )
 set( PROJECT_VERSION_MINOR 1 )
-set( PROJECT_VERSION_RELEASE 2 )
-set( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_RELEASE}" )
+set( PROJECT_VERSION_PATCH 2 )
+set( PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" )
 set( SSCE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR} )
 set( SSCE_VERSION_MINOR ${PROJECT_VERSION_MINOR} )
-set( SSCE_VERSION_RELEASE ${PROJECT_VERSION_RELEASE} )
+set( SSCE_VERSION_PATCH ${PROJECT_VERSION_PATCH} )
 set( SSCE_VERSION ${PROJECT_VERSION} )
 set( PROJECT_NAME "ssce")
 project( ${PROJECT_NAME} VERSION ${SSCE_VERSION} DESCRIPTION "A random C/C++ library." )
@@ -147,13 +147,11 @@ set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -masm=intel" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-builtin-memmov -fno-builtin-strlen -fno-builtin-memcmp" )
 
 ## Define installation.
-message( STATUS "Found strip executable: ${CMAKE_STRIP}" )
-include( GNUInstallDirs )
 install( TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
-        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
-        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}"
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" )
+        RUNTIME DESTINATION "bin"
+        ARCHIVE DESTINATION "bin"
+        LIBRARY DESTINATION "bin"
+        PUBLIC_HEADER DESTINATION "include/${PROJECT_NAME}" )
 
 ## Uninstall script.
 if( NOT TARGET uninstall )
@@ -161,25 +159,27 @@ if( NOT TARGET uninstall )
     add_custom_target( uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 endif()
 
-## Packaging
-if( NOT TARGET package )
-    add_custom_target(
-        package
-        ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
-        COMMENT "This may not work as intended if 'make install' was not run before."
-    )
-endif()
-if( NOT TARGET deploy )
-    add_custom_target(
-        deploy
-        ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/package.py" ${CMAKE_INSTALL_PREFIX} "package" upload
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        USES_TERMINAL BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/package.tar.xz"
-        COMMENT "This may not work as intended if make install was not run before."
-    )
-endif()
+## Packaging.
+set( CPACK_PACKAGE_NAME "SS-CE" )
+set( CPACK_PACKAGE_VENDOR "Sima214" )
+set( CPACK_PACKAGE_DESCRIPTION "Super simply: C/C++ extensions" )
+set( CPACK_PACKAGE_HOMEPAGE_URL "https://sima214.me/ssce" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
+set( CPACK_PACKAGE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" )
+set( CPACK_SOURCE_IGNORE_FILES "build" ".vscode" ".git" )
+set( CPACK_PACKAGE_FILE_NAME "package" )
+set( CPACK_SOURCE_PACKAGE_FILE_NAME "sources" )
+set( CPACK_STRIP_FILES TRUE )
+set( CPACK_GENERATOR "TBZ2" )
+set( CPACK_SYSTEM_NAME ${SSCE_PLT} )
+add_custom_target( 
+    deploy ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/upload.py"
+    "${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/${SSCE_PLT}/TBZ2/package.tar.bz2"
+)
+## This must come last.
+include( CPack )
+add_dependencies( deploy package )
 
 ## Test configuration.
 if( MODULE_TESTING )

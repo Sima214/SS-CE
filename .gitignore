@@ -1,8 +1,7 @@
 # Custom files.
 build*
 .vscode
-Config.h
-Modules.h
+
 ##########################
 # CMake template.
 CMakeCache.txt
