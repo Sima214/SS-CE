@@ -179,7 +179,6 @@ add_custom_target(
 )
 ## This must come last.
 include( CPack )
-add_dependencies( deploy package )
 
 ## Test configuration.
 if( MODULE_TESTING )

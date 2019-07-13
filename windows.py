@@ -44,7 +44,7 @@ os.environ["PATH"] = "%s;%s" % (
 )
 
 
-def run_build(verbose, test, trace, install, deploy):
+def run_build(verbose, test, trace, package, deploy):
     os.chdir(cwd)
     # Configure
     print('-' * 72, flush=True)
@@ -56,7 +56,6 @@ def run_build(verbose, test, trace, install, deploy):
         args += ['-DCMAKE_VERBOSE_MAKEFILE=ON']
     if trace:
         args += ['-DCMAKE_BUILD_TYPE=Debug']
-    args += ["-DCMAKE_INSTALL_PREFIX:PATH=%s" % (build_dir + "\\install")]
     if cmd_args.generator:
         args += ['-G{}'.format(cmd_args.generator)]
     do_call(args)
@@ -67,15 +66,12 @@ def run_build(verbose, test, trace, install, deploy):
     do_call(args)
 
     # Install
-    if install:
+    if package:
         print('-' * 72, flush=True)
-        args = ['cmake', '--build', build_dir, "--target", "install"]
+        args = ['cmake', '--build', build_dir, "--target", "package"]
         do_call(args)
         if deploy:
             args = ['cmake', '--build', build_dir, "--target", "deploy"]
-            do_call(args)
-        else:
-            args = ['cmake', '--build', build_dir, "--target", "package"]
             do_call(args)
 
     # Test
@@ -88,4 +84,4 @@ def run_build(verbose, test, trace, install, deploy):
 
 
 # Finally run build.
-run_build(verbose=False, trace=False, test=True, install=True, deploy=("APPVEYOR" in os.environ))
+run_build(verbose=False, trace=False, test=True, package=True, deploy=("APPVEYOR" in os.environ))

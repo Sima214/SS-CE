@@ -32,10 +32,10 @@ before_script:
   - export ARTIFACT_ID=$TRAVIS_JOB_NUMBER
   - mkdir build
   - cd build
-  - cmake -DCMAKE_VERBOSE_MAKEFILE=OFF -DCMAKE_INSTALL_PREFIX:PATH=install ..
+  - cmake -DCMAKE_VERBOSE_MAKEFILE=OFF ..
 
 script:
   - make -j 2
-  - make install
+  - make package
   - make deploy
   - ctest -VV
