@@ -174,8 +174,10 @@ set( CPACK_STRIP_FILES TRUE )
 set( CPACK_GENERATOR "TBZ2" )
 set( CPACK_SYSTEM_NAME ${SSCE_PLT} )
 add_custom_target( 
-    deploy ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/upload.py"
-    "${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/${SSCE_PLT}/TBZ2/package.tar.bz2"
+    deploy
+    ${PYTHON_EXECUTABLE}
+    "${CMAKE_CURRENT_SOURCE_DIR}/upload.py"
+    "${CMAKE_CURRENT_BINARY_DIR}/package.tar.bz2"
 )
 ## This must come last.
 include( CPack )
