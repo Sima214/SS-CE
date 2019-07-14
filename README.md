@@ -6,33 +6,40 @@
 
 ## Description
 
-This is my attempt to organize all the C/C++ code I always use in a single place. This is meant to be used as a library, however without a particular purpose. Simply put: it's just a bunch of random C/C++ code which does nothing by itself.
+This is my attempt to organize all the C/C++ code I always use in a single place. Simply put: it's just a bunch of random C/C++ code bundled in a library.
 
 ## How to include in a CMake project
 
-During installation a pkg-config file is also created. This should be usable by most build systems.
+SS-CE can function as a cmake subproject.
+To include add the following lines to the top level `CMakeLists.txt`:
 
 ```CMake
-# Example code for linking against libssce using CMake.
-find_package( PkgConfig )
-pkg_check_modules( SSCE REQUIRED ssce )
-target_compile_options( ${PROJECT_NAME} ${SSCE_CFLAGS} )
-target_link_libraries( ${PROJECT_NAME} ${SSCE_LIBRARIES} )
+message( STATUS "Importing SS-CE..." )
+# Here go any options for SS-CE.
+add_subdirectory( "SS-CE" )
+include_directories( ${SSCE_MODULE_INCLUDE} )
+target_link_libraries( ${PROJECT_NAME} ${SSCE_MODULE_LIB} )
 ```
 
 ## Building
 
 Cmake, python3 and a valid gcc or clang installation is required!
-This project uses cmake for generating makefiles for your system.
-On linux this can simply be done by running:
+MSVC is not supported.
 
-```Shell
-mkdir build
-cd build
-cmake ..
-make -j4
-sudo make install
-```
+## Supported system configurations
+
+### Operating systems
+
+- Linux
+- MacOS
+- Windows
+
+### Cpu Architectures
+
+- amd64
+- TODO: i386
+- TODO: arm
+- TODO: arm64
 
 ## Modules
 
