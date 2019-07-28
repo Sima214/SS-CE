@@ -57,42 +57,16 @@ EXPORT_API int falloc_ensure_space(ThreadLocalStack* tls, size_t l);
  * The returned pointer is aligned sizeof(int) bytes.
  * If not enough memory could be allocated, then NULL is returned.
  */
-EXPORT_API void* falloc_malloc(size_t l) MARK_MALLOC_SIMPLE(1);
-
-#ifndef DOXYGEN
-  #define FALLOC_MALLOC_ATTR MARK_UNUSED FORCE_INLINE MARK_MALLOC(2, 1)
-#else
-  #define FALLOC_MALLOC_ATTR
-#endif
+EXPORT_API void* falloc_malloc(size_t l) MARK_MALLOC(1);
 
 /**
  * Allocates \p l bytes and returns
  * a pointer to the start of the allocated memory.
- * The returned pointer is aligned \p align bytes.
+ * The returned pointer is aligned at \p align bytes.
+ * \p align must be a power of 2.
  * If not enough memory could be allocated, then NULL is returned.
  */
-FALLOC_MALLOC_ATTR static inline void* falloc_malloc_aligned(size_t l, size_t align) {
-  // Get thread local stack.
-  ThreadLocalStack* tls = falloc_get_tls();
-  // Calculate alignment.
-  uintptr_t end = ((uintptr_t)tls->start) + tls->usage;
-  size_t align_offset = end % align;
-  if(align_offset != 0) {
-    align_offset = align - align_offset;
-  }
-  size_t actual_len = align_offset + l;
-  // Request bytes.
-  if(COLD_BRANCH(falloc_ensure_space(tls, actual_len))) {
-    EARLY_TRACE("Could not allocate fast ram!");
-    return NULL;
-  }
-  // Calculate final address.
-  void* final = (void*) (end + align_offset);
-  // Update usage.
-  tls->usage += actual_len;
-  EARLY_TRACEF("Allocated fast ram at %p of size %zu!", final, actual_len);
-  return final;
-}
+EXPORT_API void* falloc_malloc_aligned(size_t l, size_t align) MARK_MALLOC_ALIGNED(2, 1);
 
 /**
  * The equivalent of free for \ref falloc_malloc_aligned.

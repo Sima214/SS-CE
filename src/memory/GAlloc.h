@@ -15,17 +15,17 @@
 /**
  * Your usual malloc.
  */
-EXPORT_API void* galloc_malloc(size_t size) MARK_MALLOC_SIMPLE(1);
+EXPORT_API void* galloc_malloc(size_t size) MARK_MALLOC(1);
 
 /**
  * Your usual calloc.
  */
-EXPORT_API void* galloc_calloc(size_t num, size_t size) MARK_MALLOC_SIMPLE(1, 2);
+EXPORT_API void* galloc_calloc(size_t num, size_t size) MARK_MALLOC(1, 2);
 
 /**
  * Your usual realloc.
  */
-EXPORT_API void* galloc_realloc(void *ptr, size_t size) MARK_MALLOC_SIMPLE(2);
+EXPORT_API void* galloc_realloc(void *ptr, size_t size) MARK_MALLOC(2);
 
 /**
  * Your usual free.

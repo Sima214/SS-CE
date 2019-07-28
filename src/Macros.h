@@ -290,17 +290,17 @@
    */
   #define HOT_BRANCH(cond) __builtin_expect(cond, 1)
 #endif
+#ifndef MARK_MALLOC_ALIGNED
+  /**
+   * Marks that a function allocates memory and returns a pointer to said memory.
+   */
+  #define MARK_MALLOC_ALIGNED(alignment, ...) __attribute__((__malloc__, alloc_align(alignment), alloc_size(__VA_ARGS__)))
+#endif
 #ifndef MARK_MALLOC
   /**
    * Marks that a function allocates memory and returns a pointer to said memory.
    */
-  #define MARK_MALLOC(alignment, ...) __attribute__((__malloc__, alloc_align(alignment), alloc_size(__VA_ARGS__)))
-#endif
-#ifndef MARK_MALLOC_SIMPLE
-  /**
-   * Marks that a function allocates memory and returns a pointer to said memory.
-   */
-  #define MARK_MALLOC_SIMPLE(...) __attribute__((__malloc__, alloc_size(__VA_ARGS__)))
+  #define MARK_MALLOC(...) __attribute__((__malloc__, alloc_size(__VA_ARGS__)))
 #endif
 #ifndef MARK_OBJ_ALLOC
   /**

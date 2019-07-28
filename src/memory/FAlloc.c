@@ -157,6 +157,29 @@ int falloc_ensure_space(ThreadLocalStack* tls, size_t l) {
   #endif
 }
 
+void* falloc_malloc_aligned(size_t l, size_t align) {
+  // Get thread local stack.
+  ThreadLocalStack* tls = falloc_get_tls();
+  // Calculate alignment.
+  uintptr_t end = ((uintptr_t)tls->start) + tls->usage;
+  size_t align_offset = end & (align - 1);
+  if(align_offset != 0) {
+    align_offset = align - align_offset;
+  }
+  size_t actual_len = align_offset + l;
+  // Request bytes.
+  if(COLD_BRANCH(falloc_ensure_space(tls, actual_len))) {
+    EARLY_TRACE("Could not allocate fast ram!");
+    return NULL;
+  }
+  // Calculate final address.
+  void* final = (void*) (end + align_offset);
+  // Update usage.
+  tls->usage += actual_len;
+  EARLY_TRACEF("Allocated fast ram at %p of size %zu!", final, actual_len);
+  return final;
+}
+
 void* falloc_malloc(size_t l) {
   return falloc_malloc_aligned(l, sizeof(int));
 }
