@@ -3,10 +3,9 @@ setlocal
 
 rem Constants
 set "ZIP7_PATH=C:\Program Files\7-Zip\7z.exe"
-set "PYTHON_URL=https://www.python.org/ftp/python/3.7.3/python-3.7.3-embed-win32.zip"
+set "PYTHON_URL=https://www.python.org/ftp/python/3.7.4/python-3.7.4-embed-win32.zip"
 set "MINGW_URL=https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/mingw64.7z"
-set "CMAKE_URL=https://github.com/Kitware/CMake/releases/download/v3.14.0/cmake-3.14.0-win32-x86.zip"
-set "JEMALLOC_URL=https://d3f3nimbmr2mxp.cloudfront.net/ssce/prebuilt/win/jemalloc-x86_64-lto.7z"
+set "CMAKE_URL=https://github.com/Kitware/CMake/releases/download/v3.15.1/cmake-3.15.1-win32-x86.zip"
 
 rem Test if 7z is working properly.
 "%ZIP7_PATH%"
@@ -46,11 +45,11 @@ echo Preparing tools...
 "%ZIP7_PATH%" x ..\cache\mingw.7z
 "%ZIP7_PATH%" x -obin ..\cache\python.zip
 "%ZIP7_PATH%" x -o. ..\cache\cmake.zip
-xcopy cmake-3.14.0-win32-x86\bin bin\ /s /e
-xcopy cmake-3.14.0-win32-x86\doc doc\ /s /e
-xcopy cmake-3.14.0-win32-x86\man man\ /s /e
-xcopy cmake-3.14.0-win32-x86\share share\ /s /e
-rmdir /s /q cmake-3.14.0-win32-x86
+xcopy cmake-3.15.1-win32-x86\bin bin\ /s /e
+xcopy cmake-3.15.1-win32-x86\doc doc\ /s /e
+xcopy cmake-3.15.1-win32-x86\man man\ /s /e
+xcopy cmake-3.15.1-win32-x86\share share\ /s /e
+rmdir /s /q cmake-3.15.1-win32-x86
 
 cd ..
 
@@ -60,10 +59,6 @@ set "PATH=%cd%\tools\bin;%PATH%"
 git submodule update --init --recursive
 set "PATH=%PATH:C:\Program Files\Git\usr\bin;=%"
 set MINGW_PATH=%cd%\tools\bin
-
-powershell -Command "Invoke-WebRequest -OutFile jemalloc-x86_64-lto.7z %JEMALLOC_URL% -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox"
-"%ZIP7_PATH%" x jemalloc-x86_64-lto.7z
-set "PATH=%CD%\jemalloc\lib;%PATH%"
 
 python .\windows.py --generator "MinGW Makefiles"
 
