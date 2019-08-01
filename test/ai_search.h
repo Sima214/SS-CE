@@ -242,7 +242,7 @@ static void npuzzle_state_swap(const IDataType* dti, void* a, void* b) {
 }
 
 static size_t npuzzle_state_hash(const IDataType* dti, const void* a) {
-  size_t hash = ncrypto_hash(a, dti->key_size);
+  size_t hash = ncrypto_native_hash(a, dti->key_size);
   return hash;
 }
 

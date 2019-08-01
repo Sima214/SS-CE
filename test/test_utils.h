@@ -1,5 +1,8 @@
 #ifndef TEST_UTILS_H
 #define TEST_UTILS_H
+/**
+ * Common code for all tests.
+ */
 
 #include <Interface.h>
 #include <Macros.h>

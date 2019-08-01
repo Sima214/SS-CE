@@ -59,10 +59,20 @@ void loge(T... args) {
 }
 
 /**
+ * Logs a fatal message and continues execution.
+ * Takes the same parameters as printf.
+ */
+template<class... T>
+void logfc(T... args) {
+  logger_log(LOGGER_FATAL, 0, args...);
+}
+
+/**
  * Logs a fatal message and aborts execution.
  * Takes the same parameters as printf.
  */
 template<class... T>
+MARK_NORETURN
 void logf(T... args) {
   logger_logf(args...);
 }
@@ -83,5 +93,5 @@ inline LogLevel getLoggerLevel() {
   return logger_get_level();
 }
 
-} // namespace ssce
+}  // namespace ssce
 #endif /*SSCE_LOGGER_HPP*/

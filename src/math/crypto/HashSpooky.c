@@ -1,5 +1,7 @@
 #include "Hash.h"
 
+#include <BiggerNumbers.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -22,8 +24,11 @@
  *   July 30 2012: I reintroduced the buffer overflow
  *   August 5 2012: SpookyV2: d = should be d += in short hash, and remove extra mix from long hash
  */
-
-#define ALLOW_UNALIGNED_READS 1
+#if IS_ARM && !__ARM_FEATURE_UNALIGNED
+  #define ALLOW_UNALIGNED_READS 0
+#else
+  #define ALLOW_UNALIGNED_READS 1
+#endif
 // number of uint64's in internal state
 #define NUM_VARS 12
 // size of the internal state
@@ -302,7 +307,7 @@ static void internal_spooky_hash_short(const void* message, size_t length, uint6
   u.p8 = (const uint8_t* )message;
 
   if(!ALLOW_UNALIGNED_READS && (u.i & 0x7)) {
-    memcpy(buf, message, length);
+    __builtin_memcpy(buf, message, length);
     u.p64 = buf;
   }
 
@@ -424,7 +429,7 @@ static inline void internal_spooky_hash(const void* message, size_t length, uint
   }
   else {
     while(u.p64 < end) {
-      memcpy(buf, u.p64, BLOCK_SIZE);
+      __builtin_memcpy(buf, u.p64, BLOCK_SIZE);
       internal_spooky_hash_mix(buf, h0, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11);
       u.p64 += NUM_VARS;
     }
@@ -442,9 +447,18 @@ static inline void internal_spooky_hash(const void* message, size_t length, uint
   *hash2 = h1;
 }
 
-size_t ncrypto_hash(const void* data, size_t length) {
-  uint64_t hash = 0;
-  uint64_t seed = 0;
-  internal_spooky_hash(data, length, &hash, &seed);
-  return hash;
+#ifdef INT128_SUPPORTED
+  uint128_t ncrypto_spooky128(const void* data, size_t length, uint128_t seed) {
+    uint64_t h1 = unpack_lower_u128_u64(seed);
+    uint64_t h2 = unpack_upper_u128_u64(seed);
+    internal_spooky_hash(data, length, &h1, &h2);
+    return pack_u64_u128(h1, h2);
+  }
+#endif
+
+size_t ncrypto_spooky64(const void* data, size_t length, uint64_t seed) {
+  uint64_t h1 = 0;
+  uint64_t h2 = seed;
+  internal_spooky_hash(data, length, &h1, &h2);
+  return h1;
 }

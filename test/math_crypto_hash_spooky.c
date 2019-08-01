@@ -90,7 +90,7 @@ int spooky_hash_test_results() {
   uint32_t saw[SPOOKY_HASH_RESULTS_BUFSIZE];
   for(int i = 0; i < SPOOKY_HASH_RESULTS_BUFSIZE; ++i) {
     buf[i] = (uint8_t)(i + 128);
-    saw[i] = (uint32_t)ncrypto_hash(buf, i);
+    saw[i] = (uint32_t)ncrypto_spooky64(buf, i, 0);
     if(saw[i] != expected[i]) {
       printf("\t%3d: saw 0x%.8x, expected 0x%.8x\n", i, saw[i], (uint32_t)expected[i]);
       return EXIT_FAILURE;
@@ -112,7 +112,7 @@ int spooky_hash_test_alignment() {
         buf[j + k] = (char)k;
       }
       buf[j + i + 1] = (char)(i + j);
-      hash[j] = ncrypto_hash((const void *)(buf + j + 1), i);
+      hash[j] = ncrypto_spooky64((const void *)(buf + j + 1), i, 0);
     }
     for(int j = 1; j < 8; ++j) {
       if(hash[0] != hash[j]) {

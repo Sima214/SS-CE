@@ -113,7 +113,9 @@ EXPORT_API void logger_log(const LogLevel level, const int options, const char* 
  * Logs a fatal message and aborts execution.
  * Takes the same parameters as printf.
  */
-#define logger_logf(...) logger_log(LOGGER_FATAL, LOGGER_ABORT, __VA_ARGS__);__builtin_unreachable();
+#define logger_logf(...)                               \
+  logger_log(LOGGER_FATAL, LOGGER_ABORT, __VA_ARGS__); \
+  MARK_UNREACHABLE;
 
 /**
  * Checks if a pointer is null.
@@ -136,10 +138,10 @@ EXPORT_API void logger_log(const LogLevel level, const int options, const char* 
   int r = exp;                                                               \
   if(COLD_BRANCH(r == 0)) {                                                  \
     logger_logf("%s at %s in %s:%d",                                         \
-      COLD_BRANCH(errno == 0) ? "Unknown error" : strerror(errno), \
-      __PRETTY_FUNCTION__, __FILE__, __LINE__);                    \
-    }
-  
+                COLD_BRANCH(errno == 0) ? "Unknown error" : strerror(errno), \
+                __PRETTY_FUNCTION__, __FILE__, __LINE__);                    \
+  }
+
 /**
  * Used internally for initializing this module.
  */

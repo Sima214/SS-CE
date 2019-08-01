@@ -8,15 +8,63 @@
 #include <Macros.h>
 
 #include <stddef.h>
+#include <stdint.h>
+
+#if SIZE_WIDTH==64
+    /**
+     * Calculates a non cryptographic hash for some data.
+     * The used hash algorithm depends on cpu architecture.
+     * Note that the returned hash may differ based on cpu architecture.
+     * 
+     * @param data pointer to message.
+     * @param length how many bytes is the message?
+     * @returns the calculated hash.
+     */
+    #define ncrypto_native_hash(data, length) ncrypto_spooky64(data, length, 0)
+#elif SIZE_WIDTH==32
+    /**
+     * Calculates a non cryptographic hash for some data.
+     * The used hash algorithm depends on cpu architecture.
+     * Note that the returned hash may differ based on cpu architecture.
+     * 
+     * @param data pointer to message.
+     * @param length how many bytes is the message?
+     * @returns the calculated hash.
+     */
+    #define ncrypto_native_hash(data, length) ncrypto_xxhash32(data, length)
+#else
+    #warning No native hash function for this processor!
+#endif
+
+
+#ifdef INT128_SUPPORTED
+    /**
+     * SpookyHash implementation.
+     * 
+     * @param data pointer to message.
+     * @param length how many bytes is the message?
+     * @returns the calculated hash.
+     */
+    EXPORT_API uint128_t ncrypto_spooky128(const void* data, size_t length, uint128_t seed) MARK_NONNULL_ARGS(1);
+#endif
 
 /**
- * Calculates a non cryptographic hash for some data.
- * Note that the returned hash may differ based on cpu architecture.
+ * SpookyHash implementation.
+ * This only returns the lower 64 bits of the hash.
  * 
  * @param data pointer to message.
  * @param length how many bytes is the message?
  * @returns the calculated hash.
  */
-EXPORT_API size_t ncrypto_hash(const void* data, size_t length) MARK_NONNULL_ARGS(1);
+EXPORT_API uint64_t ncrypto_spooky64(const void* data, size_t length, uint64_t seed) MARK_NONNULL_ARGS(1);
+
+/**
+ * 
+ * 
+ * @param data pointer to message.
+ * @param length how many bytes is the message?
+ * @returns the calculated hash.
+ */
+EXPORT_API uint32_t ncrypto_xxhash32(const void* data, size_t length) MARK_NONNULL_ARGS(1);
 
 #endif /*SSCE_NC_HASH_H*/

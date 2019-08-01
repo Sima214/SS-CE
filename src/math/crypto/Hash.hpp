@@ -6,7 +6,6 @@
  */
 
 #include <Macros.h>
-namespace std {
 C_DECLS_START
 #include <Hash.h>
 C_DECLS_END
@@ -15,5 +14,5 @@ namespace ssce {
 
 // TODO:
 
-} // namespace ssce
+}  // namespace ssce
 #endif /*SSCE_NC_HASH_HPP*/

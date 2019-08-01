@@ -34,6 +34,12 @@
    */
   #define IS_POSIX (defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)))
 #endif
+#ifndef IS_ARM
+  /**
+   * True if compiling for an ARM processor.
+   */
+  #define IS_ARM (defined(__arm__) || defined(__TARGET_ARCH_ARM))
+#endif
 #ifndef MARK_PRINTF
   #ifdef _WIN32
     /**
@@ -87,6 +93,12 @@
    * Marks a function as 'cold'.
    */
   #define MARK_COLD __attribute__((cold))
+#endif
+#ifndef MARK_UNREACHABLE
+  #define MARK_UNREACHABLE __builtin_unreachable();
+#endif
+#ifndef MARK_NORETURN
+  #define MARK_NORETURN __attribute__((noreturn))
 #endif
 #ifndef MASK_CREATE
   /**
