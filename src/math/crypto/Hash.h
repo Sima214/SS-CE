@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if SIZE_WIDTH==64
+#if __SIZE_WIDTH__==64
     /**
      * Calculates a non cryptographic hash for some data.
      * The used hash algorithm depends on cpu architecture.
@@ -21,7 +21,7 @@
      * @returns the calculated hash.
      */
     #define ncrypto_native_hash(data, length) ncrypto_spooky64(data, length, 0)
-#elif SIZE_WIDTH==32
+#elif __SIZE_WIDTH__==32
     /**
      * Calculates a non cryptographic hash for some data.
      * The used hash algorithm depends on cpu architecture.
