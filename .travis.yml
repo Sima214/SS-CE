@@ -14,8 +14,6 @@ compiler:
 addons:
   homebrew:
     packages:
-    # - libtool
-    # - gcc
     - python3
 
 branches:
@@ -24,6 +22,9 @@ branches:
     - linux
 
 before_script:
+  # We need a newer version of cmake than the one provided.
+  - brew update
+  - brew upgrade cmake
   - git submodule update --init --recursive
   - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then
       export CC=$(ls /usr/local/Cellar/gcc/*/bin/gcc-?);
