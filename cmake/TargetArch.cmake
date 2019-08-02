@@ -38,7 +38,7 @@ function(target_architecture output_var)
         run_result_unused
         compile_result_unused
         "${CMAKE_BINARY_DIR}"
-        "${CMAKE_BINARY_DIR}/arch.c"
+        "${CMAKE_BINARY_DIR}/generated/arch.c"
         COMPILE_OUTPUT_VARIABLE arch
     )
 

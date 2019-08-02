@@ -31,7 +31,7 @@
      * @param length how many bytes is the message?
      * @returns the calculated hash.
      */
-    #define ncrypto_native_hash(data, length) ncrypto_xxhash32(data, length)
+    #define ncrypto_native_hash(data, length) ncrypto_xxhash32(data, length, 0)
 #else
     #warning No native hash function for this processor!
 #endif
@@ -40,6 +40,7 @@
 #ifdef INT128_SUPPORTED
     /**
      * SpookyHash implementation.
+     * Only available on >=64bit platforms.
      * 
      * @param data pointer to message.
      * @param length how many bytes is the message?
@@ -59,12 +60,12 @@
 EXPORT_API uint64_t ncrypto_spooky64(const void* data, size_t length, uint64_t seed) MARK_NONNULL_ARGS(1);
 
 /**
- * 
+ * XXHash32 implementation.
  * 
  * @param data pointer to message.
  * @param length how many bytes is the message?
  * @returns the calculated hash.
  */
-EXPORT_API uint32_t ncrypto_xxhash32(const void* data, size_t length) MARK_NONNULL_ARGS(1);
+EXPORT_API uint32_t ncrypto_xxhash32(const void* data, size_t length, uint32_t seed) MARK_NONNULL_ARGS(1);
 
 #endif /*SSCE_NC_HASH_H*/

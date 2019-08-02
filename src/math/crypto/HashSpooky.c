@@ -7,7 +7,7 @@
 #include <string.h>
 
 /*
- * This is a SpookyHash implementation ported in C.
+ * This is the SpookyV2 implementation ported in C.
  * Original sources can be found at:
  * http://burtleburtle.net/bob/hash/spooky.html
  */
