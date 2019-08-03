@@ -456,7 +456,7 @@ static inline void internal_spooky_hash(const void* message, size_t length, uint
   }
 #endif
 
-size_t ncrypto_spooky64(const void* data, size_t length, uint64_t seed) {
+uint64_t ncrypto_spooky64(const void* data, size_t length, uint64_t seed) {
   uint64_t h1 = 0;
   uint64_t h2 = seed;
   internal_spooky_hash(data, length, &h1, &h2);
