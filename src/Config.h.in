@@ -26,6 +26,11 @@
 #define SSCE_VERSION "${SSCE_VERSION}"
 
 /**
+ * Whether the user requested a build with minimal external dependecies.
+ */
+#cmakedefine STANDALONE
+
+/**
  * Logger module log file output support.
  */
 #define LOGGER_FILE ${MODULE_LOGGER_FILE}

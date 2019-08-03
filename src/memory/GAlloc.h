@@ -6,6 +6,7 @@
  * This is usually provided jemalloc, but this may change in the future.
  */
 
+#include <Config.h>
 #include <Macros.h>
 
 // Include std malloc, so we can later override them and not cause any problems.
@@ -37,10 +38,13 @@ EXPORT_API void galloc_free(void *ptr);
  */
 EXPORT_API size_t galloc_size(void *ptr);
 
-/**
- * Dumps allocator statistics at stdout.
- */
-EXPORT_API void galloc_dump_stats();
+#ifndef STANDALONE
+  /**
+   * Dumps allocator statistics at stdout.
+   * Function may not be always available.
+   */
+  EXPORT_API void galloc_dump_stats();
+#endif
 
 #ifndef GALLOC_IMPLEMENTATION
   #define malloc galloc_malloc
