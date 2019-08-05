@@ -56,5 +56,7 @@ function(target_architecture output_var)
     endif()
     set( ${output_var} "${arch}" PARENT_SCOPE )
 
+    add_compile_definitions( "${arch}" )
+
     message( STATUS "Compiling for ${arch}." )
 endfunction()
