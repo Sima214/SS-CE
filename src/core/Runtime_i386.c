@@ -17,7 +17,7 @@ static Runtime features;
 
 Runtime* ssce_get_runtime() {
   if(!initialized) {
-    features.cpu_64bit = 1;
+    features.cpu_64bit = 0;
     unsigned int eax;
     unsigned int ebx;
     unsigned int ecx;
