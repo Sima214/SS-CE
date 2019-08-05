@@ -1,4 +1,18 @@
+stages:
+  - test
+  - build
+  - deploy
+
+workaround:
+  stage: test
+  tags:
+    - aws
+  allow_failure: true
+  script:
+    - ping -c 1 gitlab.com
+
 clang:
+  stage: build
   tags:
     - clang
   except:
@@ -22,6 +36,7 @@ clang:
     - ctest -VV
 
 gcc:
+  stage: build
   tags:
     - gcc
   except:
