@@ -1,5 +1,5 @@
-// TODO: 
 #include "Memory.h"
+#include "Swap.h"
 
 #include <Macros.h>
 #include <Runtime.h>
@@ -63,7 +63,7 @@ TARGET_EXT(sse2) static void memswap_sse2(void* dst, void* src, size_t len) {
 
 static memswap_t* resolve_memswap() {
   Runtime* features = ssce_get_runtime();
-  else if(features->cpu_x86_sse2) {
+  if(features->cpu_x86_sse2) {
     EARLY_TRACE("Selecting memswap_sse2");
     return memswap_sse2;
   }
@@ -73,4 +73,34 @@ static memswap_t* resolve_memswap() {
   }
 }
 
-EXPORT_API_RUNTIME(resolve_memswap) void memswap(void*, void*, size_t);
+#if defined(LINK_STATIC)
+  void memswap(void* dst, void* src, size_t len) {
+    static memswap_t* resolved = NULL;
+    if(resolved == NULL) {
+      resolved = resolve_memswap();
+    }
+    (*resolved)(dst, src, len);
+  }
+#elif defined(LINK_ELF)
+  EXPORT_API_RUNTIME(resolve_memswap) void memswap(void*, void*, size_t);
+#elif defined(LINK_MACHO)
+  // TODO: replace with macho symbol resolvers?
+  void memswap(void* dst, void* src, size_t len) {
+    static memswap_t* resolved = NULL;
+    if(resolved == NULL) {
+      resolved = resolve_memswap();
+    }
+    (*resolved)(dst, src, len);
+  }
+#elif defined(LINK_PE)
+  void memswap(void* dst, void* src, size_t len) {
+    static memswap_t* resolved = NULL;
+    // TODO: patch all the IATs.
+    if(resolved == NULL) {
+      resolved = resolve_memswap();
+    }
+    (*resolved)(dst, src, len);
+  }
+#else
+  #error Unsupported link format!
+#endif
