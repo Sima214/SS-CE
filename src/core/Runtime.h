@@ -3,7 +3,6 @@
 /**
  * @file
  * @brief Retrieve information about the runtime environment.
- * TODO: other architectures.
  */
 
 #include <Macros.h>
@@ -19,8 +18,36 @@ typedef struct {
    * 1 if the cpu uses 64bit addressing.
    */
   int cpu_64bit : 1;
-  #if defined(arm) || defined(arm64)
-  #else
+  #ifdef arm
+    /**
+     * Thumb instruction set.
+     */
+    int cpu_arm_thumb : 1;
+    /**
+     * VFPv3-D16 or above.
+     */
+    int cpu_arm_vfpv3 : 1;
+    /**
+     * VFPv4-D16 or above
+     */
+    int cpu_arm_vfpv4 : 1;
+    /**
+     * 32 `D` registers for VFP.
+     */
+    int cpu_arm_vfpd32 : 1;
+    /**
+     * Advanced SIMD instructions.
+     */
+    int cpu_arm_neon : 1;
+    /**
+     * Half-precision extension for NEON.
+     */
+    int cpu_arm_half_float : 1;
+  #elif arm64
+    /**
+     * Everything I care about is mandatory for aarch64.
+     */
+  #elif defined(i386) || defined(x86_64)
     /**
      * https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions
      */
@@ -113,6 +140,8 @@ typedef struct {
        */
       int cpu_x86_avx512vbmi2 : 1;
     #endif
+  #else
+    #warning Unsupported architecture!
   #endif
 } Runtime;
 
