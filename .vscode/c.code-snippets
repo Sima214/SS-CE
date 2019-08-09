@@ -1,0 +1,38 @@
+{
+	"Header Guard": {
+		"prefix": "headguard",
+		"scope": "c",
+		"body": [
+			"#ifndef SSCE_${TM_FILENAME/(.*)\\..*/${1:/upcase}/}",
+			"#define SSCE_${TM_FILENAME/(.*)\\..*/${1:/upcase}/}",
+			"/**",
+			"* @file",
+			"* @brief ",
+			"*/",
+			"",
+			"#endif /*SSCE_${TM_FILENAME/(.*)\\..*/${1:/upcase}/}*/"
+		],
+	},
+	"Header Guard C++": {
+		"prefix": "headguard",
+		"scope": "cpp",
+		"body": [
+			"#ifndef SSCE_${TM_FILENAME/(.*)\\..*/${1:/upcase}/}_HPP",
+			"#define SSCE_${TM_FILENAME/(.*)\\..*/${1:/upcase}/}_HPP",
+			"/**",
+			"* @file",
+			"* @brief ",
+			"*/",
+			"",
+			"#include <Macros.h>",
+			"C_DECLS_START",
+			"#include <${TM_FILENAME/([^\\.]*).hpp/${1}.h/}>",
+			"C_DECLS_END",
+			"",
+			"namespace ssce {",
+			"",
+			"}  // namespace ssce",
+			"#endif /*SSCE_${TM_FILENAME/(.*)\\..*/${1:/upcase}/}_HPP*/"
+		],
+	}
+}

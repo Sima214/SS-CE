@@ -8,6 +8,7 @@
 #include <Modules.h>
 #include <clock/Clock.h>
 #include <logger/Logger.h>
+#include <math/PrimeGenerator.h>
 #include <memory/FAlloc.h>
 
 #include <windows.h>
@@ -80,6 +81,9 @@ static void ssce_init() {
   #if defined(MODULE_LOGGER)
     internal_logger_init();
   #endif
+  #if defined(MODULE_MATH)
+    internal_primegen_init();
+  #endif
 }
 
 /*
@@ -94,6 +98,9 @@ static void ssce_exit() {
   #endif
   #if defined(MODULE_MEMORY)
     internal_falloc_exit();
+  #endif
+  #if defined(MODULE_MATH)
+    internal_primegen_exit();
   #endif
   EARLY_TRACE("Unloaded shared library ssce[" SSCE_VERSION "]");
 }
