@@ -80,13 +80,13 @@ Runtime* ssce_get_runtime() {
             features.cpu_x86_avx512vbmi = MASK_TEST(ecx, AVX512VBMI_MASK);
             features.cpu_x86_avx512vbmi2 = MASK_TEST(ecx, AVX512VBMI2_MASK);
           } else {
-            EARLY_TRACE("AVX512 disabled by OS!");
+            EARLY_TRACE("AVX512 not supported or disabled by OS!");
           }
         } else {
           EARLY_TRACE("Cpu does not support extended features.");
         }
       } else {
-        EARLY_TRACE("AVX disabled by OS!")
+        EARLY_TRACE("AVX disabled by OS!");
       }
     } else {
       EARLY_TRACE("Cpu does not support processor info and feature bits.");
