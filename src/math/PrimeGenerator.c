@@ -1,5 +1,7 @@
 #include "PrimeGenerator.h"
 
+#include <Macros.h>
+
 #include <pthread.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -23,7 +25,7 @@ prime_t primegen_get_next(prime_t state) {
 
 // Thread generator.
 void* internal_primegen_main(void* unused) {
-  pthread_setname_np(pthread_self(), "SSCE_PRIMEGEN");
+  pthread_setname_self("SSCE_PRIMEGEN");
   pthread_mutex_lock(&primegen_mutex);
   while(!primegen_thr_exit) {
     // Do work.

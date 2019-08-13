@@ -62,7 +62,7 @@ static void internal_runtime_init_os_cpu(Runtime* rt) {
   SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpu_info_end;
   SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpu_info_current;
   // Request info using new api.
-  ret = GetLogicalProcessorInformationEx(RelationAll, NULL, &size);
+  ret = GetLogicalProcessorInformationEx(RelationAll, NULL, &cpu_info_size);
   if(COLD_BRANCH(ret || GetLastError() != ERROR_INSUFFICIENT_BUFFER)) {
     EARLY_TRACE("Could not calculate required buffer size for CPU info!");
     return;
@@ -77,26 +77,26 @@ static void internal_runtime_init_os_cpu(Runtime* rt) {
     EARLY_TRACEF("Could not obtain cpu info: 0x%08x!", GetLastError());
     return;
   }
-  SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpu_info_end = add_offset(cpu_info, cpu_info_size);
+  cpu_info_end = add_offset(cpu_info, cpu_info_size);
   // Parse structures returned from api.
   size_t total_cores = 0;
   size_t total_threads = 0;
   WindowsCacheSizes l1 = {0, 0, 0, 0};
   WindowsCacheSizes l2 = {0, 0, 0, 0};
   WindowsCacheSizes l3 = {0, 0, 0, 0};
-  for(cpu_info_current = cpu_info; cpu_info_current != end; cpu_info_current = add_offset(cpu_info_current, cpu_info_current->Size)) {
-    switch(current->Relationship) {
+  for(cpu_info_current = cpu_info; cpu_info_current != cpu_info_end; cpu_info_current = add_offset(cpu_info_current, cpu_info_current->Size)) {
+    switch(cpu_info_current->Relationship) {
       case RelationProcessorCore: {
-        // PROCESSOR_RELATIONSHIP* core = &current->Processor;
+        // PROCESSOR_RELATIONSHIP* core = &cpu_info_current->Processor;
         total_cores++;
         break;
       }
       case RelationNumaNode: {
-        // NUMA_NODE_RELATIONSHIP* numa = &current->NumaNode;
+        // NUMA_NODE_RELATIONSHIP* numa = &cpu_info_current->NumaNode;
         break;
       }
       case RelationCache: {
-        CACHE_RELATIONSHIP* cache = &current->Cache;
+        CACHE_RELATIONSHIP* cache = &cpu_info_current->Cache;
         switch(cache->Level) {
           case 1:
             register_cache(cache, l1);
@@ -115,11 +115,11 @@ static void internal_runtime_init_os_cpu(Runtime* rt) {
         break;
       }
       case RelationProcessorPackage: {
-        // PROCESSOR_RELATIONSHIP* pkg = &current->Processor;
+        // PROCESSOR_RELATIONSHIP* pkg = &cpu_info_current->Processor;
         break;
       }
       case RelationGroup: {
-        GROUP_RELATIONSHIP* group = &current->Group;
+        GROUP_RELATIONSHIP* group = &cpu_info_current->Group;
         for(int i = 0; i < group->ActiveGroupCount; i++) {
           total_threads += group->GroupInfo[i].ActiveProcessorCount;
         }

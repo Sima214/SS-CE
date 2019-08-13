@@ -225,6 +225,14 @@
     #error Unsupported OS
   #endif
 #endif
+#ifndef pthread_setname_self
+  #include <pthread.h>
+  #ifdef __APPLE__
+    #define pthread_setname_self(str) pthread_setname_np(str)
+  #else
+    #define pthread_setname_self(str) pthread_setname_np(pthread_self(), str)
+  #endif
+#endif
 #ifndef EARLY_TRACE
   #ifndef NDEBUG
     #include <stdio.h>
