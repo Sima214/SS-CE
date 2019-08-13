@@ -7,6 +7,8 @@
 
 #include <Macros.h>
 
+#include <stddef.h>
+
 /**
  * Storage of collected runtime information.
  * It's mostly information about the machine
@@ -15,7 +17,7 @@
  */
 typedef struct {
   /**
-   * 1 if the cpu uses 64bit addressing.
+   * Non zero if the cpu uses >32bit addressing.
    */
   int cpu_64bit : 1;
   #ifdef arm
@@ -143,6 +145,63 @@ typedef struct {
   #else
     #warning Unsupported architecture!
   #endif
+  /**
+   * Actual usable/active physical core count.
+   * 
+   * Multiply with \ref cpu_threads_per_core to
+   * get total thread count.
+   */
+  size_t cpu_core_count;
+  /**
+   * Logical cores/Threads per physical core.
+   * For more info research about SMT.
+   * 
+   * Multiply with \ref cpu_core_count to
+   * get total thread count.
+   */
+  size_t cpu_threads_per_core;
+  /**
+   * Smallest block of virtual memory.
+   * 
+   * Note that windows does not allow virtual
+   * memory allocations less than 64Kib,
+   * no matter the page size.
+   */
+  size_t cpu_page_size;
+  /**
+   * L1 instruction cache.
+   * 
+   * If the cpu has a unified L1 cache instead,
+   * this is 0 and \ref cpu_cache_size_l1d
+   * holds the size of the L1 unified cache.
+   */
+  size_t cpu_cache_size_l1i;
+  /**
+   * L1 data or unified cache.
+   * 
+   * 0 if the cache does not exist.
+   */
+  size_t cpu_cache_size_l1d;
+  /**
+   * L2 unified cache.
+   * 
+   * If the L2 is not unified, then this value
+   * holds the total size of all L2 cache types.
+   * If the cache does not exist, this is 0.
+   */
+  size_t cpu_cache_size_l2;
+  /**
+   * L3 unified cache.
+   * 
+   * If the L3 is not unified, then this value
+   * holds the total size of all L3 cache types.
+   * If the cache does not exist, this is 0.
+   */
+  size_t cpu_cache_size_l3;
+  /**
+   * Biggest cache line size.
+   */
+  size_t cpu_cache_alignment;
 } Runtime;
 
 /**
@@ -156,5 +215,18 @@ EXPORT_API void ssce_get_version(int* major, int* minor, int* release);
  * Retrieves the current \ref Runtime structure.
  */
 EXPORT_API Runtime* ssce_get_runtime();
+
+/**
+ * Internal usage only.
+ * 
+ * Initialize the cpu dependant part of \ref Runtime
+ */
+void internal_runtime_init_cpu(Runtime*);
+/**
+ * Internal usage only.
+ * 
+ * Initialize the OS dependant part of \ref Runtime
+ */
+void internal_runtime_init_os(Runtime*);
 
 #endif /*SSCE_RUNTIME_H*/

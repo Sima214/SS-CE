@@ -11,6 +11,10 @@
   #include <sys/mman.h>
 #elif defined(_WIN32)
   #include <windows.h>
+  /**
+   * Note we cannot depend on Runtime because that may cause a runtime cyclic dependency.
+   * Simply Falloc is lower level than Runtime.
+   */
   DWORD page_size;
 #endif
 
