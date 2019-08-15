@@ -1,5 +1,6 @@
 #include "Runtime.h"
 
+#include <Macros.h>
 #include <math/MinMax.h>
 #include <memory/FAlloc.h>
 
@@ -56,25 +57,28 @@ typedef struct {
 
 static void internal_runtime_init_os_cpu(Runtime* rt) {
   // Cpu information.
-  BOOL ret;
-  DWORD cpu_info_size;
+  DWORD cpu_info_size = 0;
   SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpu_info;
   SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpu_info_end;
   SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpu_info_current;
-  // Request info using new api.
-  ret = GetLogicalProcessorInformationEx(RelationAll, NULL, &cpu_info_size);
-  if(COLD_BRANCH(ret || GetLastError() != ERROR_INSUFFICIENT_BUFFER)) {
+  // Request info using new api - required buffer calculation.
+  BOOL ret_00 = GetLogicalProcessorInformationEx(RelationAll, NULL, &cpu_info_size);
+  if(COLD_BRANCH(ret_00 || GetLastError() != ERROR_INSUFFICIENT_BUFFER)) {
     EARLY_TRACE("Could not calculate required buffer size for CPU info!");
     return;
+  } else {
+    EARLY_TRACEF("Allocating %lu bytes for cpu_info!", cpu_info_size);
   }
+  // Allocate temp buffer.
   cpu_info = falloc_malloc(cpu_info_size);
   if(COLD_BRANCH(cpu_info == NULL)) {
-    EARLY_TRACE("Could not allocate the required buffer for CPU info!")
+    EARLY_TRACE("Could not allocate the required buffer for CPU info!");
     return;
   }
-  GetLogicalProcessorInformationEx(RelationAll, cpu_info, &cpu_info_size);
-  if(COLD_BRANCH(!ret)) {
-    EARLY_TRACEF("Could not obtain cpu info: 0x%08x!", GetLastError());
+  // Actual request of cpu information.
+  BOOL ret_01 = GetLogicalProcessorInformationEx(RelationAll, cpu_info, &cpu_info_size);
+  if(COLD_BRANCH(!ret_01)) {
+    EARLY_TRACEF("Could not obtain cpu info from GetLogicalProcessorInformationEx(RelationAll, %p, %lu)->0x%08lx!", cpu_info, cpu_info_size, GetLastError());
     return;
   }
   cpu_info_end = add_offset(cpu_info, cpu_info_size);
