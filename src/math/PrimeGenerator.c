@@ -1,9 +1,12 @@
 #include "PrimeGenerator.h"
 
 #include <Macros.h>
+#include <MathExtra.h>
 #include <MinMax.h>
 #include <core/Runtime.h>
 #include <memory/FAlloc.h>
+#include <memory/GAlloc.h>
+#include <structures/Bitfield.h>
 
 #include <errno.h>
 #include <pthread.h>
@@ -11,6 +14,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#define PRIMEGEN_STATIC_END 6
 
 // List of found integers.
 static volatile uintmax_t* primegen_list;
@@ -44,8 +49,7 @@ prime_t primegen_get_next(prime_t state) {
       // Got it.
       state.last_prime = primegen_list[state.last_prime_index];
       return state;
-    }
-    else {
+    } else {
       // Thread was not running...
       EARLY_TRACE("primegen_get_next still waiting...");
       pthread_cond_broadcast(&primegen_cond);
@@ -88,8 +92,7 @@ prime_t primegen_get_next(prime_t state) {
         pthread_cond_broadcast(&primegen_cond);
         pthread_mutex_unlock(&primegen_mutex);
         sched_yield();
-      }
-      else if(mutex_locked != EBUSY) {
+      } else if(mutex_locked != EBUSY) {
         EARLY_TRACE("primegen invalid mutex state!");
       }
     }
@@ -101,31 +104,53 @@ prime_t primegen_get_next(prime_t state) {
 void* internal_primegen_main(void* unused) {
   pthread_setname_self("SSCE_PRIMEGEN");
   // End of generated numbers.
-  uintmax_t primegen_end;
+  uintmax_t primegen_end = PRIMEGEN_STATIC_END;
   // Allocate buffer which fits exactly in cache.
   Runtime* rt = ssce_get_runtime();
   size_t job_size = math_max(rt->cpu_cache_size_l1d, 4096U);
   // NOTE: If the cache line size is not a power of two, this will result in undefined behaviour.
   void* bitfield_store = falloc_malloc_aligned(job_size, rt->cpu_cache_alignment);
   // Allocate bitfield.
+  Bitfield bitfield;
+  bitfield_init(&bitfield, bitfield_store, job_size);
+  bitfield_set_all(&bitfield);
   job_size *= __CHAR_BIT__;
   pthread_mutex_lock(&primegen_mutex);
   while(!primegen_thr_exit) {
     // Do work.
-    EARLY_TRACE("Primegen working...");
-    // TODO:
+    uintmax_t primegen_start = primegen_end + 1;
+    primegen_end = primegen_end + job_size * 2;
+    uintmax_t primegen_limit = ssce_sqrt(primegen_end);
+    EARLY_TRACEF("Primegen working at [%llu, %llu]...", primegen_start, primegen_end);
+    // Algorithm used: Sieve of Eratosthenes with sqrt, bitarray, even number optimizations.
+
+    // Find primes.
+    // Extract results.
+    // Store results.
+    pthread_spin_lock(&primegen_list_lock);
+    pthread_spin_unlock(&primegen_list_lock);
+    // Clean up and prepare for next work.
+    bitfield_set_all(&bitfield);
     // Wait until more work is needed.
     EARLY_TRACE("Primegen waiting...");
     // Releases mutex, so primegen_get_next can execute.
     pthread_cond_wait(&primegen_cond, &primegen_mutex);
   }
   pthread_mutex_unlock(&primegen_mutex);
+  bitfield_deinit(&bitfield);
+  falloc_free(bitfield_store);
   EARLY_TRACE("Primegen exiting...");
   return NULL;
 }
 
 void internal_primegen_init() {
   pthread_spin_init(&primegen_list_lock, PTHREAD_PROCESS_PRIVATE);
+  primegen_list_len = 4;
+  primegen_list = malloc(primegen_list_len * sizeof(uintmax_t));
+  primegen_list[0] = 1;
+  primegen_list[1] = 2;
+  primegen_list[2] = 3;
+  primegen_list[3] = 5;
   int ret = pthread_create(&primegen_thr, NULL, internal_primegen_main, NULL);
   if(COLD_BRANCH(ret != 0)) {
     EARLY_TRACEF("Could not create primegen thread code: 0x%x!", ret);
