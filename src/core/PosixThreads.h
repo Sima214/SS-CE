@@ -10,9 +10,9 @@
 #include <pthread.h>
 
 #ifdef __APPLE__
-    #include <libkern/OSAtomic.h>
+    #include <os/lock.h>
     
-    typedef OSSpinLock pthread_spinlock_t;
+    typedef os_unfair_lock pthread_spinlock_t;
 
     EXPORT_API int pthread_spin_init(pthread_spinlock_t *lock, int pshared);
     EXPORT_API int pthread_spin_lock(pthread_spinlock_t *lock);

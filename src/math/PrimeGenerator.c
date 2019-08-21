@@ -101,7 +101,7 @@ prime_t primegen_get_next(prime_t state) {
 }
 
 // Thread main.
-void* internal_primegen_main(void* unused) {
+void* internal_primegen_main(MARK_UNUSED void* input) {
   pthread_setname_self("SSCE_PRIMEGEN");
   // End of generated numbers.
   uintmax_t primegen_end = PRIMEGEN_STATIC_END;

@@ -6,25 +6,25 @@
 #include <Macros.h>
 
 #include <errno.h>
-#include <libkern/OSAtomic.h>
+#include <os/lock.h>
 
 int pthread_spin_init(pthread_spinlock_t *lock, MARK_UNUSED int pshared) {
-  *lock = OS_SPINLOCK_INIT;
+  *lock = OS_UNFAIR_LOCK_INIT;
   return 0;
 }
 
 int pthread_spin_lock(pthread_spinlock_t *lock) {
-  OSSpinLockLock(lock);
+  os_unfair_lock_lock(lock);
   return 0;
 }
 
 int pthread_spin_trylock(pthread_spinlock_t *lock) {
-  bool lock_taken = OSSpinLockTry(lock);
+  bool lock_taken = os_unfair_lock_trylock(lock);
   return lock_taken ? 0 : EBUSY;
 }
 
 int pthread_spin_unlock(pthread_spinlock_t *lock) {
-  OSSpinLockUnlock(lock);
+  os_unfair_lock_unlock(lock);
   return 0;
 }
 
