@@ -3,11 +3,11 @@
 #include <Macros.h>
 #include <MathExtra.h>
 #include <MinMax.h>
+#include <core/PosixThreads.h>
 #include <core/Runtime.h>
 #include <memory/FAlloc.h>
 #include <memory/GAlloc.h>
 #include <structures/Bitfield.h>
-#include <core/PosixThreads.h>
 
 #include <errno.h>
 #include <sched.h>
@@ -122,7 +122,9 @@ void* internal_primegen_main(MARK_UNUSED void* input) {
     primegen_end = primegen_end + job_size * 2;
     EARLY_TRACEF("Primegen working at [%llu, %llu]...", primegen_start, primegen_end);
     // Algorithm used: Sieve of Eratosthenes with square bound, bitarray, odd-only optimizations.
-
+    for(size_t i = 2; i < primegen_list_len; i++) {
+      uintmax_t current_prime = primegen_list[i];
+    }
     // Find primes.
     // Extract results.
     // Store results.

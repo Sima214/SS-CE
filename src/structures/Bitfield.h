@@ -121,7 +121,7 @@ static inline FORCE_INLINE int bitfield_get(Bitfield* obj, size_t index) {
 /**
  * Deinit an object.
  */
-static inline FORCE_INLINE int bitfield_deinit(MARK_UNUSED Bitfield* obj) {
+static inline FORCE_INLINE void bitfield_deinit(MARK_UNUSED Bitfield* obj) {
   // NOP
 }
 

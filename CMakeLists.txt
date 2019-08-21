@@ -161,6 +161,11 @@ set( SSCE_FLAGS "${SSCE_FLAGS} -fno-builtin-memset -fno-builtin-memcpy -fno-buil
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SSCE_FLAGS}" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SSCE_FLAGS}" )
 
+## Module specific optimizations. Clang full support for gcc's optimize attribute when?
+if( ${MODULE_MATH} )
+    set_source_files_properties( "${PROJECT_SOURCE_DIR}/src/math/MathExtra.c" PROPERTIES COMPILE_FLAGS -ffast-math )
+endif()
+
 ## Define installation.
 install( TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION "bin"
