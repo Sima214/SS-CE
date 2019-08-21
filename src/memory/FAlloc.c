@@ -2,9 +2,9 @@
 
 #include <Config.h>
 #include <Macros.h>
+#include <core/PosixThreads.h>
 #include <memory/GAlloc.h>
 
-#include <pthread.h>
 #include <stdlib.h>
 
 #if IS_POSIX

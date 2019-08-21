@@ -2,11 +2,11 @@
 
 #include <Config.h>
 #include <Macros.h>
+#include <core/PosixThreads.h>
 #include <math/MinMax.h>
 #include <memory/GAlloc.h>
 #include <string/SStrings.h>
 
-#include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -7,9 +7,9 @@
 #include <memory/FAlloc.h>
 #include <memory/GAlloc.h>
 #include <structures/Bitfield.h>
+#include <core/PosixThreads.h>
 
 #include <errno.h>
-#include <pthread.h>
 #include <sched.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -120,9 +120,8 @@ void* internal_primegen_main(void* unused) {
     // Do work.
     uintmax_t primegen_start = primegen_end + 1;
     primegen_end = primegen_end + job_size * 2;
-    uintmax_t primegen_limit = ssce_sqrt(primegen_end);
     EARLY_TRACEF("Primegen working at [%llu, %llu]...", primegen_start, primegen_end);
-    // Algorithm used: Sieve of Eratosthenes with sqrt, bitarray, even number optimizations.
+    // Algorithm used: Sieve of Eratosthenes with square bound, bitarray, odd-only optimizations.
 
     // Find primes.
     // Extract results.
