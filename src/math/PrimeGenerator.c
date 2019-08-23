@@ -104,7 +104,7 @@ prime_t primegen_get_next(prime_t state) {
 void* internal_primegen_main(MARK_UNUSED void* input) {
   pthread_setname_self("SSCE_PRIMEGEN");
   // End of generated numbers.
-  uintmax_t primegen_end = PRIMEGEN_STATIC_END;
+  uintmax_t end = PRIMEGEN_STATIC_END;
   // Allocate buffer which fits exactly in cache.
   Runtime* rt = ssce_get_runtime();
   size_t job_size = math_max(rt->cpu_cache_size_l1d, 4096U);
@@ -118,12 +118,36 @@ void* internal_primegen_main(MARK_UNUSED void* input) {
   pthread_mutex_lock(&primegen_mutex);
   while(!primegen_thr_exit) {
     // Do work.
-    uintmax_t primegen_start = primegen_end + 1;
-    primegen_end = primegen_end + job_size * 2;
-    EARLY_TRACEF("Primegen working at [%llu, %llu]...", primegen_start, primegen_end);
+    uintmax_t start = end + 1;
+    end = end + job_size * 2;
+    uintmax_t fast_bound = ssce_sqrt(end);
+    EARLY_TRACEF("Primegen working at [%ju, %ju]...", start, end);
     // Algorithm used: Sieve of Eratosthenes with square bound, bitarray, odd-only optimizations.
     for(size_t i = 2; i < primegen_list_len; i++) {
+      // Use already generated primes, starting from 3.
       uintmax_t current_prime = primegen_list[i];
+      if(current_prime <= fast_bound) {
+        break;
+      }
+      for(uintmax_t not_prime = current_prime * current_prime; not_prime <= end; not_prime += current_prime) {
+        // Convert to bit index.
+        size_t not_prime_index = (not_prime - start) / 2;
+        bitfield_clear(&bitfield, not_prime_index);
+      }
+    }
+    for(size_t i = 0; i < job_size; i++) {
+      // If current number is prime:
+      if(bitfield_get(&bitfield, i)) {
+        uintmax_t current_prime = start + i * 2;
+        if(current_prime <= fast_bound) {
+          break;
+        }
+        for(uintmax_t not_prime = current_prime * current_prime; not_prime <= end; not_prime += current_prime) {
+          // Convert to bit index.
+          size_t not_prime_index = (not_prime - start) / 2;
+          bitfield_clear(&bitfield, not_prime_index);
+        }
+      }
     }
     // Find primes.
     // Extract results.

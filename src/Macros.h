@@ -125,6 +125,12 @@
    */
   #define MASK_TOOGLE(o, m) o ^= m
 #endif
+#ifndef EXTRACT_BYTE
+  /**
+   * Gets the \p i th byte of value.
+   */
+  #define EXTRACT_BYTE(v, i) (v >> (i * __CHAR_BIT__)) & 0xff;
+#endif
 #ifndef EXPORT_API
   #if defined(_WIN32)
     #ifndef SSCE_EXPORTS

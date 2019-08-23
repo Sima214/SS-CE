@@ -218,6 +218,10 @@ EXPORT_API Runtime* ssce_get_runtime();
 
 /**
  * Internal usage only.
+ */
+void internal_runtime_init();
+/**
+ * Internal usage only.
  * 
  * Initialize the cpu dependant part of \ref Runtime
  */

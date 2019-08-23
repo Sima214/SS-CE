@@ -36,7 +36,7 @@ static inline uint8_t hex_bit_count(int c) {
     case 'F':
       return 4;
     default:
-      EARLY_TRACEF("Skipping character %c `" SYS_CPU0_BASE("thread_siblings") "`...", (char)c);
+      EARLY_TRACEF("Skipping character `#%u` from `" SYS_CPU0_BASE("thread_siblings") "`...", (char)c);
       return 0;
   }
 }

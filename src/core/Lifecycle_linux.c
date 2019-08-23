@@ -4,6 +4,7 @@
 #include <Config.h>
 #include <Macros.h>
 #include <Modules.h>
+#include <Runtime.h>
 #include <clock/Clock.h>
 #include <logger/Logger.h>
 #include <math/PrimeGenerator.h>
@@ -18,6 +19,7 @@ ssce_init(void) {
   #if defined(MODULE_MEMORY)
     internal_falloc_init();
   #endif
+  internal_runtime_init();
   // Clock init is nop
   #if defined(MODULE_LOGGER)
     internal_logger_init();
