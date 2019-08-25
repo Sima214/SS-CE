@@ -38,8 +38,19 @@ typedef struct {
 } Bitfield;
 
 /**
+ * Given a size in bytes, returns how many bytes should actually be allocated.
+ */
+static inline FORCE_INLINE size_t bitfield_size(size_t bytes) {
+  size_t rem = bytes % sizeof(size_t);
+  if(rem == 0) {
+    return bytes;
+  } else {
+    return bytes + (sizeof(size_t) - rem);
+  }
+}
+
+/**
  * Initialize a new bitfield.
- * TODO: alignment
  * 
  * @param obj must refer to valid storage.
  * @param data backing array.
@@ -49,7 +60,7 @@ typedef struct {
 static inline FORCE_INLINE int bitfield_init(Bitfield* obj, void* data, size_t length) {
   obj->__data = data;
   obj->__length = length;
-  return 0;
+  return !!(length % sizeof(size_t));
 }
 
 /**
@@ -135,12 +146,21 @@ static inline FORCE_INLINE int bitfield_get(Bitfield* obj, size_t index) {
   return !!value;
 }
 
-#define internal_bitfield_for_each_set(byte, code_block) \
-  while(byte != 0) {                                     \
-    size_t bit_index = __builtin_ffs(byte) - 1;          \
-    byte ^= ((__typeof__(byte))0x1) << bit_index;        \
-    bit_index = base_bit_index + bit_index;              \
-    (code_block);                                        \
+#define internal_bitfield_for_each_set(byte, byte_index, code_block) \
+  while(byte != 0) {                                                 \
+    MARK_UNUSED size_t bit_index = __builtin_ffs(byte) - 1;          \
+    byte ^= ((__typeof__(byte))0x1) << bit_index;                    \
+    bit_index += base_bit_index + byte_index * CHAR_BIT;             \
+    (code_block);                                                    \
+  }
+
+#define internal_bitfield_for_each(byte, byte_index, code_block) \
+  for(size_t ibte_i = 0; ibte_i < CHAR_BIT; ibte_i++) {          \
+    MARK_UNUSED int bit_value = byte & 0x1;                      \
+    byte = byte >> 1;                                            \
+    MARK_UNUSED size_t bit_index = ibte_i;                       \
+    bit_index += base_bit_index + byte_index * CHAR_BIT;         \
+    (code_block);                                                \
   }
 
 /**
@@ -155,62 +175,79 @@ static inline FORCE_INLINE int bitfield_get(Bitfield* obj, size_t index) {
  * Has the same locals variables as the line where \ref bitfield_for_each is called(parameters included).
  * Also it has access to a variable `size_t bit_index` which contains the index of the found bit
  * and `int bit_value` the value of the found bit.
- * TODO: arm. I wonder the benefit of counting the bits and predetermined loop count will have any benefit.
- * NOTE: This feels retarded.
+ * TODO: arm optimizations, counting the bits optimization for intel branch predictor.
  */
-#define bitfield_for_each(obj, filter, dense, code_block)            \
-  for(size_t bfe_i = 0; i < (obj)->__length / sizeof(size_t); i++) { \
-    size_t value = (obj)->__data[bfe_i];                             \
-    size_t base_bit_index = bfe_i * sizeof(size_t) * __CHAR_BIT__;   \
-    if(filter == 0) {                                                \
-      int bit_value = 0;                                             \
-      if(dense && value == SIZE_MAX) {                               \
-        continue;                                                    \
-      }                                                              \
-      value = ~value;                                                \
-      uint_least8_t b0 = EXTRACT_BYTE(value, 0);                     \
-      internal_bitfield_for_each_set(b0, code_block);                \
-      uint_least8_t b1 = EXTRACT_BYTE(value, 1);                     \
-      internal_bitfield_for_each_set(b1, code_block);                \
-      uint_least8_t b2 = EXTRACT_BYTE(value, 2);                     \
-      internal_bitfield_for_each_set(b2, code_block);                \
-      uint_least8_t b3 = EXTRACT_BYTE(value, 3);                     \
-      internal_bitfield_for_each_set(b3, code_block);                \
-      if(__SIZEOF_SIZE_T__ == 8) {                                   \
-        uint_least8_t b4 = EXTRACT_BYTE(value, 4);                   \
-        internal_bitfield_for_each_set(b4, code_block);              \
-        uint_least8_t b5 = EXTRACT_BYTE(value, 5);                   \
-        internal_bitfield_for_each_set(b5, code_block);              \
-        uint_least8_t b6 = EXTRACT_BYTE(value, 6);                   \
-        internal_bitfield_for_each_set(b6, code_block);              \
-        uint_least8_t b7 = EXTRACT_BYTE(value, 7);                   \
-        internal_bitfield_for_each_set(b7, code_block);              \
-      }                                                              \
-    } else if(filter == 1) {                                         \
-      int bit_value = 1;                                             \
-      if(!dense && value == 0) {                                     \
-        continue;                                                    \
-      }                                                              \
-      uint_least8_t b0 = EXTRACT_BYTE(value, 0);                     \
-      internal_bitfield_for_each_set(b0, code_block);                \
-      uint_least8_t b1 = EXTRACT_BYTE(value, 1);                     \
-      internal_bitfield_for_each_set(b1, code_block);                \
-      uint_least8_t b2 = EXTRACT_BYTE(value, 2);                     \
-      internal_bitfield_for_each_set(b2, code_block);                \
-      uint_least8_t b3 = EXTRACT_BYTE(value, 3);                     \
-      internal_bitfield_for_each_set(b3, code_block);                \
-      if(__SIZEOF_SIZE_T__ == 8) {                                   \
-        uint_least8_t b4 = EXTRACT_BYTE(value, 4);                   \
-        internal_bitfield_for_each_set(b4, code_block);              \
-        uint_least8_t b5 = EXTRACT_BYTE(value, 5);                   \
-        internal_bitfield_for_each_set(b5, code_block);              \
-        uint_least8_t b6 = EXTRACT_BYTE(value, 6);                   \
-        internal_bitfield_for_each_set(b6, code_block);              \
-        uint_least8_t b7 = EXTRACT_BYTE(value, 7);                   \
-        internal_bitfield_for_each_set(b7, code_block);              \
-      }                                                              \
-    } else {                                                         \
-    }                                                                \
+#define bitfield_for_each(obj, filter, dense, code_block)                    \
+  for(size_t bfe_i = 0; bfe_i < (obj)->__length / sizeof(size_t); bfe_i++) { \
+    size_t bfe_value = (obj)->__data[bfe_i];                                 \
+    size_t base_bit_index = bfe_i * sizeof(size_t) * CHAR_BIT;               \
+    if(filter == 0) {                                                        \
+      MARK_UNUSED int bit_value = 0;                                         \
+      if(dense && bfe_value == SIZE_MAX) {                                   \
+        continue;                                                            \
+      }                                                                      \
+      bfe_value = ~bfe_value;                                                \
+      uint_least8_t bfe_b0 = EXTRACT_BYTE(bfe_value, 0);                     \
+      internal_bitfield_for_each_set(bfe_b0, 0, code_block);                 \
+      uint_least8_t bfe_b1 = EXTRACT_BYTE(bfe_value, 1);                     \
+      internal_bitfield_for_each_set(bfe_b1, 1, code_block);                 \
+      uint_least8_t bfe_b2 = EXTRACT_BYTE(bfe_value, 2);                     \
+      internal_bitfield_for_each_set(bfe_b2, 2, code_block);                 \
+      uint_least8_t bfe_b3 = EXTRACT_BYTE(bfe_value, 3);                     \
+      internal_bitfield_for_each_set(bfe_b3, 3, code_block);                 \
+      if(__SIZEOF_SIZE_T__ == 8) {                                           \
+        uint_least8_t bfe_b4 = EXTRACT_BYTE(bfe_value, 4);                   \
+        internal_bitfield_for_each_set(bfe_b4, 4, code_block);               \
+        uint_least8_t bfe_b5 = EXTRACT_BYTE(bfe_value, 5);                   \
+        internal_bitfield_for_each_set(bfe_b5, 5, code_block);               \
+        uint_least8_t bfe_b6 = EXTRACT_BYTE(bfe_value, 6);                   \
+        internal_bitfield_for_each_set(bfe_b6, 6, code_block);               \
+        uint_least8_t bfe_b7 = EXTRACT_BYTE(bfe_value, 7);                   \
+        internal_bitfield_for_each_set(bfe_b7, 7, code_block);               \
+      }                                                                      \
+    } else if(filter == 1) {                                                 \
+      MARK_UNUSED int bit_value = 1;                                         \
+      if(!dense && bfe_value == 0) {                                         \
+        continue;                                                            \
+      }                                                                      \
+      uint_least8_t bfe_b0 = EXTRACT_BYTE(bfe_value, 0);                     \
+      internal_bitfield_for_each_set(bfe_b0, 0, code_block);                 \
+      uint_least8_t bfe_b1 = EXTRACT_BYTE(bfe_value, 1);                     \
+      internal_bitfield_for_each_set(bfe_b1, 1, code_block);                 \
+      uint_least8_t bfe_b2 = EXTRACT_BYTE(bfe_value, 2);                     \
+      internal_bitfield_for_each_set(bfe_b2, 2, code_block);                 \
+      uint_least8_t bfe_b3 = EXTRACT_BYTE(bfe_value, 3);                     \
+      internal_bitfield_for_each_set(bfe_b3, 3, code_block);                 \
+      if(__SIZEOF_SIZE_T__ == 8) {                                           \
+        uint_least8_t bfe_b4 = EXTRACT_BYTE(bfe_value, 4);                   \
+        internal_bitfield_for_each_set(bfe_b4, 4, code_block);               \
+        uint_least8_t bfe_b5 = EXTRACT_BYTE(bfe_value, 5);                   \
+        internal_bitfield_for_each_set(bfe_b5, 5, code_block);               \
+        uint_least8_t bfe_b6 = EXTRACT_BYTE(bfe_value, 6);                   \
+        internal_bitfield_for_each_set(bfe_b6, 6, code_block);               \
+        uint_least8_t bfe_b7 = EXTRACT_BYTE(bfe_value, 7);                   \
+        internal_bitfield_for_each_set(bfe_b7, 7, code_block);               \
+      }                                                                      \
+    } else {                                                                 \
+      uint_least8_t bfe_b0 = EXTRACT_BYTE(bfe_value, 0);                     \
+      internal_bitfield_for_each(bfe_b0, 0, code_block);                     \
+      uint_least8_t bfe_b1 = EXTRACT_BYTE(bfe_value, 1);                     \
+      internal_bitfield_for_each(bfe_b1, 1, code_block);                     \
+      uint_least8_t bfe_b2 = EXTRACT_BYTE(bfe_value, 2);                     \
+      internal_bitfield_for_each(bfe_b2, 2, code_block);                     \
+      uint_least8_t bfe_b3 = EXTRACT_BYTE(bfe_value, 3);                     \
+      internal_bitfield_for_each(bfe_b3, 3, code_block);                     \
+      if(__SIZEOF_SIZE_T__ == 8) {                                           \
+        uint_least8_t bfe_b4 = EXTRACT_BYTE(bfe_value, 4);                   \
+        internal_bitfield_for_each(bfe_b4, 4, code_block);                   \
+        uint_least8_t bfe_b5 = EXTRACT_BYTE(bfe_value, 5);                   \
+        internal_bitfield_for_each(bfe_b5, 5, code_block);                   \
+        uint_least8_t bfe_b6 = EXTRACT_BYTE(bfe_value, 6);                   \
+        internal_bitfield_for_each(bfe_b6, 6, code_block);                   \
+        uint_least8_t bfe_b7 = EXTRACT_BYTE(bfe_value, 7);                   \
+        internal_bitfield_for_each(bfe_b7, 7, code_block);                   \
+      }                                                                      \
+    }                                                                        \
   }
 
 /**
