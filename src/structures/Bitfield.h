@@ -70,29 +70,27 @@ static inline FORCE_INLINE int bitfield_init(Bitfield* obj, void* data, size_t l
  * Same interface as \ref bitfield_init.
  */
 static inline FORCE_INLINE int bitfield_update(Bitfield* obj, void* data, size_t length) {
-  obj->__data = data;
-  obj->__length = length;
-  return 0;
+  return bitfield_init(obj, data, length);
 }
 
 /**
  * Clears all bits.
  */
-static inline FORCE_INLINE void bitfield_clear_all(Bitfield* obj) {
+static inline FORCE_INLINE void bitfield_clear_all(const Bitfield* obj) {
   memset(obj->__data, 0x00, obj->__length);
 }
 
 /**
  * Set all bits.
  */
-static inline FORCE_INLINE void bitfield_set_all(Bitfield* obj) {
+static inline FORCE_INLINE void bitfield_set_all(const Bitfield* obj) {
   memset(obj->__data, 0xff, obj->__length);
 }
 
 /**
  * Set a bit.
  */
-static inline FORCE_INLINE void bitfield_set(Bitfield* obj, size_t index) {
+static inline FORCE_INLINE void bitfield_set(const Bitfield* obj, size_t index) {
   size_t word = index / SIZE_T_BITS;
   unsigned int bit = index % SIZE_T_BITS;
   BOUNDS_CHECK(word, obj->__length / sizeof(size_t));
@@ -102,7 +100,7 @@ static inline FORCE_INLINE void bitfield_set(Bitfield* obj, size_t index) {
 /**
  * Clear a bit.
  */
-static inline FORCE_INLINE void bitfield_clear(Bitfield* obj, size_t index) {
+static inline FORCE_INLINE void bitfield_clear(const Bitfield* obj, size_t index) {
   size_t word = index / SIZE_T_BITS;
   unsigned int bit = index % SIZE_T_BITS;
   BOUNDS_CHECK(word, obj->__length / sizeof(size_t));
@@ -112,7 +110,7 @@ static inline FORCE_INLINE void bitfield_clear(Bitfield* obj, size_t index) {
 /**
  * Toggle a bit.
  */
-static inline FORCE_INLINE void bitfield_toggle(Bitfield* obj, size_t index) {
+static inline FORCE_INLINE void bitfield_toggle(const Bitfield* obj, size_t index) {
   size_t word = index / SIZE_T_BITS;
   unsigned int bit = index % SIZE_T_BITS;
   BOUNDS_CHECK(word, obj->__length / sizeof(size_t));
@@ -122,7 +120,7 @@ static inline FORCE_INLINE void bitfield_toggle(Bitfield* obj, size_t index) {
 /**
  * Set a bit to a value.
  */
-static inline FORCE_INLINE void bitfield_assign(Bitfield* obj, size_t index, int value) {
+static inline FORCE_INLINE void bitfield_assign(const Bitfield* obj, size_t index, int value) {
   size_t word = index / SIZE_T_BITS;
   unsigned int bit = index % SIZE_T_BITS;
   BOUNDS_CHECK(word, obj->__length / sizeof(size_t));
@@ -137,7 +135,7 @@ static inline FORCE_INLINE void bitfield_assign(Bitfield* obj, size_t index, int
 /**
  * Retrieve a bit.
  */
-static inline FORCE_INLINE int bitfield_get(Bitfield* obj, size_t index) {
+static inline FORCE_INLINE int bitfield_get(const Bitfield* obj, size_t index) {
   size_t word = index / SIZE_T_BITS;
   unsigned int bit = index % SIZE_T_BITS;
   BOUNDS_CHECK(word, obj->__length / sizeof(size_t));

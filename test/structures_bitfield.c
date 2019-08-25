@@ -27,10 +27,10 @@ int bench() {
   const size_t size = bitfield_size(16 * 1024);
   void* data = malloc(size);
   // size_t* tmp = malloc(sizeof(size_t));
-  fill_garbage(data, size);
+  fill_light_garbage(data, size);
   Bitfield bt;
   bitfield_init(&bt, data, size);
-  for(size_t c = 0; c < 512 * 1024; c++) {
+  for(size_t c = 0; c < 256 * 1024; c++) {
     bitfield_for_each(&bt, 1, 1, {
       // *tmp = bit_index;
       asm ("nop; mov %0,%0": : "r" (bit_index));

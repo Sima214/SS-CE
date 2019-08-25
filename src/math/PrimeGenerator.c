@@ -10,6 +10,7 @@
 #include <structures/Bitfield.h>
 
 #include <errno.h>
+#include <math.h>
 #include <sched.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -100,6 +101,44 @@ prime_t primegen_get_next(prime_t state) {
   return state;
 }
 
+/**
+ * First pass using previously generated values.
+ */
+void internal_primegen_algo_pre(const Bitfield* bt, const uintmax_t start, const uintmax_t end, const uintmax_t fast_bound) {
+  for(size_t i = 2; i < primegen_list_len; i++) {
+    // Use already generated primes, starting from 3.
+    uintmax_t current_prime = primegen_list[i];
+    if(current_prime <= fast_bound) {
+      break;
+    }
+    for(uintmax_t not_prime = current_prime * current_prime; not_prime <= end; not_prime += current_prime) {
+      // Convert to bit index.
+      size_t not_prime_index = (not_prime - start) / 2;
+      bitfield_clear(bt, not_prime_index);
+    }
+  }
+}
+
+/**
+ * Partial sieve pass.
+ */
+void internal_primegen_algo_main(Bitfield* bt, const uintmax_t start, const uintmax_t end, const uintmax_t fast_bound, const size_t job_size) {
+  for(size_t i = 0; i < job_size; i++) {
+    // If current number is prime:
+    if(bitfield_get(bt, i)) {
+      uintmax_t current_prime = start + i * 2;
+      if(current_prime <= fast_bound) {
+        break;
+      }
+      for(uintmax_t not_prime = current_prime * current_prime; not_prime <= end; not_prime += current_prime) {
+        // Convert to bit index.
+        size_t not_prime_index = (not_prime - start) / 2;
+        bitfield_clear(bt, not_prime_index);
+      }
+    }
+  }
+}
+
 // Thread main.
 void* internal_primegen_main(MARK_UNUSED void* input) {
   pthread_setname_self("SSCE_PRIMEGEN");
@@ -108,58 +147,39 @@ void* internal_primegen_main(MARK_UNUSED void* input) {
   // Allocate buffer which fits exactly in cache.
   Runtime* rt = ssce_get_runtime();
   size_t job_size = math_max(rt->cpu_cache_size_l1d, 4096U);
-  // NOTE: If the cache line size is not a power of two, this will result in undefined behaviour.
+  // TODO: cache line size may not always be valid.
   void* bitfield_store = falloc_malloc_aligned(job_size, rt->cpu_cache_alignment);
   // Allocate bitfield.
   Bitfield bitfield;
   bitfield_init(&bitfield, bitfield_store, job_size);
   bitfield_set_all(&bitfield);
   job_size *= __CHAR_BIT__;
+  // Thread main loop.
   pthread_mutex_lock(&primegen_mutex);
-  while(!primegen_thr_exit) {
-    // Do work.
-    uintmax_t start = end + 1;
-    end = end + job_size * 2;
-    uintmax_t fast_bound = ssce_sqrt(end);
-    EARLY_TRACEF("Primegen working at [%ju, %ju]...", start, end);
-    // Algorithm used: Sieve of Eratosthenes with square bound, bitarray, odd-only optimizations.
-    for(size_t i = 2; i < primegen_list_len; i++) {
-      // Use already generated primes, starting from 3.
-      uintmax_t current_prime = primegen_list[i];
-      if(current_prime <= fast_bound) {
-        break;
-      }
-      for(uintmax_t not_prime = current_prime * current_prime; not_prime <= end; not_prime += current_prime) {
-        // Convert to bit index.
-        size_t not_prime_index = (not_prime - start) / 2;
-        bitfield_clear(&bitfield, not_prime_index);
-      }
-    }
-    for(size_t i = 0; i < job_size; i++) {
-      // If current number is prime:
-      if(bitfield_get(&bitfield, i)) {
-        uintmax_t current_prime = start + i * 2;
-        if(current_prime <= fast_bound) {
-          break;
-        }
-        for(uintmax_t not_prime = current_prime * current_prime; not_prime <= end; not_prime += current_prime) {
-          // Convert to bit index.
-          size_t not_prime_index = (not_prime - start) / 2;
-          bitfield_clear(&bitfield, not_prime_index);
-        }
-      }
-    }
-    // Find primes.
-    // Extract results.
-    // Store results.
-    pthread_spin_lock(&primegen_list_lock);
-    pthread_spin_unlock(&primegen_list_lock);
-    // Clean up and prepare for next work.
-    bitfield_set_all(&bitfield);
+  while(HOT_BRANCH(!primegen_thr_exit)) {
     // Wait until more work is needed.
     EARLY_TRACE("Primegen waiting...");
     // Releases mutex, so primegen_get_next can execute.
     pthread_cond_wait(&primegen_cond, &primegen_mutex);
+    if(COLD_BRANCH(primegen_thr_exit)) break;
+    // Do work.
+    uintmax_t start = end + 1;
+    end = end + job_size * 2;
+    uintmax_t fast_bound = ssce_sqrt(end);
+    EARLY_TRACEF("Primegen working at [%ju, %ju, %ju]...", start, fast_bound, end);
+    // Algorithm used: Sieve of Eratosthenes with square bound, bitarray, odd-only optimizations.
+    internal_primegen_algo_pre(&bitfield, start, end, fast_bound);
+    if(COLD_BRANCH(primegen_thr_exit)) break;
+    internal_primegen_algo_main(&bitfield, start, end, fast_bound, job_size);
+    if(COLD_BRANCH(primegen_thr_exit)) break;
+    // Prepare for prime extraction (realloc can be expensive this is why we are doing this before locking)!
+    size_t old_primes = primegen_list_len;
+    size_t potential_new_primes = ((double)end) / log((double)end);
+    pthread_spin_lock(&primegen_list_lock);
+    // Store results.
+    pthread_spin_unlock(&primegen_list_lock);
+    // Clean up and prepare for next work.
+    bitfield_set_all(&bitfield);
   }
   pthread_mutex_unlock(&primegen_mutex);
   bitfield_deinit(&bitfield);

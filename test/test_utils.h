@@ -37,6 +37,23 @@ static inline void fill_garbage(void* array, size_t bytes) {
 }
 
 /*
+ * Flips random bits in an array.
+ */
+static inline void fill_light_garbage(void* array, size_t bytes) {
+  char* q = array;
+  char* const end_bytes = q + bytes;
+  for(/* NOP */; q < end_bytes; q++) {
+    char r = rand() % (sizeof(size_t) * __CHAR_BIT__ + 1);
+    // r -> [0, 64]
+    if(r) {
+      // r -> [0, 63]
+      r--;
+      MASK_SET(*q, MASK_CREATE(r), 1);
+    }
+  }
+}
+
+/*
  * Test if array of integers is in ascending order.
  */
 static inline int is_sorted_i(int* a, size_t n) {
