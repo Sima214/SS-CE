@@ -6,8 +6,8 @@
 #include <stdlib.h>
 
 /*
- * This is a reduced version of xxHash v0.7.0 found at:
- * https://github.com/Cyan4973/xxHash/releases/tag/v0.7.0
+ * This is a reduced version of xxHash v0.7.1 found at:
+ * https://github.com/Cyan4973/xxHash/releases/tag/v0.7.1
  */
 
 /*
@@ -63,11 +63,11 @@ typedef enum {
   XXH_UNALIGNED
 } XXHAlignment;
 
-static const uint32_t PRIME32_1 = 2654435761U;   /* 0b10011110001101110111100110110001 */
-static const uint32_t PRIME32_2 = 2246822519U;   /* 0b10000101111010111100101001110111 */
-static const uint32_t PRIME32_3 = 3266489917U;   /* 0b11000010101100101010111000111101 */
-static const uint32_t PRIME32_4 =  668265263U;   /* 0b00100111110101001110101100101111 */
-static const uint32_t PRIME32_5 =  374761393U;   /* 0b00010110010101100110011110110001 */
+static const uint32_t PRIME32_1 = 0x9E3779B1U;   /* 0b10011110001101110111100110110001 */
+static const uint32_t PRIME32_2 = 0x85EBCA77U;   /* 0b10000101111010111100101001110111 */
+static const uint32_t PRIME32_3 = 0xC2B2AE3DU;   /* 0b11000010101100101010111000111101 */
+static const uint32_t PRIME32_4 = 0x27D4EB2FU;   /* 0b00100111110101001110101100101111 */
+static const uint32_t PRIME32_5 = 0x165667B1U;   /* 0b00010110010101100110011110110001 */
 
 #if defined(XXH_FORCE_MEMORY_ACCESS) && XXH_FORCE_MEMORY_ACCESS
   /*
@@ -136,7 +136,8 @@ static inline uint32_t internal_xxh32_finalize(uint32_t h32, const void* ptr, si
     h32 += internal_xxh_get32bits(p) * PRIME32_3; \
     p += 4;                                       \
     h32 = internal_xxh_rotl32(h32, 17) * PRIME32_4;
-  /* or switch(bEnd - p) */
+
+  // or switch(bEnd - p)
   switch(len & 15) {
     case 12:
       PROCESS4;
