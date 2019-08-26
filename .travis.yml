@@ -39,4 +39,4 @@ script:
   - make -j 2
   - make package
   - make deploy
-  - ctest -VV
+  - ctest -VV --timeout 60

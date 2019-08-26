@@ -78,7 +78,7 @@ def run_build(verbose, test, trace, package, deploy):
     if test:
         print('-' * 72, flush=True)
         os.chdir(build_dir)
-        args = ['ctest', '-VV']
+        args = ['ctest', '-VV', '--timeout', '60']
         do_call(args)
         os.chdir(cwd)
 

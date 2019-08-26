@@ -33,7 +33,7 @@ clang:
     - make package
     - export ARTIFACT_ID="${CI_PIPELINE_IID}-${CI_JOB_NAME}"
     - make deploy
-    - ctest -VV
+    - ctest -VV --timeout 60
 
 gcc:
   stage: build
@@ -57,4 +57,4 @@ gcc:
     - make package
     - export ARTIFACT_ID="${CI_PIPELINE_IID}-${CI_JOB_NAME}"
     - make deploy
-    - ctest -VV
+    - ctest -VV --timeout 60
