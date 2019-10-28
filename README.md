@@ -1,5 +1,7 @@
 # SS-CE
 
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+
 [![linux status](https://img.shields.io/gitlab/pipeline/Sima214/SS-CE.svg?label=Linux)](https://gitlab.com/Sima214/SS-CE/commits/master)
 [![osx status](https://img.shields.io/travis/com/Sima214/SS-CE.svg?label=MacOS)](https://travis-ci.com/Sima214/SS-CE)
 [![windows status](https://img.shields.io/appveyor/ci/Sima214/SS-CE.svg?label=Windows)](https://ci.appveyor.com/project/Sima214/ss-ce)
