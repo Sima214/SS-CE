@@ -19,7 +19,7 @@
 #define PRIMEGEN_STATIC_END 6
 
 // List of found integers.
-static volatile uintmax_t* primegen_list;
+static uintmax_t* volatile primegen_list;
 static volatile size_t primegen_list_len;
 
 // Thread control.
@@ -28,6 +28,7 @@ pthread_mutex_t primegen_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t primegen_cond = PTHREAD_COND_INITIALIZER;
 pthread_spinlock_t primegen_list_lock;
 static volatile int primegen_thr_exit;
+static volatile int primegen_thr_ready;
 
 prime_t primegen_get_next(prime_t state) {
   state.last_prime_index++;
@@ -156,6 +157,7 @@ void* internal_primegen_main(MARK_UNUSED void* input) {
   job_size *= __CHAR_BIT__;
   // Thread main loop.
   pthread_mutex_lock(&primegen_mutex);
+  primegen_thr_ready = 1;
   while(HOT_BRANCH(!primegen_thr_exit)) {
     // Wait until more work is needed.
     EARLY_TRACE("Primegen waiting...");
@@ -172,11 +174,24 @@ void* internal_primegen_main(MARK_UNUSED void* input) {
     if(COLD_BRANCH(primegen_thr_exit)) break;
     internal_primegen_algo_main(&bitfield, start, end, fast_bound, job_size);
     if(COLD_BRANCH(primegen_thr_exit)) break;
-    // Prepare for prime extraction (realloc can be expensive this is why we are doing this before locking)!
-    size_t old_primes = primegen_list_len;
-    size_t potential_new_primes = ((double)end) / log((double)end);
+    // Prepare for prime extraction.
+    const size_t old_primes = primegen_list_len;
+    size_t potential_new_primes = math_max(((double)end) / log((double)end) * 1.2, old_primes + 8);
+    size_t new_primes = old_primes;
     pthread_spin_lock(&primegen_list_lock);
     // Store results.
+    primegen_list = realloc(primegen_list, potential_new_primes * sizeof(uintmax_t));
+    bitfield_for_each(&bitfield, 1, 0, {
+      if(COLD_BRANCH(new_primes == potential_new_primes)) {
+        EARLY_TRACE("primegen did not preallocate enough space!");
+        potential_new_primes += 8;
+        primegen_list = realloc(primegen_list, potential_new_primes * sizeof(uintmax_t));
+      }
+      uintmax_t extracted_prime = start + bit_index * 2;
+      primegen_list[new_primes] = extracted_prime;
+      new_primes++;
+    });
+    primegen_list_len = new_primes;
     pthread_spin_unlock(&primegen_list_lock);
     // Clean up and prepare for next work.
     bitfield_set_all(&bitfield);
@@ -190,13 +205,17 @@ void* internal_primegen_main(MARK_UNUSED void* input) {
 
 void internal_primegen_init() {
   pthread_spin_init(&primegen_list_lock, PTHREAD_PROCESS_PRIVATE);
+  primegen_thr_ready = 0;
+  int ret = pthread_create(&primegen_thr, NULL, internal_primegen_main, NULL);
+  while (!primegen_thr_ready) {
+    sched_yield();
+  }
   primegen_list_len = 4;
   primegen_list = malloc(primegen_list_len * sizeof(uintmax_t));
   primegen_list[0] = 1;
   primegen_list[1] = 2;
   primegen_list[2] = 3;
   primegen_list[3] = 5;
-  int ret = pthread_create(&primegen_thr, NULL, internal_primegen_main, NULL);
   if(COLD_BRANCH(ret != 0)) {
     EARLY_TRACEF("Could not create primegen thread code: 0x%x!", ret);
     abort();

@@ -1,10 +1,10 @@
 #include "test_utils.h"
 
-#include <Macros.h>
 #include <Hash.h>
+#include <Macros.h>
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 int main(MARK_UNUSED int argc, MARK_UNUSED char* argv[]) {
   uint64_t t1 = 0;
